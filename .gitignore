@@ -3,10 +3,10 @@ ressources
 data
 *.db
 __pycache__
-models\__pycache__
-views\__pycache__
-data\__pycache__
-controllers\__pycache__
-ressources\__pycache__
+models/__pycache__
+views/__pycache__
+data/__pycache__
+controllers/__pycache__
+ressources/__pycache__
 .vscode
 
