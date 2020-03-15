@@ -9,4 +9,5 @@ data/__pycache__
 controllers/__pycache__
 ressources/__pycache__
 .vscode
+debug.log
 
