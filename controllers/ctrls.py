@@ -3,48 +3,36 @@ from PyQt5.QtWidgets import QMainWindow
 
 from controllers import utils
 from controllers import log
+from models.vocabulary import lct_voc
 
 class lct_controller(QObject):
-    def __init__(self, main_win, vocab, start_up):
+    def __init__(self, main_win, start_up):
         super().__init__()
         log.info("WELCOME TO THE LANGUAGE CONSTRUCTION TOOL")
         log.info("#########################################")
-        self.vocab = vocab
+        
         self.main_win = main_win
         self.util = utils
         self.start_up = start_up
 
-        # connect widgets to controller
-        self.main_win._ui.spinBox_amount.valueChanged.connect(self.change_amount)
-        self.main_win._ui.pushButton_reset.clicked.connect(lambda: self.change_amount(0))
 
-        # listen for vocab event signals
-        self.vocab.amount_changed.connect(self.on_amount_changed)
-        self.vocab.even_odd_changed.connect(self.on_even_odd_changed)
-        self.vocab.enable_reset_changed.connect(self.on_enable_reset_changed)
+
+    def loaded_mode(self, db_file="", name=""):
+        if db_file != "":
+            self.vocab = lct_voc()
+            self.vocabulary = self.vocab.load_db(db_file, "load")
+        elif name != "":
+            db_file = name + ".db"
+            self.vocab = lct_voc()
+            self.vocabulary = self.vocab.load_db(db_file, "create")
         
-        # set a default value
-        self.change_amount(42)
+        # print(self.vocabulary)
+        
+        # self.load_voc_into_list(self.vocabulary)
 
-    @pyqtSlot(int)
-    def on_amount_changed(self, value):
-        self.main_win._ui.spinBox_amount.setValue(value)
-
-    @pyqtSlot(str)
-    def on_even_odd_changed(self, value):
-        self.main_win._ui.label_even_odd.setText(value)
-
-    @pyqtSlot(bool)
-    def on_enable_reset_changed(self, value):
-        self.main_win._ui.pushButton_reset.setEnabled(value)
     
-    @pyqtSlot(int)
-    def change_amount(self, value):
-        self.vocab.amount = value
+    def load_voc_into_list(self, voc):
+        pass
+    
 
-        # calculate even or odd
-        self.vocab.even_odd = 'odd' if value % 2 else 'even'
-
-        # calculate button enabled state
-        self.vocab.enable_reset = True if value else False
 
