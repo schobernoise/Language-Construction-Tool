@@ -1,5 +1,6 @@
 from PyQt5.QtCore import QObject, pyqtSignal
-from controllers.utils import utils
+from controllers import utils
+from controllers import log
 
 class lct_voc(QObject):
     amount_changed = pyqtSignal(int)

@@ -2,15 +2,20 @@ from PyQt5.QtWidgets import QApplication
 from controllers.ctrls import lct_controller
 from views.views import main_frame
 from models.models import lct_voc
+from controllers import log
+from controllers import utils
 
 import sys
 
 class App(QApplication):
     def __init__(self, sys_argv):
         super(App, self).__init__(sys_argv)
+        conf = utils.Config()
+        
         self.vocab = lct_voc()
         self.main_win = main_frame()
         self.main_controller = lct_controller(self.main_win, self.vocab, start_up=True)
+        log.debug("GUI: Starting Main Frame")
         self.main_win.show()
 
 

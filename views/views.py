@@ -2,6 +2,8 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import pyqtSlot
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from controllers import log
+
 class main_frame(QMainWindow):
     def __init__(self):
         super().__init__()

@@ -1,11 +1,14 @@
 from PyQt5.QtCore import QObject, pyqtSlot
 from PyQt5.QtWidgets import QMainWindow
 
-from controllers.utils import utils
+from controllers import utils
+from controllers import log
 
 class lct_controller(QObject):
     def __init__(self, main_win, vocab, start_up):
         super().__init__()
+        log.info("WELCOME TO THE LANGUAGE CONSTRUCTION TOOL")
+        log.info("#########################################")
         self.vocab = vocab
         self.main_win = main_win
         self.util = utils
