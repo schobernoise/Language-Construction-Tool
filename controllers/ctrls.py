@@ -37,11 +37,11 @@ class lct_controller(QObject):
     
     @pyqtSlot(int)
     def change_amount(self, value):
-        self._model.amount = value
+        self.vocab.amount = value
 
         # calculate even or odd
-        self._model.even_odd = 'odd' if value % 2 else 'even'
+        self.vocab.even_odd = 'odd' if value % 2 else 'even'
 
         # calculate button enabled state
-        self._model.enable_reset = True if value else False
+        self.vocab.enable_reset = True if value else False
 

@@ -8,7 +8,7 @@ import sys
 class App(QApplication):
     def __init__(self, sys_argv):
         super(App, self).__init__(sys_argv)
-        self.vocab = lct_voc
+        self.vocab = lct_voc()
         self.main_win = main_frame()
         self.main_controller = lct_controller(self.main_win, self.vocab, start_up=True)
         self.main_win.show()
