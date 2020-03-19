@@ -14,8 +14,14 @@ class lct_controller(QObject):
         self.main_win = main_win
         self.util = utils
         self.start_up = start_up
-
-
+        
+        if self.start_up == True:
+            self.start_mode()
+  
+    def start_mode(self):
+        self.vocab = lct_voc()
+        self.vocabulary = self.vocab.load_db("../start.db", "load")
+        self.connect_models()
 
     def loaded_mode(self, db_file="", name=""):
         if db_file != "":
@@ -26,13 +32,15 @@ class lct_controller(QObject):
             self.vocab = lct_voc()
             self.vocabulary = self.vocab.load_db(db_file, "create")
         
-        # print(self.vocabulary)
         
-        # self.load_voc_into_list(self.vocabulary)
+        print(self.vocabulary)
+        
 
-    
-    def load_voc_into_list(self, voc):
+
+    def display_data(self):
         pass
     
+    def connect_models(self):
+        self.main_win._ui.vocab_tv.setModel(self.vocab.qt_vocab)
 
 

@@ -19,3 +19,6 @@ class App(QApplication):
 if __name__ == '__main__':
     app = App(sys.argv)
     sys.exit(app.exec_())
+
+
+# SELECT generated_id, word, translation, pos, example_sentence, example_translation, description, related_words, related_image FROM vocabulary

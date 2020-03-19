@@ -32,6 +32,7 @@ Wenn es etwas geladen hat:
 - [generated_id] INTEGER PRIMARY KEY
 - [word] text
 - [translation] text
+- [pos] text
 - [example_sentence] text
 - [example_translation] text
 - [description] text
