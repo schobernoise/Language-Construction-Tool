@@ -1,260 +1,175 @@
-2020-03-18 08:45:03 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-18 08:46:22 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-18 08:46:22 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-18 08:46:37 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-18 08:46:37 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-18 08:46:37 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-18 08:46:37 lct      INFO    #########################################
-2020-03-18 08:48:22 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-18 08:50:16 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-18 08:51:50 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-18 08:51:50 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-18 08:51:50 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-18 08:51:50 lct      INFO    #########################################
-2020-03-18 08:52:36 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-18 08:52:56 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-18 08:52:56 lct      WARNING config.yaml entry log_level not set, will take from cli option or default.
-2020-03-18 08:52:56 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-18 08:52:56 lct      INFO    #########################################
-2020-03-18 08:55:19 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-18 08:55:19 lct      INFO    config.yaml entry log_level is DEBUG.
-2020-03-18 08:55:20 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-18 08:55:20 lct      INFO    #########################################
-2020-03-18 08:55:20 lct      DEBUG   GUI: Starting Main Frame
-2020-03-18 08:55:59 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-18 08:55:59 lct      INFO    config.yaml entry log_level is INFO.
-2020-03-18 08:55:59 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-18 08:55:59 lct      INFO    #########################################
-2020-03-18 08:55:59 lct      DEBUG   GUI: Starting Main Frame
-2020-03-18 09:07:04 lct      INFO    Config.lct_root: D:\06_GITHUB\lct
-2020-03-18 09:07:04 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-18 09:07:04 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-18 09:07:04 lct      INFO    #########################################
-2020-03-18 09:07:04 lct      DEBUG   GUI: Starting Main Frame
-2020-03-18 09:07:28 lct      INFO    Config.lct_root: D:\06_GITHUB\lct
-2020-03-18 09:07:28 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-18 09:07:28 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-18 09:07:28 lct      INFO    #########################################
-2020-03-18 09:07:28 lct      DEBUG   GUI: Starting Main Frame
-2020-03-18 09:07:50 lct      INFO    Config.lct_root: D:\06_GITHUB\lct
-2020-03-18 09:07:50 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-18 09:07:50 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-18 09:07:50 lct      INFO    #########################################
-2020-03-18 09:07:50 lct      DEBUG   GUI: Starting Main Frame
-2020-03-18 09:08:02 lct      INFO    Config.lct_root: D:\06_GITHUB\lct
-2020-03-18 09:08:02 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-18 09:08:02 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-18 09:08:02 lct      INFO    #########################################
-2020-03-18 09:08:02 lct      DEBUG   GUI: Starting Main Frame
-2020-03-18 19:23:19 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-18 19:23:19 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-18 19:23:20 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-18 19:23:20 lct      INFO    #########################################
-2020-03-18 19:23:20 lct      DEBUG   GUI: Starting Main Frame
-2020-03-18 22:11:10 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-18 22:11:10 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-18 22:11:10 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-18 22:11:10 lct      INFO    #########################################
-2020-03-18 22:11:10 lct      DEBUG   MODEL: Successfully created
-2020-03-18 22:11:11 lct      DEBUG   MODEL: Successfully Created new Tables
-2020-03-18 22:11:11 lct      DEBUG   GUI: Starting Main Frame
-2020-03-18 22:16:33 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-18 22:16:33 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-18 22:16:33 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-18 22:16:33 lct      INFO    #########################################
-2020-03-18 22:16:33 lct      DEBUG   GUI: Starting Main Frame
-2020-03-19 07:27:52 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 07:27:52 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 07:27:52 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 07:27:52 lct      INFO    #########################################
-2020-03-19 07:27:52 lct      DEBUG   GUI: Starting Main Frame
-2020-03-19 07:45:27 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 07:45:27 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 07:45:27 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 07:45:27 lct      INFO    #########################################
-2020-03-19 07:45:27 lct      DEBUG   MODEL: Successfully created
-2020-03-19 07:45:28 lct      DEBUG   MODEL: Successfully Created new Tables
-2020-03-19 07:45:28 lct      DEBUG   GUI: Starting Main Frame
-2020-03-19 08:24:15 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 08:24:15 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 08:24:15 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 08:24:15 lct      INFO    #########################################
-2020-03-19 08:25:05 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 08:25:05 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 08:25:05 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 08:25:05 lct      INFO    #########################################
-2020-03-19 08:26:20 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 08:26:20 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 08:26:20 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 08:26:20 lct      INFO    #########################################
-2020-03-19 08:26:55 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 08:26:55 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 08:26:55 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 08:26:55 lct      INFO    #########################################
-2020-03-19 08:28:17 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 08:28:17 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 08:28:17 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 08:28:17 lct      INFO    #########################################
-2020-03-19 08:29:26 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 08:29:26 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 08:29:26 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 08:29:26 lct      INFO    #########################################
-2020-03-19 08:30:46 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 08:30:46 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 08:30:46 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 08:30:46 lct      INFO    #########################################
-2020-03-19 08:41:52 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 08:41:52 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 08:41:52 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 08:41:52 lct      INFO    #########################################
-2020-03-19 08:52:40 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 08:52:40 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 08:52:40 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 08:52:40 lct      INFO    #########################################
-2020-03-19 08:53:10 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 08:53:10 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 08:53:10 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 08:53:10 lct      INFO    #########################################
-2020-03-19 08:53:10 lct      DEBUG   MODEL: Successfully created
-2020-03-19 08:54:10 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 08:54:10 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 08:54:10 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 08:54:10 lct      INFO    #########################################
-2020-03-19 08:54:10 lct      DEBUG   MODEL: Successfully created
-2020-03-19 08:54:46 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 08:54:46 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 08:54:46 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 08:54:46 lct      INFO    #########################################
-2020-03-19 08:54:46 lct      DEBUG   MODEL: Successfully created
-2020-03-19 08:55:33 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 08:55:33 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 08:55:33 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 08:55:33 lct      INFO    #########################################
-2020-03-19 08:55:34 lct      DEBUG   GUI: Starting Main Frame
-2020-03-19 09:01:47 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 09:01:47 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 09:01:47 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 09:01:47 lct      INFO    #########################################
-2020-03-19 09:01:47 lct      DEBUG   GUI: Starting Main Frame
-2020-03-19 09:05:01 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 09:05:01 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 09:05:01 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 09:05:01 lct      INFO    #########################################
-2020-03-19 09:05:01 lct      DEBUG   GUI: Starting Main Frame
-2020-03-19 09:05:42 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 09:05:42 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 09:05:42 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 09:05:42 lct      INFO    #########################################
-2020-03-19 09:05:42 lct      DEBUG   MODEL: Successfully created
-2020-03-19 09:05:42 lct      DEBUG   MODEL: Successfully loaded Data from DB.
-2020-03-19 09:06:08 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 09:06:08 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 09:06:08 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 09:06:08 lct      INFO    #########################################
-2020-03-19 09:06:08 lct      DEBUG   MODEL: Successfully created
-2020-03-19 09:06:08 lct      DEBUG   MODEL: Successfully loaded Data from DB.
-2020-03-19 09:13:28 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 09:13:28 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 09:13:28 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 09:13:28 lct      INFO    #########################################
-2020-03-19 09:13:28 lct      DEBUG   MODEL: Successfully created
-2020-03-19 09:13:28 lct      ERROR   MODEL: Couldn't Fetch All.
-2020-03-19 09:14:04 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 09:14:04 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 09:14:04 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 09:14:04 lct      INFO    #########################################
-2020-03-19 09:14:04 lct      DEBUG   MODEL: Successfully created
-2020-03-19 09:14:04 lct      ERROR   MODEL: Couldn't Fetch All.
-2020-03-19 09:14:24 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 09:14:24 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 09:14:24 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 09:14:24 lct      INFO    #########################################
-2020-03-19 09:14:24 lct      DEBUG   MODEL: Successfully created
-2020-03-19 09:14:24 lct      ERROR   MODEL: Couldn't Fetch All.
-2020-03-19 09:15:35 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 09:15:35 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 09:15:35 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 09:15:35 lct      INFO    #########################################
-2020-03-19 09:15:35 lct      DEBUG   MODEL: Successfully created
-2020-03-19 09:15:35 lct      ERROR   MODEL: Couldn't Fetch All.
-2020-03-19 09:17:30 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 09:17:30 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 09:17:30 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 09:17:30 lct      INFO    #########################################
-2020-03-19 09:17:30 lct      DEBUG   MODEL: Successfully created
-2020-03-19 09:17:30 lct      ERROR   MODEL: Couldn't Fetch All.
-2020-03-19 19:54:07 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 19:54:07 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 19:54:08 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 19:54:08 lct      INFO    #########################################
-2020-03-19 19:54:08 lct      DEBUG   MODEL: Successfully created
-2020-03-19 19:54:08 lct      ERROR   MODEL: Couldn't Fetch All.
-2020-03-19 19:55:27 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 19:55:27 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 19:55:27 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 19:55:27 lct      INFO    #########################################
-2020-03-19 19:55:27 lct      DEBUG   MODEL: Successfully created
-2020-03-19 19:55:27 lct      ERROR   MODEL: Couldn't Fetch All.
-2020-03-19 19:56:10 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 19:56:10 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 19:56:10 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 19:56:10 lct      INFO    #########################################
-2020-03-19 19:56:10 lct      DEBUG   MODEL: Successfully created
-2020-03-19 19:56:10 lct      ERROR   MODEL: Couldn't Fetch All.
-2020-03-19 19:56:10 lct      DEBUG   GUI: Starting Main Frame
-2020-03-19 19:57:30 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 19:57:30 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 19:57:30 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 19:57:30 lct      INFO    #########################################
-2020-03-19 19:57:30 lct      DEBUG   MODEL: Successfully created
-2020-03-19 20:01:25 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 20:01:25 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 20:01:25 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 20:01:25 lct      INFO    #########################################
-2020-03-19 20:01:25 lct      DEBUG   MODEL: Successfully created
-2020-03-19 20:02:09 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 20:02:09 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 20:02:09 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 20:02:09 lct      INFO    #########################################
-2020-03-19 20:02:09 lct      DEBUG   MODEL: Successfully created
-2020-03-19 20:04:43 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 20:04:43 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 20:04:43 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 20:04:43 lct      INFO    #########################################
-2020-03-19 20:04:43 lct      DEBUG   MODEL: Successfully connected DB FIle
-2020-03-19 20:04:43 lct      DEBUG   MODEL: Successfully loaded Data from DB.
-2020-03-19 20:04:43 lct      DEBUG   GUI: Starting Main Frame
-2020-03-19 20:05:57 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 20:05:57 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 20:05:58 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 20:05:58 lct      INFO    #########################################
-2020-03-19 20:05:58 lct      DEBUG   MODEL: Successfully connected DB FIle
-2020-03-19 20:05:58 lct      DEBUG   MODEL: Successfully loaded Data from DB.
-2020-03-19 20:07:00 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 20:07:00 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 20:07:00 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 20:07:00 lct      INFO    #########################################
-2020-03-19 20:07:00 lct      DEBUG   MODEL: Successfully connected DB FIle
-2020-03-19 20:07:00 lct      DEBUG   MODEL: Successfully loaded Data from DB.
-2020-03-19 20:10:44 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 20:10:44 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 20:10:44 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 20:10:44 lct      INFO    #########################################
-2020-03-19 20:10:44 lct      DEBUG   MODEL: Successfully connected DB FIle
-2020-03-19 20:10:44 lct      DEBUG   MODEL: Successfully loaded Data from DB.
-2020-03-19 20:10:58 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 20:10:58 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 20:10:58 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 20:10:58 lct      INFO    #########################################
-2020-03-19 20:10:58 lct      DEBUG   MODEL: Successfully connected DB FIle
-2020-03-19 20:10:58 lct      DEBUG   MODEL: Successfully loaded Data from DB.
-2020-03-19 20:10:58 lct      DEBUG   GUI: Starting Main Frame
-2020-03-19 20:12:39 lct      INFO    Config.lct_root: d:\06_GITHUB\lct
-2020-03-19 20:12:39 lct      INFO    config.yaml entry log_level is WARNING.
-2020-03-19 20:12:39 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
-2020-03-19 20:12:39 lct      INFO    #########################################
-2020-03-19 20:12:39 lct      DEBUG   MODEL: Successfully connected DB FIle
-2020-03-19 20:12:39 lct      DEBUG   MODEL: Successfully loaded Data from DB.
-2020-03-19 20:12:39 lct      DEBUG   GUI: Starting Main Frame
-2020-03-19 20:12:44 lct      DEBUG   MODEL: Successfully connected DB FIle
-2020-03-19 20:12:44 lct      DEBUG   MODEL: Successfully Created new Tables
+2020-03-20 15:16:58 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:16:58 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:16:58 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:16:58 lct      INFO    #########################################
+2020-03-20 15:16:58 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:16:58 lct      INFO    MODEL: Processing Query
+2020-03-20 15:16:58 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:17:10 lct      INFO    MODEL: Processing Query
+2020-03-20 15:17:27 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:17:27 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:17:27 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:17:27 lct      INFO    #########################################
+2020-03-20 15:17:27 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:17:27 lct      INFO    MODEL: Processing Query
+2020-03-20 15:17:28 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:17:38 lct      INFO    MODEL: Processing Query
+2020-03-20 15:20:15 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:20:15 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:20:15 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:20:15 lct      INFO    #########################################
+2020-03-20 15:20:15 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:20:15 lct      INFO    MODEL: Processing Query
+2020-03-20 15:20:16 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:20:21 lct      DEBUG   MODEL: Successfully reading Image
+2020-03-20 15:20:21 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:24:14 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:24:14 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:24:14 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:24:14 lct      INFO    #########################################
+2020-03-20 15:24:14 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:24:14 lct      INFO    MODEL: Processing Query
+2020-03-20 15:24:14 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:24:16 lct      DEBUG   MODEL: Successfully reading Image
+2020-03-20 15:25:27 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:25:27 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:25:27 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:25:27 lct      INFO    #########################################
+2020-03-20 15:25:27 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:25:27 lct      INFO    MODEL: Processing Query
+2020-03-20 15:25:27 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:25:29 lct      DEBUG   MODEL: Successfully reading Image
+2020-03-20 15:29:29 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:29:29 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:29:29 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:29:29 lct      INFO    #########################################
+2020-03-20 15:29:29 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:29:29 lct      INFO    MODEL: Processing Query
+2020-03-20 15:29:30 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:29:33 lct      DEBUG   MODEL: Successfully reading Image
+2020-03-20 15:31:39 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:31:39 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:31:39 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:31:39 lct      INFO    #########################################
+2020-03-20 15:31:39 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:31:39 lct      INFO    MODEL: Processing Query
+2020-03-20 15:31:39 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:31:41 lct      DEBUG   MODEL: Successfully reading Image
+2020-03-20 15:34:32 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:34:32 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:34:32 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:34:32 lct      INFO    #########################################
+2020-03-20 15:34:32 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:34:32 lct      INFO    MODEL: Processing Query
+2020-03-20 15:34:32 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:34:34 lct      DEBUG   MODEL: Successfully reading Image
+2020-03-20 15:34:34 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:34:51 lct      DEBUG   MODEL: Successfully reading Image
+2020-03-20 15:34:51 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:36:06 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:36:06 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:36:06 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:36:06 lct      INFO    #########################################
+2020-03-20 15:36:06 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:36:06 lct      INFO    MODEL: Processing Query
+2020-03-20 15:36:06 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:36:09 lct      DEBUG   MODEL: Successfully reading Image
+2020-03-20 15:37:12 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:37:12 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:37:13 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:37:13 lct      INFO    #########################################
+2020-03-20 15:37:13 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:37:13 lct      INFO    MODEL: Processing Query
+2020-03-20 15:37:13 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:37:15 lct      DEBUG   MODEL: Successfully reading Image
+2020-03-20 15:37:15 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:39:55 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:39:55 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:39:55 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:39:55 lct      INFO    #########################################
+2020-03-20 15:39:55 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:39:55 lct      INFO    MODEL: Processing Query
+2020-03-20 15:39:56 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:39:58 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:40:06 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:40:07 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:40:07 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:40:08 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:40:08 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:43:16 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:43:16 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:43:16 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:43:16 lct      INFO    #########################################
+2020-03-20 15:43:16 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:43:16 lct      INFO    MODEL: Processing Query
+2020-03-20 15:43:16 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:43:20 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:43:41 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:43:41 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:43:41 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:43:41 lct      INFO    #########################################
+2020-03-20 15:43:41 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:43:41 lct      INFO    MODEL: Processing Query
+2020-03-20 15:43:41 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:43:43 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:43:47 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:43:47 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:43:48 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:43:48 lct      DEBUG   MODEL: Executing Insertion SQL
+2020-03-20 15:51:02 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:51:02 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:51:02 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:51:02 lct      INFO    #########################################
+2020-03-20 15:51:02 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:51:02 lct      INFO    MODEL: Processing Query
+2020-03-20 15:51:03 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:51:19 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:51:19 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:51:19 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:51:19 lct      INFO    #########################################
+2020-03-20 15:51:19 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:51:19 lct      INFO    MODEL: Processing Query
+2020-03-20 15:51:19 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:51:21 lct      DEBUG   MODEL: Successfully reading Image
+2020-03-20 15:52:57 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:52:57 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:52:57 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:52:57 lct      INFO    #########################################
+2020-03-20 15:52:57 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:52:57 lct      INFO    MODEL: Processing Query
+2020-03-20 15:52:57 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:53:36 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:53:36 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:53:36 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:53:36 lct      INFO    #########################################
+2020-03-20 15:53:36 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:53:36 lct      INFO    MODEL: Processing Query
+2020-03-20 15:53:36 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:58:34 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:58:34 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:58:34 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:58:34 lct      INFO    #########################################
+2020-03-20 15:58:34 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:58:34 lct      INFO    MODEL: Processing Query
+2020-03-20 15:58:34 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 15:58:57 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 15:58:57 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 15:58:57 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 15:58:57 lct      INFO    #########################################
+2020-03-20 15:58:57 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 15:58:57 lct      INFO    MODEL: Processing Query
+2020-03-20 15:58:57 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 16:04:23 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 16:04:23 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 16:04:23 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 16:04:23 lct      INFO    #########################################
+2020-03-20 16:04:23 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 16:04:23 lct      INFO    MODEL: Processing Query
+2020-03-20 16:04:23 lct      DEBUG   GUI: Starting Main Frame
+2020-03-20 16:08:45 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-20 16:08:45 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-20 16:08:45 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-20 16:08:45 lct      INFO    #########################################
+2020-03-20 16:08:45 lct      DEBUG   MODEL: connect to SQL Server successfully
+2020-03-20 16:08:45 lct      INFO    MODEL: Processing Query
+2020-03-20 16:08:46 lct      DEBUG   GUI: Starting Main Frame

@@ -11,6 +11,7 @@ class App(QApplication):
         super(App, self).__init__(sys_argv)
         conf = utils.Config()
         self.main_win = main_frame()
+        self.main_win.setupUi(self.main_win)
         self.main_controller = lct_controller(self.main_win, start_up=True)
         log.debug("GUI: Starting Main Frame")
         self.main_win.show()
@@ -20,5 +21,3 @@ if __name__ == '__main__':
     app = App(sys.argv)
     sys.exit(app.exec_())
 
-
-# SELECT generated_id, word, translation, pos, example_sentence, example_translation, description, related_words, related_image FROM vocabulary

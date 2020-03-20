@@ -19,32 +19,23 @@ class lct_controller(QObject):
             self.start_mode()
   
     def start_mode(self):
-        self.vocab = lct_voc()
-        self.vocabulary = self.vocab.load_db("data/start.db", "load")
-        self.connect_models()
+        self.start_vocab = lct_voc("data/start.db", "load")
+        self.main_win.vocab_tv.setModel(self.start_vocab)
+        for i in range(9):
+            if i != 1:
+                self.main_win.vocab_tv.hideColumn(i)
+        self.main_win.vocab_tv.header().hide()
+
         self.connect_buttons()
 
     def loaded_mode(self, db_file="", name=""):
         if db_file != "":
-            self.vocab = lct_voc()
-            self.vocabulary = self.vocab.load_db(db_file, "load")
+            self.vocab = lct_voc(db_file, "load")
         elif name != "":
             db_file = "data/" + name + ".db"
-            self.vocab = lct_voc()
-            self.vocabulary = self.vocab.load_db(db_file, "create")
-        
-        
-        print(self.vocabulary)
-        
+            self.vocab = lct_voc(db_file, "create")
 
-
-    def display_data(self):
-        pass
-    
-    def connect_models(self):
-        self.main_win._ui.vocab_tv.setModel(self.vocab.qt_vocab)
-    
     def connect_buttons(self):
-        self.main_win._ui.new_vocab.clicked.connect(lambda:self.loaded_mode(name="test"))
+        self.main_win.new_vocab.clicked.connect(lambda:self.start_vocab.save_image("ressources/word_image.jpg"))
 
 

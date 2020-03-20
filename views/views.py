@@ -8,10 +8,7 @@ class main_frame(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self._ui = Ui_MainWindow()
-        self._ui.setupUi(self)
 
-class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1024, 768)
@@ -95,6 +92,9 @@ class Ui_MainWindow(object):
         self.vocab_tv = QtWidgets.QTreeView(self.vocabulary)
         self.vocab_tv.setGeometry(QtCore.QRect(0, 0, 331, 681))
         self.vocab_tv.setObjectName("vocab_tv")
+        self.vocab_tv.setStyleSheet("border: none;\n"
+                                    "background-color: #eee;")
+        self.vocab_tv.setFont(font)
         self.gridLayoutWidget = QtWidgets.QWidget(self.vocabulary)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(450, 610, 391, 51))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
