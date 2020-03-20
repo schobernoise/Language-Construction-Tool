@@ -20,15 +20,16 @@ class lct_controller(QObject):
   
     def start_mode(self):
         self.vocab = lct_voc()
-        self.vocabulary = self.vocab.load_db("../start.db", "load")
+        self.vocabulary = self.vocab.load_db("data/start.db", "load")
         self.connect_models()
+        self.connect_buttons()
 
     def loaded_mode(self, db_file="", name=""):
         if db_file != "":
             self.vocab = lct_voc()
             self.vocabulary = self.vocab.load_db(db_file, "load")
         elif name != "":
-            db_file = name + ".db"
+            db_file = "data/" + name + ".db"
             self.vocab = lct_voc()
             self.vocabulary = self.vocab.load_db(db_file, "create")
         
@@ -42,5 +43,8 @@ class lct_controller(QObject):
     
     def connect_models(self):
         self.main_win._ui.vocab_tv.setModel(self.vocab.qt_vocab)
+    
+    def connect_buttons(self):
+        self.main_win._ui.new_vocab.clicked.connect(lambda:self.loaded_mode(name="test"))
 
 

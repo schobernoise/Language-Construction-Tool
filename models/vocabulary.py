@@ -1,12 +1,11 @@
-from PyQt5.QtCore import QObject, pyqtSignal, Qt
-from PyQt5.QtGui import QStandardItemModel
+from PyQt5.QtCore import QObject, pyqtSignal, Qt, QAbstractItemModel
 from controllers import utils
 from controllers import log
 
 import sqlite3
 from sqlite3 import Error
 
-class lct_voc(QObject):
+class lct_voc(QAbstractItemModel):
 
     WORD, POS = range(2)
 
@@ -32,34 +31,36 @@ class lct_voc(QObject):
         conn = None
         try:
             conn = sqlite3.connect(db_file)
-            c = conn.cursor()
             # log.debug(f"MODEL: Successfully created {}".format(db_file))
-            log.debug("MODEL: Successfully created")
+            log.debug("MODEL: Successfully connected DB FIle")
         except:
             return False
-            log.error("Couldn't create Database File")
+            log.error("Couldn't connect Database File")
         
         ######### CREATE AND LOAD TABLES
 
         if mode == "create":
             try:
+                c = conn.cursor()
                 c.execute(sql_create_vocabulary)
                 log.debug("MODEL: Successfully Created new Tables")
                 return []
             except:
                 log.error("MODEL: Couldn't create Tables")
                 pass
+
         elif mode == "load":
             try:
-                c.execute('SELECT * FROM vocabulary')
+                c = conn.cursor()
+                c.execute('SELECT * FROM VOCABULARY')
                 data = c.fetchall()
                 log.debug("MODEL: Successfully loaded Data from DB.")
-                print(data)
+                # print(data)
             except:
                 data = []
                 log.error("MODEL: Couldn't Fetch All.")
             finally:
-                self.add_vocab_model(self.qt_vocab, data)
+                # self.add_vocab_model(self.qt_vocab, data)
                 return data
 
 
@@ -77,16 +78,5 @@ class lct_voc(QObject):
     def load_word_from_db(self, id):
         pass
 
-    def create_vocab_model(self,parent):
-        model = QStandardItemModel(0, 2, parent)
-        model.setHeaderData(self.WORD, Qt.Horizontal, "word")
-        model.setHeaderData(self.POS, Qt.Horizontal, "pos")
-        return model
-
-    def add_vocab_model(self, model, word_data):
-        model.insertRow(0)
-        model.setData(model.index(0, self.WORD), word_data[1])
-        model.setData(model.index(0, self.POS), word_data[3])
- 
 
     
