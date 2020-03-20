@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QObject, pyqtSlot
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QDataWidgetMapper
 
 from controllers import utils
 from controllers import log
@@ -21,9 +21,9 @@ class lct_controller(QObject):
     def start_mode(self):
         self.start_vocab = lct_voc("data/start.db", "load")
         self.main_win.vocab_tv.setModel(self.start_vocab)
-        for i in range(9):
-            if i != 1:
-                self.main_win.vocab_tv.hideColumn(i)
+        # for i in range(9):
+        #     if i != 1:
+        #         self.main_win.vocab_tv.hideColumn(i)
         self.main_win.vocab_tv.header().hide()
 
         self.connect_buttons()
