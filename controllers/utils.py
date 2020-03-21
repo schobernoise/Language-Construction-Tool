@@ -27,6 +27,18 @@ def read_yaml(yamlfile):
         log.error(" trying to load %s.", yamlfile)
         raise err
         raise SystemExit(3)
+    
+
+def convertToBinaryData(self, image_name):
+        #Convert digital data to binary format
+        try:
+            with open(image_name, 'rb') as file:
+                blobData = file.read()
+            log.debug("UTILS: Successfully reading Image")
+            return blobData
+        except:
+            log.error("UTILS: Reading Image failed")    
+            return False
 
 
 class Config():

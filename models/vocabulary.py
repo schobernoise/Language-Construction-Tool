@@ -5,51 +5,32 @@ from controllers import utils
 from controllers import log
 
 
-class lct_voc(QSqlTableModel):
+class vocab_model(QSqlTableModel):
 
     def __init__(self, db_file, mode):
-        super().__init__()
+        # The Database File has to be linked before the Super Class is called
         self.db = QSqlDatabase.addDatabase('QSQLITE')
-        print(db_file)
         self.db.setDatabaseName(db_file)
-        self.setEditStrategy(QSqlRelationalTableModel.OnFieldChange)
+
+        # Then the QSqlTableModel gets initialized, so we can use all its methods
+        super().__init__()
+
+        # It automatically creates a new file, if it is in create mode
+        if mode == "create":
+            query = QSqlQuery(self.db)
+            query.exec_('''CREATE TABLE VOCABULARY
+                            ([generated_id] INTEGER PRIMARY KEY,
+                            [word] TEXT,
+                            [translation] TEXT,
+                            [pos] TEXT,
+                            [example_sentence] TEXT,
+                            [example_translation] TEXT,
+                            [description] TEXT,
+                            [related_words] TEXT,
+                            [related_image] BLOB)''')
+
+        self.setEditStrategy(QSqlRelationalTableModel.OnRowChange)
         self.setTable("VOCABULARY") 
         self.select()
-
-        print(self.rowCount())
-   
-
-
-    def convertToBinaryData(self, image_name):
-        #Convert digital data to binary format
-        try:
-            with open(image_name, 'rb') as file:
-                blobData = file.read()
-            log.debug("MODEL: Successfully reading Image")
-            return blobData
-        except:
-            log.error("MODEL: Reading Image failed")    
-            pass
-
-
-    def save_image(self, image_file):
-        print("BEFORE " + self.record(0).value("related_words"))
-        try:
-            self.setData(self.index(0, 7), "XXXXX")
-            self.submitAll()
-            print("SUCCESS")
-        except:
-            print("FAIL")
-        
-        print("AFTER " + self.record(0).value("related_words"))
-        
-        # self.convertToBinaryData(image_file)
-    
-    def write_word_to_db(self, word_data):
-        pass
-    
-    def load_word_from_db(self, id):
-        pass
-
 
     
