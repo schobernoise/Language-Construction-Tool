@@ -19,7 +19,7 @@ class lct_controller(QObject):
             self.start_mode()
   
     def start_mode(self):
-        self.start_vocab = lct_voc("data/start.db", "load")
+        self.start_vocab = lct_voc("../data/start.db", "load")
         self.main_win.vocab_tv.setModel(self.start_vocab)
         # for i in range(9):
         #     if i != 1:

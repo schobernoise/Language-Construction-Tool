@@ -10,59 +10,14 @@ class lct_voc(QSqlTableModel):
     def __init__(self, db_file, mode):
         super().__init__()
         self.db = QSqlDatabase.addDatabase('QSQLITE')
+        print(db_file)
         self.db.setDatabaseName(db_file)
         self.setEditStrategy(QSqlRelationalTableModel.OnFieldChange)
         self.setTable("VOCABULARY") 
         self.select()
 
-        
-        
-        # if mode == "create":
-        #     self.create_db()
-        # elif mode == "load":
-        #     self.load_db()
-        
-    
-    def create_db(self):
-
-        sql_create_vocab = '''CREATE TABLE VOCABULARY
-                            ([generated_id] INTEGER PRIMARY KEY,
-                            [word] TEXT NOT NULL,
-                            [translation] TEXT NOT NULL,
-                            [pos] TEXT NOT NULL,
-                            [example_sentence] TEXT NOT NULL,
-                            [example_translation] TEXT NOT NULL,
-                            [description] TEXT NOT NULL,
-                            [related_words] TEXT NOT NULL,
-                            [related_image] BLOB NOT NULL)'''
-
-        sql_create_rel_words = '''CREATE TABLE RELATED
-                                ([])'''
-
-         
-        query = QSqlQuery(self.db)
-        query.prepare(sql_create_vocab)    
-        query.exec()
-        self.setQuery(query)
-
-        return True
-
-
-    def load_db(self):
-
-        if self.db.open():
-            log.debug('MODEL: connect to SQL Server successfully')
-            # return True
-        else:
-            log.error('MODEL: connection failed')
-            # return False
-
-        qry = QSqlQuery(self.db)
-        log.info('MODEL: Processing Query')
-        qry.prepare('SELECT * FROM VOCABULARY')
-        qry.exec()
-        self.setQuery(qry)
-
+        print(self.rowCount())
+   
 
 
     def convertToBinaryData(self, image_name):

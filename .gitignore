@@ -10,3 +10,4 @@ controllers/__pycache__
 ressources/__pycache__
 .vscode
 start.db
+debug.log

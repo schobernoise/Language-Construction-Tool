@@ -29,15 +29,16 @@ Wenn es etwas geladen hat:
 
 ### Vocabulary
 
-- [generated_id] INTEGER PRIMARY KEY
-- [word] text
-- [translation] text
-- [pos] text
-- [example_sentence] text
-- [example_translation] text
-- [description] text
-- [related_words] text
-- [related_image] image
+'''CREATE TABLE VOCABULARY
+                            ([generated_id] INTEGER PRIMARY KEY,
+                            [word] TEXT,
+                            [translation] TEXT,
+                            [pos] TEXT,
+                            [example_sentence] TEXT,
+                            [example_translation] TEXT,
+                            [description] TEXT,
+                            [related_words] TEXT,
+                            [related_image] BLOB)'''
 
 ## LANGUAGE CONSTRUCTOR
 
