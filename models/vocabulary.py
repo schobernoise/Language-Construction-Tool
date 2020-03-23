@@ -11,6 +11,7 @@ class vocab_model(QSqlTableModel):
         # The Database File has to be linked before the Super Class is called
         self.db = QSqlDatabase.addDatabase('QSQLITE')
         self.db.setDatabaseName(db_file)
+        # print(dir(QSqlTableModel))
 
         # Then the QSqlTableModel gets initialized, so we can use all its methods
         super().__init__()

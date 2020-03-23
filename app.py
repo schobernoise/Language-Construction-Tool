@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QApplication
 from controllers.ctrls import lct_controller
-from views.views import main_frame
+from views.main_frame import main_frame
 from controllers import log
 from controllers import utils
 

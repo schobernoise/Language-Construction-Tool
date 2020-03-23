@@ -7,7 +7,7 @@ from controllers import log
 class main_frame(QMainWindow):
     def __init__(self):
         super().__init__()
-
+        
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -86,7 +86,7 @@ class main_frame(QMainWindow):
         font.setPointSize(36)
         self.word_label.setFont(font)
         self.word_label.setObjectName("word_label")
-        self.word_image = QtWidgets.QGraphicsView(self.vocabulary)
+        self.word_image = QtWidgets.QLabel(self.vocabulary)
         self.word_image.setGeometry(QtCore.QRect(330, 0, 691, 161))
         self.word_image.setObjectName("word_image")
         self.vocab_tv = QtWidgets.QTreeView(self.vocabulary)
