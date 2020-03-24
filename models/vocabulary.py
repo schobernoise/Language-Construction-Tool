@@ -8,10 +8,14 @@ from controllers import log
 class vocab_model(QSqlTableModel):
 
     def __init__(self, db_file, mode):
+
+        # If any, close old connections
+        
         # The Database File has to be linked before the Super Class is called
         self.db = QSqlDatabase.addDatabase('QSQLITE')
         self.db.setDatabaseName(db_file)
         # print(dir(QSqlTableModel))
+        self.db_file = db_file
 
         # Then the QSqlTableModel gets initialized, so we can use all its methods
         super().__init__()

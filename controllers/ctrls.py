@@ -68,18 +68,18 @@ class lct_controller(QObject):
         self.dialog.buttonBox.accepted.connect(lambda x=voc_name:self.load_interface(name=x))
         self.dialog.exec_()
         # if self.dialog.lineEdit.text() != "":
-        
-        print("NAME IS " + voc_name)
-        
     
+    def show_word_editor(self):
+        self.dialog = word_editor() 
+        
+        self.dialog.buttonBox.accepted.connect(lambda x=entries:self.save_data_to_model(entries))
+        self.dialog.exec_()
+        
 
-    def save_data_to_model(self):
+    def save_data_to_model(self, entries):
         pass
     
     
-    def show_word_editor(self):
-        self.dialog = word_editor()
-        self.dialog.exec_()
-
+    
         
         
