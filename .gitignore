@@ -1,6 +1,5 @@
 lct_shell.bat
 ressources
-data
 *.db
 __pycache__
 models/__pycache__

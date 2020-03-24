@@ -368,3 +368,8 @@
 2020-03-22 17:35:35 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
 2020-03-22 17:35:35 lct      INFO    #########################################
 2020-03-22 17:35:35 lct      DEBUG   GUI: Starting Main Frame
+2020-03-24 08:39:36 lct      INFO    Config.lct_root: d:\02_GITHUB\lct
+2020-03-24 08:39:36 lct      INFO    config.yaml entry log_level is WARNING.
+2020-03-24 08:39:36 lct      INFO    WELCOME TO THE LANGUAGE CONSTRUCTION TOOL
+2020-03-24 08:39:36 lct      INFO    #########################################
+2020-03-24 08:39:36 lct      DEBUG   GUI: Starting Main Frame
