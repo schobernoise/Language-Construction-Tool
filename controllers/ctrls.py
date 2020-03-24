@@ -1,6 +1,7 @@
-from PyQt5.QtCore import QObject, pyqtSlot, QModelIndex
-from PyQt5.QtWidgets import QMainWindow, QDataWidgetMapper, QTreeView
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+from PyQt5.QtSql import *
 
 from controllers import utils
 from controllers import log
@@ -70,14 +71,60 @@ class lct_controller(QObject):
         # if self.dialog.lineEdit.text() != "":
     
     def show_word_editor(self):
+        self.entries = []
         self.dialog = word_editor() 
-        
-        self.dialog.buttonBox.accepted.connect(lambda x=entries:self.save_data_to_model(entries))
+        self.dialog.pos_combo.clear()
+        self.dialog.pos_combo.addItems(["verb", "noun", "adjective", "adbverb", "pronoun", "preposition", "conjunction", "interjection", "article", "determiner"])
+        self.dialog.rel_words_combo.setModel(self.vocab)
+        self.dialog.rel_words_combo.setModelColumn(1)
+        self.dialog.file_button.clicked.connect(lambda:self.open_file_dialog(mode="image"))
+        self.dialog.buttonbox.accepted.connect(self.save_new_word)
         self.dialog.exec_()
+
+    
+    def save_new_word(self):
+        
+        self.entries.append(self.dialog.word_edit.text())
+        self.entries.append(self.dialog.translation_edit.text())
+        self.entries.append(str(self.dialog.pos_combo.currentText()))
+        self.entries.append(self.dialog.example_sentence_edit.text())
+        self.entries.append(self.dialog.example_translation_edit.text())
+        self.entries.append(self.dialog.description_edit.toPlainText())
+        self.entries.append(self.dialog.rel_words_combo.currentText())
         
 
-    def save_data_to_model(self, entries):
-        pass
+        self.save_data_to_model(entries, mode="new_word")
+
+        
+    def save_data_to_model(self, entries, mode):
+        if mode == "new_word":
+            self.vocab.insertRow(self.vocab.rowCount())
+
+            for i, entry in enumerate(entries):
+                if i != 0:
+                    self.vocab.setData(rowPosition , i, entry)
+            self.vocab.submitAll()
+        
+    
+    def open_file_dialog(self, mode="image"):
+        if mode == "image":
+            dlg = QFileDialog()
+            dlg.setFileMode(QFileDialog.AnyFile)
+            # dlg.setFilter("Image Files (*.jpg, *.png)")
+                
+            if dlg.exec_():
+                fname = dlg.selectedFiles()[0]
+
+            self.dialog.related_image_label.setPixmap(QPixmap(fname))
+            self.entries.append(utils.convertToBinaryData(self.dialog_image_file))
+            return fname
+
+        elif mode == "db":
+            fname = QFileDialog.getOpenFileName(self.dialog, 'Open Database', 
+                                                'c:\\',"Database Files (*.db)")
+            self.db_file_name = fname
+            return fname
+        
     
     
     
