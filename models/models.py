@@ -1,5 +1,5 @@
-from controllers.utils import utils
+from controllers import utils
 
-class lct_voc():
+class voc_model():
     def __init__(self):
         pass
