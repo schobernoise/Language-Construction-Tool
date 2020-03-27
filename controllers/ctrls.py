@@ -18,17 +18,26 @@ class lct_controller():
             self.load_vocabulary()
             self.start_up = False
     
-    def load_vocabulary(self, name="", db_file="")
+    def load_vocabulary(self, name="", db_file=""):
         self.vocab = voc_model()
 
-        if name != "" and db_file = "":
+        if name != "" and db_file == "":
             db_file = "data/" + name + ".db"
             self.vocab.load_db(db_file, mode="create")
-        elif name = "" and db_file != "":
+        elif name == "" and db_file != "":
             self.vocab.load_db(db_file, mode="load")
         else:
             db_file="data/start.db"
             self.vocab.load_db(db_file, mode="load")
+
+        self.display_vocabulary()
+    
+
+    def display_vocabulary(self):
+        for i, word_object in enumerate(self.vocab.vocabulary):
+            self.main_win.word_list.insert("", i, text=word_object.attributes["word"])
+
+    
 
         
         
