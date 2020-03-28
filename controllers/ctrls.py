@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from functools import partial
 
+
 from controllers import utils
 from controllers import log
 from models.models import voc_model
@@ -56,6 +57,9 @@ class lct_controller():
                                             False, 
                                             word_object))
 
+        self.main_win.description_header.set_html(html=word_object.attributes["description"])
+        self.main_win.description_header.bind('<Double-Button-1>', lambda event: self.edit_description(event, word_object))
+
 
     def editor_switch(self, event, element, switch, word_object, save=False):
         log.debug("GUI: Switch triggered for " + element[3])
@@ -93,6 +97,29 @@ class lct_controller():
         child_id = tree_view.get_children()[int(pos)]
         tree_view.focus(child_id)
         tree_view.selection_set(child_id)
+    
+
+    def edit_description(self, event, word_object):
+        self.desc_edit = tk.Toplevel()
+        self.desc_edit.geometry("300x300")
+        self.desc_edit.title("Edit Description")
+        self.desc_edit.resizable(0,0)
+
+        self.desc_text_edit = tk.Text(self.desc_edit, height=15, wrap=tk.WORD)
+        self.desc_text_edit.pack()
+        self.desc_text_edit.insert(tk.END, word_object.attributes["description"])
+
+        self.desc_edit.bind("<Control-s>", lambda event:self.close_description(event, word_object.attributes["word_id"]))
+
+        tk.Button(self.desc_edit, text="Submit", width=100, command=lambda event:self.close_description(event, word_object.attributes["word_id"])).pack(side="bottom")
+
+
+    def close_description(self, event, w_id):
+        self.vocab.update_word(w_id, 
+                                "description", 
+                                self.desc_text_edit.get("1.0",tk.END))
+        self.desc_edit.destroy()
+        self.display_vocabulary()
 
         
         

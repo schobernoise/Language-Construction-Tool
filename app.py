@@ -9,6 +9,7 @@ from controllers.ctrls import lct_controller
 
 
 if __name__ == '__main__':
+    log.info("#########################################")
     log.info("WELCOME TO THE LANGUAGE CONSTRUCTION TOOL")
     root = tk.Tk()  # TKINTER OBJECT
     conf = utils.Config()

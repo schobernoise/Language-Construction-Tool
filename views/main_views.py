@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tk_html_widgets import HTMLLabel
 
 class common_win:
     def __init__(self):
@@ -58,7 +59,7 @@ class main_frame(common_win, tk.Toplevel):
         ########## WORD HEADER ################
         
         self.word_header = []
-        self.word_header.append(tk.Label(self.main_win, text="Word Header", font=("Consolas", 36)))
+        self.word_header.append(tk.Label(self.main_win, text="", font=("Consolas", 36)))
         self.word_header.append(ttk.Entry(self.main_win))
         self.word_header.append([4, 1, "nw"])
         self.word_header.append("word")
@@ -68,7 +69,7 @@ class main_frame(common_win, tk.Toplevel):
         ########### PART OF SPEECH ###################
 
         self.pos_header = []
-        self.pos_header.append(tk.Label(self.main_win, text="part of speech", font=("Consolas", 12)))
+        self.pos_header.append(tk.Label(self.main_win, text="", font=("Consolas", 12)))
         self.pos_header.append(ttk.Entry(self.main_win))
         self.pos_header.append([4, 2, "nw"])
         self.pos_header.append("pos")
@@ -78,7 +79,7 @@ class main_frame(common_win, tk.Toplevel):
         ########### TRANSLATION ###################
 
         self.translation_header = []
-        self.translation_header.append(tk.Label(self.main_win, text="part of speech", font=("Consolas", 12)))
+        self.translation_header.append(tk.Label(self.main_win, text="", font=("Consolas", 12)))
         self.translation_header.append(ttk.Entry(self.main_win))
         self.translation_header.append([4, 3, "nw"])
         self.translation_header.append("translation")
@@ -88,7 +89,7 @@ class main_frame(common_win, tk.Toplevel):
         ########### EXAMPLE SENTENCE ###################
 
         self.example_sentence_header = []
-        self.example_sentence_header.append(tk.Label(self.main_win, text="part of speech", font=("Consolas", 12)))
+        self.example_sentence_header.append(tk.Label(self.main_win, text="", font=("Consolas", 12)))
         self.example_sentence_header.append(ttk.Entry(self.main_win))
         self.example_sentence_header.append([4, 4, "nw"])
         self.example_sentence_header.append("example_sentence")
@@ -98,12 +99,17 @@ class main_frame(common_win, tk.Toplevel):
         ########### EXAMPLE TRANSLATION ###################
 
         self.example_translation_header = []
-        self.example_translation_header.append(tk.Label(self.main_win, text="part of speech", font=("Consolas", 12)))
+        self.example_translation_header.append(tk.Label(self.main_win, text="", font=("Consolas", 12)))
         self.example_translation_header.append(ttk.Entry(self.main_win))
         self.example_translation_header.append([4, 5, "nw"])
         self.example_translation_header.append("example_translation")
         self.example_translation_header[0].grid(column=self.example_translation_header[2][0], row=self.example_translation_header[2][1], sticky=self.example_translation_header[2][2])
         self.gui_displays.append(self.example_translation_header)
+
+        ########### DESCRIPTION ##########################
+
+        self.description_header = HTMLLabel(self.main_win, html="", width=40, height=10)
+        self.description_header.grid(column=4, row=6, sticky="nw")
 
         
 
