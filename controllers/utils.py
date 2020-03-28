@@ -49,8 +49,7 @@ class Config():
         self.conf = read_yaml( self.lct_root / "config.yaml")
         try: 
             self.log_level = self.conf["log_level"]
-            log.info("config.yaml entry log_level is {}.".format(
-                self.log_level))
+            log.info("config.yaml entry log_level is {}.".format(self.log_level))
         except:
             self.log_level = "WARNING"
             log.warn("config.yaml entry log_level not set, set Default Level.")

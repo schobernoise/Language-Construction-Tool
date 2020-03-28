@@ -59,18 +59,15 @@ class voc_model():
     def update_word(self, id, column, value):
 
         conn = sqlite3.connect(self.db_file)
-        sql_update_word = '''UPDATE VOCABULARY 
-                            SET [word] = ?
-                            WHERE [word_id] = ?'''
+        sql_update_word = '''UPDATE VOCABULARY SET {} = ? WHERE word_id == ?'''.format(column)
         c = conn.cursor()
 
-        c.execute(sql_update_word, (value,id))
-
-        # try:
-        #     log.debug("MODEL: Updating Word ID {}, {}".format(id, value_type))
-        #     c.execute(sql_update_word)
-        # except:
-        #     log.error("MODEL: Updating Word ID {} failed".format(id))
+        try:
+            c.execute(sql_update_word, (value, id))
+            conn.commit()
+            log.debug("MODEL: Updated Word ID {}, column {}, {}".format(id, column, value))
+        except:
+            log.error("MODEL: Updating Word ID {} failed".format(id))
          
         self.load_db()
 

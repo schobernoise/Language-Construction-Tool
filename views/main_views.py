@@ -19,9 +19,9 @@ class main_frame(common_win, tk.Toplevel):
 
         self.main_win.geometry("1024x768")     
         self.main_win.minsize(1024, 768)
-        self.main_win.title("Discodos")
+        self.main_win.title("Language Construction Tool")
 
-        ##########################################
+        ###########  BUILD GUI ##################
 
         self.build_geruest()
 
@@ -49,31 +49,62 @@ class main_frame(common_win, tk.Toplevel):
             
 
         self.word_list = ttk.Treeview(self.voc_tab, show="tree")
-        self.word_list.grid(column=0, row=0, columnspan=4, rowspan=12, sticky="wns")    
+        self.word_list.grid(column=0, row=0, columnspan=4, rowspan=12, sticky="wns")  
+
+        ######################## GUI DISPLAYS #########################
+
+        self.gui_displays = []  
 
         ########## WORD HEADER ################
         
         self.word_header = []
-        self.word_header.append(tk.Label(self.main_win, text="Word Header", font=("Consolas", 24)))
+        self.word_header.append(tk.Label(self.main_win, text="Word Header", font=("Consolas", 36)))
         self.word_header.append(ttk.Entry(self.main_win))
         self.word_header.append([4, 1, "nw"])
         self.word_header.append("word")
         self.word_header[0].grid(column=self.word_header[2][0], row=self.word_header[2][1], sticky=self.word_header[2][2])
+        self.gui_displays.append(self.word_header)
+
+        ########### PART OF SPEECH ###################
+
+        self.pos_header = []
+        self.pos_header.append(tk.Label(self.main_win, text="part of speech", font=("Consolas", 12)))
+        self.pos_header.append(ttk.Entry(self.main_win))
+        self.pos_header.append([4, 2, "nw"])
+        self.pos_header.append("pos")
+        self.pos_header[0].grid(column=self.pos_header[2][0], row=self.pos_header[2][1], sticky=self.pos_header[2][2])
+        self.gui_displays.append(self.pos_header)
+
+        ########### TRANSLATION ###################
+
+        self.translation_header = []
+        self.translation_header.append(tk.Label(self.main_win, text="part of speech", font=("Consolas", 12)))
+        self.translation_header.append(ttk.Entry(self.main_win))
+        self.translation_header.append([4, 3, "nw"])
+        self.translation_header.append("translation")
+        self.translation_header[0].grid(column=self.translation_header[2][0], row=self.translation_header[2][1], sticky=self.translation_header[2][2])
+        self.gui_displays.append(self.translation_header)
         
+        ########### EXAMPLE SENTENCE ###################
+
+        self.example_sentence_header = []
+        self.example_sentence_header.append(tk.Label(self.main_win, text="part of speech", font=("Consolas", 12)))
+        self.example_sentence_header.append(ttk.Entry(self.main_win))
+        self.example_sentence_header.append([4, 4, "nw"])
+        self.example_sentence_header.append("example_sentence")
+        self.example_sentence_header[0].grid(column=self.example_sentence_header[2][0], row=self.example_sentence_header[2][1], sticky=self.example_sentence_header[2][2])
+        self.gui_displays.append(self.example_sentence_header)
+
+        ########### EXAMPLE TRANSLATION ###################
+
+        self.example_translation_header = []
+        self.example_translation_header.append(tk.Label(self.main_win, text="part of speech", font=("Consolas", 12)))
+        self.example_translation_header.append(ttk.Entry(self.main_win))
+        self.example_translation_header.append([4, 5, "nw"])
+        self.example_translation_header.append("example_translation")
+        self.example_translation_header[0].grid(column=self.example_translation_header[2][0], row=self.example_translation_header[2][1], sticky=self.example_translation_header[2][2])
+        self.gui_displays.append(self.example_translation_header)
+
         
 
-        ########### 
-
-    
-    
-
         
-
-
-
-
-        
-
-
-      
-    
