@@ -1,4 +1,5 @@
 from controllers import utils
+from controllers import log
 from models import word
 import sqlite3
 from PIL import Image
@@ -8,7 +9,11 @@ class voc_model():
     def __init__(self):
         pass
 
-    def load_db(self, db_file, mode="load"):
+    def load_db(self, db_file="", mode="load"):
+        if db_file=="":
+            db_file = self.db_file
+        else:
+            self.db_file = db_file
 
         conn = sqlite3.connect(db_file)
         self.vocabulary = []
@@ -49,11 +54,26 @@ class voc_model():
                     related_words = row[7],
                     related_image = Image.open(io.BytesIO(row[8])) 
                 ))
-
-        
+  
     
-    def create_word(self, editor_entries):
-        pass
+    def update_word(self, id, column, value):
+
+        conn = sqlite3.connect(self.db_file)
+        sql_update_word = '''UPDATE VOCABULARY 
+                            SET [word] = ?
+                            WHERE [word_id] = ?'''
+        c = conn.cursor()
+
+        c.execute(sql_update_word, (value,id))
+
+        # try:
+        #     log.debug("MODEL: Updating Word ID {}, {}".format(id, value_type))
+        #     c.execute(sql_update_word)
+        # except:
+        #     log.error("MODEL: Updating Word ID {} failed".format(id))
+         
+        self.load_db()
+
 
 
 class word():

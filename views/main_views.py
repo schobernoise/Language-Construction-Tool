@@ -50,21 +50,26 @@ class main_frame(common_win, tk.Toplevel):
 
         self.word_list = ttk.Treeview(self.voc_tab, show="tree")
         self.word_list.grid(column=0, row=0, columnspan=4, rowspan=12, sticky="wns")    
+
+        ########## WORD HEADER ################
+        
+        self.word_header = []
+        self.word_header.append(tk.Label(self.main_win, text="Word Header", font=("Consolas", 24)))
+        self.word_header.append(ttk.Entry(self.main_win))
+        self.word_header.append([4, 1, "nw"])
+        self.word_header.append("word")
+        self.word_header[0].grid(column=self.word_header[2][0], row=self.word_header[2][1], sticky=self.word_header[2][2])
+        
         
 
-        self.word_header = tk.Label(self.main_win, text="Word Header", font=("Consolas", 24))
-        self.word_header.grid(column=4, row=1, sticky="nw")
-        self.word_header.bind("<Button-1>", self.insert_edit)
-        
-
-        self.editor = tk.Entry(self.main_win)
-        self.editor.grid(column=4, row=10, sticky="sw")
+        ########### 
 
     
-    def insert_edit(self, event):
-        self.editor.delete(0, tk.END)
-        self.editor.insert(0,self.word_header["text"])
-        print("TEST")
+    
+
+        
+
+
 
 
         
