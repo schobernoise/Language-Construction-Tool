@@ -29,7 +29,7 @@ def read_yaml(yamlfile):
         raise SystemExit(3)
     
 
-def convertToBinaryData(self, image_name):
+def convertToBinaryData(image_name):
         #Convert digital data to binary format
         try:
             with open(image_name, 'rb') as file:

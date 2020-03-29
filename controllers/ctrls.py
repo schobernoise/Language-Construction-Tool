@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import filedialog
 from tkinter import ttk
 from functools import partial
 from PIL import ImageTk, Image
@@ -8,7 +9,7 @@ import io
 from controllers import utils
 from controllers import log
 from models.models import voc_model
-from views.main_views import main_frame
+from views.main_views import *
 
 
 class lct_controller():
@@ -48,6 +49,12 @@ class lct_controller():
             self.main_win.word_list.insert("", i, text=word_object.attributes["word"], values=word_object.attributes["translation"], tags=(word_object.attributes["word"]))
             self.main_win.word_list.tag_bind(word_object.attributes["word"],'<<TreeviewSelect>>', lambda event: self.display_data(event, word_object))
             self.focus_object(self.main_win.word_list)
+        
+        # Add some commands
+        self.main_win.voc_menu_buttons[0].menu.add_command(label="Create new Vocabulary", command=self.trigger_new_vocabulary)
+        self.main_win.voc_menu_buttons[0].menu.add_command(label="Open Vocabulary")
+        self.main_win.voc_menu_buttons[0].menu.add_separator()
+        self.main_win.voc_menu_buttons[0].menu.add_command(label="Exit")
 
 
     def display_data(self, event, word_object):
@@ -66,7 +73,7 @@ class lct_controller():
    
         self.main_win.related_image.image = ImageTk.PhotoImage(img, Image.ANTIALIAS)     
         self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')
-        self.main_win.bind('<Double-Button-1>', lambda event: self.update_related_image(event, word_object))
+        self.main_win.related_image.bind('<Double-Button-1>', lambda event: self.update_related_image(event, word_object))
 
 
     def editor_switch(self, event, element, switch, word_object, save=False):
@@ -112,6 +119,7 @@ class lct_controller():
         self.desc_edit.geometry("300x300")
         self.desc_edit.title("Edit Description")
         self.desc_edit.resizable(0,0)
+        self.desc_edit.attributes('-topmost', True)
 
         self.desc_text_edit = tk.Text(self.desc_edit, height=15, wrap=tk.WORD)
         self.desc_text_edit.pack()
@@ -131,7 +139,13 @@ class lct_controller():
 
     
     def update_related_image(self, event, word_object):
-        pass
+        image_filename = filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
+        self.vocab.update_word(word_object.attributes["word_id"], "related_image", utils.convertToBinaryData(image_filename))
+        self.display_vocabulary()
+
+    
+    def trigger_new_vocabulary(self):
+        self.new_vocab = new_vocabulary()
 
         
         

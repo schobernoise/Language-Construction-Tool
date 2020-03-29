@@ -127,7 +127,7 @@ class main_frame(common_win, tk.Toplevel):
         ################## RELATED IMAGE ######################
 
         self.related_image  = tk.Canvas(self.voc_tab)
-        self.related_image.grid(column=10, row=0, rowspan=12, columnspan=2, sticky="nesw", padx=5, pady=5)
+        self.related_image.grid(column=10, row=0, rowspan=12, columnspan=2, sticky="nesw")
 
         ################## MENU FRAME #########################
 
@@ -144,16 +144,23 @@ class main_frame(common_win, tk.Toplevel):
         self.voc_menu_buttons[0].menu = tk.Menu(self.voc_menu_buttons[0], tearoff = 0)
         self.voc_menu_buttons[0]["menu"] = self.voc_menu_buttons[0].menu
 
-        # Add some commands
-        self.voc_menu_buttons[0].menu.add_command(label="Create new")
-        self.voc_menu_buttons[0].menu.add_command(label="Open")
-        self.voc_menu_buttons[0].menu.add_separator()
-        self.voc_menu_buttons[0].menu.add_command(label="Exit")
-
         for i, button in enumerate(self.voc_menu_buttons):
             button.grid(column=i, row=0, sticky="nsew")
         
         self.menu_frame.grid(column=4, row=0, sticky="nw")
+    
+
+class new_vocabulary():
+    def __init__(self):
+        self.new_vocab_win = tk.Toplevel()
+        self.new_vocab_win.geometry("300x300")
+        self.new_vocab_win.title("New Vocabulary")
+        self.new_vocab_win.resizable(0,0)
+        self.new_vocab_win.attributes('-topmost', True)
+    
+    def create_widgets(self):
+        pass
+
 
 
         
