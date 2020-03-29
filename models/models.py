@@ -1,6 +1,5 @@
 from controllers import utils
 from controllers import log
-from models import word
 import sqlite3
 from PIL import Image
 import io

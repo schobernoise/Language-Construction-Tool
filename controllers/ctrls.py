@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 from functools import partial
+from PIL import ImageTk, Image
+import io
 
 
 from controllers import utils
@@ -43,7 +45,7 @@ class lct_controller():
         self.main_win.word_list.delete(*self.main_win.word_list.get_children())
         for i, word_object in enumerate(self.vocab.vocabulary):
             # print(word_object.attributes["word"])
-            self.main_win.word_list.insert("", i, text=word_object.attributes["word"], tags=(word_object.attributes["word"]))
+            self.main_win.word_list.insert("", i, text=word_object.attributes["word"], values=word_object.attributes["translation"], tags=(word_object.attributes["word"]))
             self.main_win.word_list.tag_bind(word_object.attributes["word"],'<<TreeviewSelect>>', lambda event: self.display_data(event, word_object))
             self.focus_object(self.main_win.word_list)
 
@@ -59,6 +61,12 @@ class lct_controller():
 
         self.main_win.description_header.set_html(html=word_object.attributes["description"])
         self.main_win.description_header.bind('<Double-Button-1>', lambda event: self.edit_description(event, word_object))
+
+        img = word_object.attributes["related_image"]
+   
+        self.main_win.related_image.image = ImageTk.PhotoImage(img, Image.ANTIALIAS)     
+        self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')
+        self.main_win.bind('<Double-Button-1>', lambda event: self.update_related_image(event, word_object))
 
 
     def editor_switch(self, event, element, switch, word_object, save=False):
@@ -120,6 +128,10 @@ class lct_controller():
                                 self.desc_text_edit.get("1.0",tk.END))
         self.desc_edit.destroy()
         self.display_vocabulary()
+
+    
+    def update_related_image(self, event, word_object):
+        pass
 
         
         
