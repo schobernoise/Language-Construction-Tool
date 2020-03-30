@@ -158,8 +158,38 @@ class new_vocabulary():
         self.new_vocab_win.resizable(0,0)
         self.new_vocab_win.attributes('-topmost', True)
     
+
     def create_widgets(self):
-        pass
+        self.entries = {
+            "name" : ["Vocabulary Name"],
+            "author" : ["Author"],
+            "language" : ["Translation Language"],
+            "notes": ["Vocabulary Notes"]
+                        }
+        row = 0
+        for name, entry in self.entries.iteritems():
+            entry.append(tk.Label(self.new_vocab_win, text=entry[0], padx=10, pady=10))
+            entry.append(tk.Entry(self.new_vocab_win, padx=10, pady=10))
+            for i, entropy in enumerate(entry):
+                entropy.grid(row=row, column=i, sticky="nsew")
+            row += 1
+        
+
+
+
+class new_word():
+    def __init__(self):
+        self.new_vocab_win = tk.Toplevel()
+        self.new_vocab_win.geometry("300x300")
+        self.new_vocab_win.title("New Vocabulary")
+        self.new_vocab_win.resizable(0,0)
+        self.new_vocab_win.attributes('-topmost', True)
+    
+
+    def create_widgets(self):
+        self.entries = ["word", "translation", "pos", "example_sentence", "example_translation"]
+        self.widget_container = []
+
 
 
 
