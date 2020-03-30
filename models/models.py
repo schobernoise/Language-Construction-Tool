@@ -20,18 +20,31 @@ class voc_model():
         if mode == "create":
             sql_create_voc = '''CREATE TABLE VOCABULARY
                                 ([word_id] INTEGER PRIMARY KEY,
-                                [word] varchar(255),
-                                [translation] TEXT,
-                                [pos] varchar(255),
-                                [example_sentence] TEXT,
-                                [example_translation] TEXT,
-                                [description] TEXT,
+                                [word] varchar(255) NOT NULL,
+                                [translation] TEXT NOT NULL,
+                                [pos] varchar(255) NOT NULL,
+                                [example_sentence] TEXT NOT NULL,
+                                [example_translation] TEXT NOT NULL,
+                                [description] TEXT NOT NULL,
                                 [related_words] TEXT,
-                                [related_image] BLOB)'''
+                                [related_image] BLOB NOT NULL)'''
+
+            sql_create_meta = ''' CREATE TABLE METADATA
+                                ([name] varchar(255),
+                                [author] varchar(255),
+                                [language] varchar(255),
+                                [notes] TEXT)'''
+
+            sql_create_rel = '''CREATE TABLE RELATIONSHIPS
+                                ([rel_id] INTEGER PRIMARY KEY,
+                                [word_id] INTEGER,
+                                [rel_word_id] INTEGER)'''
             
 
             c = conn.cursor()
             c.execute(sql_create_voc)
+            c.execute(sql_create_meta)
+            c.execute(sql_create_rel)
 
             
         elif mode =="load":

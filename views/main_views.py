@@ -153,10 +153,11 @@ class main_frame(common_win, tk.Toplevel):
 class new_vocabulary():
     def __init__(self):
         self.new_vocab_win = tk.Toplevel()
-        self.new_vocab_win.geometry("300x300")
+        self.new_vocab_win.geometry("280x200")
         self.new_vocab_win.title("New Vocabulary")
         self.new_vocab_win.resizable(0,0)
         self.new_vocab_win.attributes('-topmost', True)
+        self.create_widgets()
     
 
     def create_widgets(self):
@@ -167,15 +168,17 @@ class new_vocabulary():
             "notes": ["Vocabulary Notes"]
                         }
         row = 0
-        for name, entry in self.entries.iteritems():
+        for name, entry in self.entries.items():
             entry.append(tk.Label(self.new_vocab_win, text=entry[0], padx=10, pady=10))
-            entry.append(tk.Entry(self.new_vocab_win, padx=10, pady=10))
+            entry.append(tk.Entry(self.new_vocab_win))
             for i, entropy in enumerate(entry):
-                entropy.grid(row=row, column=i, sticky="nsew")
+                if i != 0:
+                    entropy.grid(row=row, column=i-1, sticky="nsew")
             row += 1
         
+        tk.Button(self.new_vocab_win, text="Create Vocabulary").grid(row=len(self.entries), padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
 
-
+        
 
 class new_word():
     def __init__(self):
