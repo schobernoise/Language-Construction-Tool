@@ -150,7 +150,7 @@ class main_frame(common_win, tk.Toplevel):
         self.menu_frame.grid(column=4, row=0, sticky="nw")
     
 
-class new_vocabulary():
+class new_vocabulary_form():
     def __init__(self):
         self.new_vocab_win = tk.Toplevel()
         self.new_vocab_win.geometry("280x200")
@@ -176,22 +176,52 @@ class new_vocabulary():
                     entropy.grid(row=row, column=i-1, sticky="nsew")
             row += 1
         
-        tk.Button(self.new_vocab_win, text="Create Vocabulary").grid(row=len(self.entries), padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
+        self.submit_button = tk.Button(self.new_vocab_win, text="Create Vocabulary")
+        self.submit_button.grid(row=len(self.entries), padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
 
         
 
-class new_word():
+class new_word_form():
     def __init__(self):
-        self.new_vocab_win = tk.Toplevel()
-        self.new_vocab_win.geometry("300x300")
-        self.new_vocab_win.title("New Vocabulary")
-        self.new_vocab_win.resizable(0,0)
-        self.new_vocab_win.attributes('-topmost', True)
-    
+        self.new_word_win = tk.Toplevel()
+        self.new_word_win.geometry("400x500")
+        self.new_word_win.title("Create New Word")
+        self.new_word_win.resizable(0,0)
+        self.new_word_win.attributes('-topmost', True)
+
+        self.create_widgets()
 
     def create_widgets(self):
-        self.entries = ["word", "translation", "pos", "example_sentence", "example_translation"]
-        self.widget_container = []
+        self.entries = {
+            "word" : ["Word Literal"],
+            "pos" : ["Part of Speech"],
+            "translation" : ["Translation"],
+            "example_sentence": ["Example Sentence"],
+            "example_translation" : ["Example Translation"],
+            "description" : ["Description"],
+            "rel_image" : ["Related Image"]
+                        }
+        
+        for name, entry in self.entries.items():
+            entry.append(tk.Label(self.new_word_win, text=entry[0], padx=10, pady=10))
+            if name == "description":
+                entry.append(tk.Text(self.new_word_win, height=10))
+            elif name == "rel_image":
+                entry.append(tk.Button(self.new_word_win, text="Choose File..."))
+            else:
+                entry.append(tk.Entry(self.new_word_win))
+            
+            
+            
+        row = 0
+        for name, entry in self.entries.items(): 
+            for i, entropy in enumerate(entry):
+                if i != 0:
+                    entropy.grid(row=row, column=i-1, sticky="nsew")
+            row += 1
+        
+        self.submit_button = tk.Button(self.new_word_win, text="Add New Word")
+        self.submit_button.grid(row=len(self.entries), padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
 
 
 

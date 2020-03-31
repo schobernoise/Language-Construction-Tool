@@ -8,7 +8,7 @@ class voc_model():
     def __init__(self):
         pass
 
-    def load_db(self, db_file="", mode="load"):
+    def load_db(self, db_file="", metadata=[], mode="load"):
         if db_file=="":
             db_file = self.db_file
         else:
@@ -40,11 +40,22 @@ class voc_model():
                                 [word_id] INTEGER,
                                 [rel_word_id] INTEGER)'''
             
+            sql_insert_meta = '''INSERT INTO METADATA VALUES(?,?,?,?)'''
+            
 
             c = conn.cursor()
             c.execute(sql_create_voc)
             c.execute(sql_create_meta)
             c.execute(sql_create_rel)
+            c.execute(sql_insert_meta, tuple(metadata))
+            conn.commit()
+
+            self.metadata = {
+                            "name": metadata[0],
+                            "author": metadata[1],
+                            "language": metadata[2],
+                            "notes": metadata[3]
+                        }
 
             
         elif mode =="load":
@@ -53,7 +64,7 @@ class voc_model():
             c.execute(sql_load_voc)
 
             rows = c.fetchall()
-
+            conn.commit()
             for row in rows:
                 self.vocabulary.append(word(
                     word_id = row[0],
@@ -66,7 +77,21 @@ class voc_model():
                     related_words = row[7],
                     related_image = Image.open(io.BytesIO(row[8])) 
                 ))
-  
+
+            sql_load_meta = "SELECT * FROM METADATA"
+            
+            c = conn.cursor()
+            c.execute(sql_load_meta)
+            rows = c.fetchall()
+            conn.commit()
+
+            self.metadata = {
+                        "name": rows[0][0],
+                        "author": rows[0][1],
+                        "language": rows[0][2],
+                        "notes": rows[0][3]
+                    }
+
     
     def update_word(self, id, column, value):
 
@@ -82,6 +107,10 @@ class voc_model():
             log.error("MODEL: Updating Word ID {} failed".format(id))
          
         self.load_db()
+        
+    
+    def save_word(self, data):
+        pass
 
 
 

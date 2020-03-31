@@ -41,6 +41,24 @@ def convertToBinaryData(image_name):
             return False
 
 
+def string_unify(db_name):
+    new_db_name = db_name.replace(" ", "_")
+    return new_db_name.lower()
+
+
+def open_file_dialog(file_type):
+    file_types = []
+    if file_type == "image":
+        file_types.append(("jpeg files","*.jpg"), ("png files", "*.png"))
+    elif file_type == "database":
+        file_types.append(("DB files","*.db"))
+    
+    file_types.append(("all files","*.*"))
+
+    filename = filedialog.askopenfilename(initialdir = "/data",title = "Select file",filetypes = tuple(file_types))
+    return filename 
+
+
 class Config():
     def __init__(self):
         lct_lib = Path(os.path.dirname(os.path.abspath(__file__)))

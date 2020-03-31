@@ -24,14 +24,14 @@ class lct_controller():
             self.load_vocabulary()
             self.start_up = False
     
-    def load_vocabulary(self, name="", db_file=""):
+    def load_vocabulary(self, name="", db_file="", metadata=[]):
         self.vocab = voc_model()
 
-        if name != "" and db_file == "":
-            db_file = "data/" + name + ".db"
-            self.vocab.load_db(db_file, mode="create")
+        if name != "" and metadata != [] and db_file == "":
+            db_file = "data/" + utils.string_unify(name) + ".db"
+            self.vocab.load_db(db_file=db_file, metadata=metadata, mode="create")
             self.show_tooltips = False
-        elif name == "" and db_file != "":
+        elif name == "" and metadata == [] and db_file != "":
             self.vocab.load_db(db_file, mode="load")
             self.show_tooltips = False
         else:
@@ -40,6 +40,7 @@ class lct_controller():
             self.show_tooltips = True
 
         self.display_vocabulary()
+        self.main_win.title("Language Construction Tool " + self.vocab.metadata["name"])
         
 
     def display_vocabulary(self):
@@ -52,9 +53,10 @@ class lct_controller():
         
         # Add some commands
         self.main_win.voc_menu_buttons[0].menu.add_command(label="Create new Vocabulary", command=self.trigger_new_vocabulary)
-        self.main_win.voc_menu_buttons[0].menu.add_command(label="Open Vocabulary")
+        self.main_win.voc_menu_buttons[0].menu.add_command(label="Open Vocabulary", command=self.trigger_load_vocabulary)
         self.main_win.voc_menu_buttons[0].menu.add_separator()
         self.main_win.voc_menu_buttons[0].menu.add_command(label="Exit")
+        self.main_win.voc_menu_buttons[1].configure(command=self.trigger_new_word)
 
 
     def display_data(self, event, word_object):
@@ -74,6 +76,16 @@ class lct_controller():
         self.main_win.related_image.image = ImageTk.PhotoImage(img, Image.ANTIALIAS)     
         self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')
         self.main_win.related_image.bind('<Double-Button-1>', lambda event: self.update_related_image(event, word_object))
+
+    def display_empty_data(self):
+        for element in self.main_win.gui_displays:
+            element[0].configure(text="")
+
+        self.main_win.description_header.set_html(html="")
+        img = Image.new('RGB', (500, 1080), (228, 150, 150))
+   
+        self.main_win.related_image.image = ImageTk.PhotoImage(img)     
+        self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')
 
 
     def editor_switch(self, event, element, switch, word_object, save=False):
@@ -139,14 +151,55 @@ class lct_controller():
 
     
     def update_related_image(self, event, word_object):
-        image_filename = filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
+        image_filename = utils.open_file_dialog("image")
         self.vocab.update_word(word_object.attributes["word_id"], "related_image", utils.convertToBinaryData(image_filename))
         self.display_vocabulary()
 
     
     def trigger_new_vocabulary(self):
-        self.new_vocab = new_vocabulary()
+        self.new_vocab = new_vocabulary_form()
+        self.new_vocab.submit_button.configure(command=self.save_new_vocabulary)
 
+
+    def save_new_vocabulary(self):
+        form_contents = []
+        for name, entry in self.new_vocab.entries.items():
+            form_contents.append(entry[2].get())
+        self.load_vocabulary(name=form_contents[0], metadata=form_contents)
+        self.new_vocab.destroy()
+        self.display_vocabulary()
+        self.display_empty_data()
+    
+    def trigger_load_vocabulary(self):
+        voc_filename = utils.open_file_dialog("database")
+        self.load_vocabulary(db_file=voc_filename, metadata=[])
+        self.display_vocabulary()
+        self.display_empty_data()
+
+
+    def trigger_new_word(self):
+        self.new_word = new_word_form()
+        self.new_word.entries["rel_image"][2].configure(command=self.add_related_image)
+        self.new_word.submit_button.configure(command=self.save_new_word)
+
+
+    def add_related_image(self):
+        self.temp_rel_image = utils.open_file_dialog("image")
+    
+
+    def save_new_word(self):
+        form_contents = []
+        for name, entry in self.new_word.entries.items():
+            if name != "rel_image":
+                form_contents.append(entry[2].get())
+        
+        # HERE ADD RELATED WORDS
+        
+        form_contents.append(self.temp_rel_image)
+            
+
+
+        
         
         
 
