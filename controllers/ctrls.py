@@ -182,6 +182,9 @@ class lct_controller():
         self.new_word.entries["rel_image"][2].configure(command=self.add_related_image)
         self.new_word.submit_button.configure(command=self.save_new_word)
 
+        # for word_object in self.vocab.vocabulary:
+
+
 
     def add_related_image(self):
         self.temp_rel_image = utils.open_file_dialog("image")

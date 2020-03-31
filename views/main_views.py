@@ -220,8 +220,32 @@ class new_word_form():
                     entropy.grid(row=row, column=i-1, sticky="nsew")
             row += 1
         
+        ################ RELATED WORDS #########################
+          
+        # self.words = []
+        # for word in self.actual_project.vocabulary:
+        #     self.words.append(word.transliteration)
+            
+        # tk.Label(self.new_word_win, text="Related Words: ").grid(row=len(self.entries), column=0, sticky=tk.W)
+
+        # self.word_to_button = {}
+        # self.word_variable = tk.StringVar(value="Related Words...")
+        # tk.OptionMenu(self.new_word_win, self.word_variable, *self.words).grid(
+        #     row=8, column=1, sticky=tk.W
+        # )
+
+        # self.words_frame = tk.Frame(self.new_word_win)
+        # self.words_frame.grid(row=len(self.entries), column=1, sticky=tk.W)
+
+        # self.word_variable.trace(
+        #     "w",
+        #     partial(self.add_related_word, self.word_variable, self.word_to_button, self.words_frame),
+        # )
+
+        ############### SUBMIT BUTTON #####################
+
         self.submit_button = tk.Button(self.new_word_win, text="Add New Word")
-        self.submit_button.grid(row=len(self.entries), padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
+        self.submit_button.grid(row=len(self.entries)+1, padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
 
 
 
