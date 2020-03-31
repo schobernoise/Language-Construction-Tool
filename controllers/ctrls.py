@@ -182,6 +182,7 @@ class lct_controller():
         self.new_word.entries["rel_image"][2].configure(command=self.add_related_image)
         self.new_word.submit_button.configure(command=self.save_new_word)
 
+        self.tk_words = tk.StringVar()
         # for word_object in self.vocab.vocabulary:
 
 
