@@ -166,7 +166,7 @@ class lct_controller():
         for name, entry in self.new_vocab.entries.items():
             form_contents.append(entry[2].get())
         self.load_vocabulary(name=form_contents[0], metadata=form_contents)
-        self.new_vocab.destroy()
+        self.new_vocab.new_vocab_win.destroy()
         self.display_vocabulary()
         self.display_empty_data()
     
@@ -178,26 +178,47 @@ class lct_controller():
 
 
     def trigger_new_word(self):
-        self.new_word = new_word_form()
+        self.temp_rel_image = ""
+        word_list = []
+        print(self.vocab.vocabulary)
+        if self.vocab.vocabulary != []:
+            for word_object in self.vocab.vocabulary:
+                word_list.append(word_object.attributes["word"])
+        else:
+            word_list = False
+    
+        self.new_word = new_word_form(word_list)
         self.new_word.entries["rel_image"][2].configure(command=self.add_related_image)
         self.new_word.submit_button.configure(command=self.save_new_word)
 
-        self.tk_words = tk.StringVar()
-        # for word_object in self.vocab.vocabulary:
-
-
+        
 
     def add_related_image(self):
         self.temp_rel_image = utils.open_file_dialog("image")
     
 
     def save_new_word(self):
+        related_words = []
+        for key, value in self.new_word.word_to_button.items():
+            related_words.append(key)
+       
         form_contents = []
         for name, entry in self.new_word.entries.items():
-            if name != "rel_image":
+            if name == "rel_image":
+                form_contents.append(self.temp_rel_image)
+            elif name == "rel_words":
+                form_contents.append(related_words)
+            elif name == "description":
+                form_contents.append(entry[2].get("1.0",tk.END))
+            else:
                 form_contents.append(entry[2].get())
         
-        # HERE ADD RELATED WORDS
+        self.vocab.save_word(form_contents)
+        self.new_word.new_word_win.destroy()
+        self.display_vocabulary()
+            
+        
+        
         
         form_contents.append(self.temp_rel_image)
             

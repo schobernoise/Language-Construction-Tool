@@ -26,7 +26,6 @@ class voc_model():
                                 [example_sentence] TEXT NOT NULL,
                                 [example_translation] TEXT NOT NULL,
                                 [description] TEXT NOT NULL,
-                                [related_words] TEXT,
                                 [related_image] BLOB NOT NULL)'''
 
             sql_create_meta = ''' CREATE TABLE METADATA
@@ -109,9 +108,37 @@ class voc_model():
         self.load_db()
         
     
-    def save_word(self, data):
-        pass
+    def save_word(self, form_contents):
+        sql_insert_word_values = []
 
+        for i, value in enumerate(form_contents):
+            if i != 6:
+                sql_insert_word_values.append(value)
+
+        sql_insert_new_word = '''INSERT INTO VOCABULARY
+                                (word, pos, translation, example_sentence, example_translation, description, related_image)
+                                VALUES (?, ?, ?, ?, ?, ?, ?)'''
+        
+
+        sql_insert_rel_words = ''' INSERT INTO RELATIONSHIPS (word_id, rel_word_id)
+                                VALUES (?, ?)'''
+        
+        # MAKE WORD NAMES TO IDS WITH ITERATING
+        
+        sql_insert_rel_values = tuple(form_contents[6])
+        
+        conn = sqlite3.connect(self.db_file)
+        c = conn.cursor()
+
+        try:
+            c.execute(sql_insert_new_word, sql_insert_word_values)
+            c.execute(sql_insert_rel_words, sql_insert_rel_values)
+            conn.commit()
+            log.debug("MODEL: Inserted Word ID")
+        except:
+            log.error("MODEL: Inserting Word failed")
+         
+        self.load_db()
 
 
 class word():

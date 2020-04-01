@@ -1,3 +1,7 @@
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import ttk
+
 import time
 import yaml
 from pathlib import Path
@@ -49,7 +53,8 @@ def string_unify(db_name):
 def open_file_dialog(file_type):
     file_types = []
     if file_type == "image":
-        file_types.append(("jpeg files","*.jpg"), ("png files", "*.png"))
+        file_types.append(("jpeg files","*.jpg"))
+        file_types.append(("png files", "*.png"))
     elif file_type == "database":
         file_types.append(("DB files","*.db"))
     
