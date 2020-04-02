@@ -17,6 +17,7 @@ class lct_controller():
         self.vocab = voc_model()
         self.main_win = main_frame(root)
         self.main_win.withdraw() 
+        self.create_voc_menu()
 
         self.start_up = start_up
         
@@ -45,12 +46,14 @@ class lct_controller():
 
     def display_vocabulary(self):
         self.main_win.word_list.delete(*self.main_win.word_list.get_children())
-        for i, word_object in enumerate(self.vocab.vocabulary):
-            # print(word_object.attributes["word"])
-            self.main_win.word_list.insert("", i, text=word_object.attributes["word"], values=word_object.attributes["translation"], tags=(word_object.attributes["word"]))
+        for word_object in self.vocab.vocabulary:
+            self.main_win.word_list.insert("", "end", text=word_object.attributes["word"], values=word_object.attributes["translation"], tags=(word_object.attributes["word"],))
+            self.main_win.word_list.tag_configure(word_object.attributes["word"], background='yellow')
             self.main_win.word_list.tag_bind(word_object.attributes["word"],'<<TreeviewSelect>>', lambda event: self.display_data(event, word_object))
             self.focus_object(self.main_win.word_list)
         
+    
+    def create_voc_menu(self):
         # Add some commands
         self.main_win.voc_menu_buttons[0].menu.add_command(label="Create new Vocabulary", command=self.trigger_new_vocabulary)
         self.main_win.voc_menu_buttons[0].menu.add_command(label="Open Vocabulary", command=self.trigger_load_vocabulary)
@@ -76,6 +79,9 @@ class lct_controller():
         self.main_win.related_image.image = ImageTk.PhotoImage(img, Image.ANTIALIAS)     
         self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')
         self.main_win.related_image.bind('<Double-Button-1>', lambda event: self.update_related_image(event, word_object))
+
+        # print(word_object.attributes["related_words"])
+
 
     def display_empty_data(self):
         for element in self.main_win.gui_displays:
@@ -180,7 +186,6 @@ class lct_controller():
     def trigger_new_word(self):
         self.temp_rel_image = ""
         word_list = []
-        print(self.vocab.vocabulary)
         if self.vocab.vocabulary != []:
             for word_object in self.vocab.vocabulary:
                 word_list.append(word_object.attributes["word"])
@@ -205,7 +210,7 @@ class lct_controller():
         form_contents = []
         for name, entry in self.new_word.entries.items():
             if name == "rel_image":
-                form_contents.append(self.temp_rel_image)
+                form_contents.append(utils.convertToBinaryData(self.temp_rel_image))
             elif name == "rel_words":
                 form_contents.append(related_words)
             elif name == "description":

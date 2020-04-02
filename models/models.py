@@ -26,6 +26,7 @@ class voc_model():
                                 [example_sentence] TEXT NOT NULL,
                                 [example_translation] TEXT NOT NULL,
                                 [description] TEXT NOT NULL,
+                                [related_words] varchar(255) NOT NULL,
                                 [related_image] BLOB NOT NULL)'''
 
             sql_create_meta = ''' CREATE TABLE METADATA
@@ -34,10 +35,6 @@ class voc_model():
                                 [language] varchar(255),
                                 [notes] TEXT)'''
 
-            sql_create_rel = '''CREATE TABLE RELATIONSHIPS
-                                ([rel_id] INTEGER PRIMARY KEY,
-                                [word_id] INTEGER,
-                                [rel_word_id] INTEGER)'''
             
             sql_insert_meta = '''INSERT INTO METADATA VALUES(?,?,?,?)'''
             
@@ -45,7 +42,6 @@ class voc_model():
             c = conn.cursor()
             c.execute(sql_create_voc)
             c.execute(sql_create_meta)
-            c.execute(sql_create_rel)
             c.execute(sql_insert_meta, tuple(metadata))
             conn.commit()
 
@@ -111,30 +107,35 @@ class voc_model():
     def save_word(self, form_contents):
         sql_insert_word_values = []
 
+        rel_word_ids= []
+        for word_name in form_contents[6]:
+            if word_name != "Empty Vocabulary":
+                for word_object in self.vocabulary:
+                    if word_object.attributes["word"] == word_name:
+                        rel_word_ids.append(word_object.attributes["word_id"])
+
         for i, value in enumerate(form_contents):
             if i != 6:
                 sql_insert_word_values.append(value)
+            else:
+                if rel_word_ids != []:
+                    sql_insert_word_values.append(str(rel_word_ids))
+                else:
+                    sql_insert_word_values.append("")
 
         sql_insert_new_word = '''INSERT INTO VOCABULARY
-                                (word, pos, translation, example_sentence, example_translation, description, related_image)
-                                VALUES (?, ?, ?, ?, ?, ?, ?)'''
-        
-
-        sql_insert_rel_words = ''' INSERT INTO RELATIONSHIPS (word_id, rel_word_id)
-                                VALUES (?, ?)'''
-        
-        # MAKE WORD NAMES TO IDS WITH ITERATING
-        
-        sql_insert_rel_values = tuple(form_contents[6])
+                                (word, pos, translation, example_sentence, example_translation, description, related_words, related_image)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?)'''
+    
         
         conn = sqlite3.connect(self.db_file)
         c = conn.cursor()
+        # print(sql_insert_word_values[5], sql_insert_word_values[6])
 
         try:
-            c.execute(sql_insert_new_word, sql_insert_word_values)
-            c.execute(sql_insert_rel_words, sql_insert_rel_values)
+            c.execute(sql_insert_new_word, tuple(sql_insert_word_values))
             conn.commit()
-            log.debug("MODEL: Inserted Word ID")
+            log.debug("MODEL: Inserted New Word in DB.")
         except:
             log.error("MODEL: Inserting Word failed")
          

@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
+from PIL import Image
+import io
 
 import time
 import yaml
@@ -35,14 +37,24 @@ def read_yaml(yamlfile):
 
 def convertToBinaryData(image_name):
         #Convert digital data to binary format
-        try:
-            with open(image_name, 'rb') as file:
-                blobData = file.read()
-            log.debug("UTILS: Successfully reading Image")
-            return blobData
-        except:
-            log.error("UTILS: Reading Image failed")    
-            return False
+        if image_name == "":
+            return ""
+        else:
+            try:
+                with open(image_name, 'rb') as file:
+                    blobData = file.read()
+                log.debug("UTILS: Successfully reading Image")
+                return blobData
+            except:
+                log.error("UTILS: Reading Image failed")    
+                return ""
+
+def binary_to_image(blobData):
+    if blobData == "":
+        img = Image.new('RGB', (500, 1080), (228, 150, 150))
+        return img
+    else:
+        return Image.open(io.BytesIO(blobData))
 
 
 def string_unify(db_name):
