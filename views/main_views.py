@@ -60,6 +60,11 @@ class main_frame(common_win, tk.Toplevel):
         self.word_list.column("translation", width=column_width)
         self.word_list.column("#0", width=column_width)
 
+        ###### COLOR BUG FIX ###########
+        self.style = ttk.Style()
+        self.style.map('Treeview', foreground=self.fixed_map('foreground'),
+        background=self.fixed_map('background'))
+
         self.header_frame = tk.Frame(self.voc_tab)
 
         ######################## GUI DISPLAYS #########################
@@ -150,6 +155,19 @@ class main_frame(common_win, tk.Toplevel):
             button.grid(column=i, row=0, sticky="nsew")
         
         self.menu_frame.grid(column=4, row=0, sticky="nw")
+    
+
+    def fixed_map(self, option):
+        # Fix for setting text colour for Tkinter 8.6.9
+        # From: https://core.tcl.tk/tk/info/509cafafae
+        #
+        # Returns the style map for 'option' with any styles starting with
+        # ('!disabled', '!selected', ...) filtered out.
+
+        # style.map() returns an empty list for missing options, so this
+        # should be future-safe.
+        return [elm for elm in self.style.map('Treeview', query_opt=option) if
+        elm[:2] != ('!disabled', '!selected')]
     
 
 class new_vocabulary_form():

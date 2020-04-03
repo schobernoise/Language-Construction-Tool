@@ -48,13 +48,8 @@ class lct_controller():
         self.main_win.word_list.delete(*self.main_win.word_list.get_children())
         for word_object in self.vocab.vocabulary:
             self.main_win.word_list.insert("", "end", text=word_object.attributes["word"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
-            self.main_win.word_list.tag_configure(word_object.attributes["word_id"], background='yellow')
-            self.main_win.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event: self.display_data(event, word_object))
+            self.main_win.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data(event, wo))
         self.focus_object(self.main_win.word_list)
-        
-    
-    def callback(self, event=None):
-        print(self.attributes["word"])
         
     
     def create_voc_menu(self):
@@ -64,10 +59,11 @@ class lct_controller():
         self.main_win.voc_menu_buttons[0].menu.add_separator()
         self.main_win.voc_menu_buttons[0].menu.add_command(label="Exit")
         self.main_win.voc_menu_buttons[1].configure(command=self.trigger_new_word)
+        
 
 
     def display_data(self, event, word_object):
-        print(word_object.attributes["word_id"])
+        # print(word_object.attributes["word_id"])
         for element in self.main_win.gui_displays:
             element[0].configure(text=word_object.attributes[element[3]])
             element[0].bind('<Double-Button-1>', 
@@ -84,9 +80,9 @@ class lct_controller():
         self.main_win.related_image.image = ImageTk.PhotoImage(img, Image.ANTIALIAS)     
         self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')
         self.main_win.related_image.bind('<Double-Button-1>', lambda event: self.update_related_image(event, word_object))
-
+        self.main_win.voc_menu_buttons[2].configure(command=lambda word_id=word_object.attributes["word_id"]:self.trigger_del_word(word_id))
         # print(word_object.attributes["related_words"])
-
+    
 
     def display_empty_data(self):
         for element in self.main_win.gui_displays:
@@ -227,10 +223,10 @@ class lct_controller():
         self.new_word.new_word_win.destroy()
         self.display_vocabulary()
             
-        
-        
-        
-        form_contents.append(self.temp_rel_image)
+
+    def trigger_del_word(self, word_id):
+        self.vocab.delete_word(word_id)
+        self.display_vocabulary()
             
 
 

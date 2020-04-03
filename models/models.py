@@ -142,8 +142,22 @@ class voc_model():
         self.load_db()
     
 
-    def delete_word(self, id):
-        sql_del_word = ''' '''
+    def delete_word(self, word_id):
+        print(word_id)
+        conn = sqlite3.connect(self.db_file)
+        c = conn.cursor()
+        sql_del_word = '''DELETE FROM VOCABULARY WHERE [word_id] = ?'''
+        c.execute(sql_del_word, (word_id,))
+        conn.commit()
+        # try:
+        #     c.execute(sql_del_word, word_id)
+        #     conn.commit()
+        #     log.debug("MODEL: Deleted Word ID {word_id} from DB.")
+        # except:
+        #     log.error("MODEL: Deleting Word ID {word_id} failed")
+         
+        self.load_db()
+
 
 
 class word():
