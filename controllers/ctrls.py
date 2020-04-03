@@ -57,6 +57,9 @@ class lct_controller():
         self.main_win.voc_menu_buttons[0].menu.add_command(label="Create new Vocabulary", command=self.trigger_new_vocabulary)
         self.main_win.voc_menu_buttons[0].menu.add_command(label="Open Vocabulary", command=self.trigger_load_vocabulary)
         self.main_win.voc_menu_buttons[0].menu.add_separator()
+        self.main_win.voc_menu_buttons[0].menu.add_command(label="Populate from File...")
+        self.main_win.voc_menu_buttons[0].menu.add_command(label="Populate from Web...")
+        self.main_win.voc_menu_buttons[0].menu.add_separator()
         self.main_win.voc_menu_buttons[0].menu.add_command(label="Exit")
         self.main_win.voc_menu_buttons[1].configure(command=self.trigger_new_word)
         
@@ -159,8 +162,11 @@ class lct_controller():
     
     def update_related_image(self, event, word_object):
         image_filename = utils.open_file_dialog("image")
-        self.vocab.update_word(word_object.attributes["word_id"], "related_image", utils.convertToBinaryData(image_filename))
-        self.display_vocabulary()
+        if image_filename != "":
+            self.vocab.update_word(word_object.attributes["word_id"], "related_image", utils.convertToBinaryData(image_filename))  
+            self.display_vocabulary()
+        else:
+            pass
 
     
     def trigger_new_vocabulary(self):

@@ -70,7 +70,7 @@ class voc_model():
                     example_translation = row[5],
                     description = row[6],
                     related_words = row[7],
-                    related_image = Image.open(io.BytesIO(row[8])) 
+                    related_image = utils.binary_to_image(row[8])
                 ))
 
             sql_load_meta = "SELECT * FROM METADATA"
@@ -147,14 +147,13 @@ class voc_model():
         conn = sqlite3.connect(self.db_file)
         c = conn.cursor()
         sql_del_word = '''DELETE FROM VOCABULARY WHERE [word_id] = ?'''
-        c.execute(sql_del_word, (word_id,))
-        conn.commit()
-        # try:
-        #     c.execute(sql_del_word, word_id)
-        #     conn.commit()
-        #     log.debug("MODEL: Deleted Word ID {word_id} from DB.")
-        # except:
-        #     log.error("MODEL: Deleting Word ID {word_id} failed")
+
+        try:
+            c.execute(sql_del_word, (word_id,))
+            conn.commit()
+            log.debug("MODEL: Deleted Word ID {word_id} from DB.")
+        except:
+            log.error("MODEL: Deleting Word ID {word_id} failed")
          
         self.load_db()
 

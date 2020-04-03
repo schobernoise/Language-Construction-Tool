@@ -57,6 +57,7 @@ def binary_to_image(blobData):
         return Image.open(io.BytesIO(blobData))
 
 
+
 def string_unify(db_name):
     new_db_name = db_name.replace(" ", "_")
     return new_db_name.lower()
