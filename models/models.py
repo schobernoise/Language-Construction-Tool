@@ -140,6 +140,10 @@ class voc_model():
             log.error("MODEL: Inserting Word failed")
          
         self.load_db()
+    
+
+    def delete_word(self, id):
+        sql_del_word = ''' '''
 
 
 class word():
@@ -147,6 +151,9 @@ class word():
         self.attributes = {}
         for key, value in kwargs.items():
             self.attributes[key] = value
-        
+    
+
+    def callback(self, event=None):
+        print(self.attributes["word"])
 
 

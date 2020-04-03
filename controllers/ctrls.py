@@ -48,9 +48,13 @@ class lct_controller():
         self.main_win.word_list.delete(*self.main_win.word_list.get_children())
         for word_object in self.vocab.vocabulary:
             self.main_win.word_list.insert("", "end", text=word_object.attributes["word"], values=word_object.attributes["translation"], tags=(word_object.attributes["word"],))
-            self.main_win.word_list.tag_configure(word_object.attributes["word"], background='yellow')
+            self.main_win.word_list.tag_configure(word_object.attributes["word"], foreground='yellow')
             self.main_win.word_list.tag_bind(word_object.attributes["word"],'<<TreeviewSelect>>', lambda event: self.display_data(event, word_object))
-            self.focus_object(self.main_win.word_list)
+        self.focus_object(self.main_win.word_list)
+        
+    
+    def callback(self, event=None):
+        print(self.attributes["word"])
         
     
     def create_voc_menu(self):
