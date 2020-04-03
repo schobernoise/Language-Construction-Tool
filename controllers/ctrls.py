@@ -47,9 +47,9 @@ class lct_controller():
     def display_vocabulary(self):
         self.main_win.word_list.delete(*self.main_win.word_list.get_children())
         for word_object in self.vocab.vocabulary:
-            self.main_win.word_list.insert("", "end", text=word_object.attributes["word"], values=word_object.attributes["translation"], tags=(word_object.attributes["word"],))
-            self.main_win.word_list.tag_configure(word_object.attributes["word"], foreground='yellow')
-            self.main_win.word_list.tag_bind(word_object.attributes["word"],'<<TreeviewSelect>>', lambda event: self.display_data(event, word_object))
+            self.main_win.word_list.insert("", "end", text=word_object.attributes["word"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
+            self.main_win.word_list.tag_configure(word_object.attributes["word_id"], background='yellow')
+            self.main_win.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event: self.display_data(event, word_object))
         self.focus_object(self.main_win.word_list)
         
     
@@ -67,6 +67,7 @@ class lct_controller():
 
 
     def display_data(self, event, word_object):
+        print(word_object.attributes["word_id"])
         for element in self.main_win.gui_displays:
             element[0].configure(text=word_object.attributes[element[3]])
             element[0].bind('<Double-Button-1>', 
