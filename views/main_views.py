@@ -136,6 +136,15 @@ class main_frame(common_win, tk.Toplevel):
         self.related_image  = tk.Canvas(self.voc_tab)
         self.related_image.grid(column=10, row=0, rowspan=12, columnspan=2, sticky="nesw")
 
+        ################ RELATED WORDS ####################
+
+        self.rel_words_frame = tk.Frame(self.voc_tab)
+        self.rel_words_frame.grid(column=4, row=8, rowspan=3, sticky="nsew")
+
+        self.rel_words_header = tk.Label(self.rel_words_frame, text="Related Words", font=("Consolas", 16))
+        self.rel_words_header.grid(column=0, row=0, sticky="nw")
+
+        
         ################## MENU FRAME #########################
 
         self.menu_frame = ttk.Frame(self.voc_tab)
@@ -273,7 +282,7 @@ class new_word_form():
         self.submit_button.grid(row=len(self.entries)+3, padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
 
 
-    ######### REALTED WORD FUNCTIONS #####################
+    ######### RELATED WORD FUNCTIONS #####################
     
     def add_related_word(self, word_variable, word_to_button, words_frame, *_args):
         word = word_variable.get()
@@ -298,5 +307,79 @@ class new_word_form():
         for i, button in enumerate(word_to_button.values()):
             button.grid(column=i, row=0, sticky=tk.NW)
             self.buttons_to_object = word_to_button
+
+
+class rel_word_editor():
+    def __init__(self, word_list, rel_words):
+        self.rel_editor_win = tk.Toplevel()
+        self.rel_editor_win.title("Edit related words")
+        self.rel_editor_win.minsize(150, 50) 
+        self.rel_editor_win.resizable(0,0)
+        self.rel_editor_win.attributes('-topmost', True)
+        
+        if word_list != False:
+            self.words = word_list
+        else:
+            self.words = ["Empty Vocabulary"]
+
+        self.tkvar = tk.StringVar(self.rel_editor_win)  
+            
+        tk.Label(self.rel_editor_win, text="Related Words: ").grid(row=0, column=0, sticky=tk.W)
+        
+        self.words_frame = tk.Frame(self.rel_editor_win)
+        self.words_frame.grid(row=1, column=1, sticky=tk.W)
+
+        self.word_to_button = {}
+
+        for word in rel_words:
+            self.word_to_button[word] = tk.Button(
+                self.words_frame,
+                text=word,
+                font="Helvetica 7",
+                command=partial(
+                    self.delete_related_word_button, self.word_to_button, word
+                ),
+            )
+        self.update_related_word_buttons(self.word_to_button)
+        self.word_variable = tk.StringVar(value="Choose Words...")
+        tk.OptionMenu(self.rel_editor_win, self.word_variable, *self.words).grid(
+            row=0, column=1, sticky=tk.W
+        )
+
+
+        
+        self.word_variable.trace(
+            "w",
+            partial(self.add_related_word, self.word_variable, self.word_to_button, self.words_frame),
+        )
+
+        self.submit_button(self.rel_editor_win, text="Submit")
+        self.submit_button.grid(row=2, column=0, sticky="nsew")
+    
+    def add_related_word(self, word_variable, word_to_button, words_frame, *_args):
+        word = word_variable.get()
+        if word not in word_to_button:
+            word_to_button[word] = tk.Button(
+                self.words_frame,
+                text=word,
+                font="Helvetica 7",
+                command=partial(
+                    self.delete_related_word_button, word_to_button, word
+                ),
+            )
+            self.update_related_word_buttons(word_to_button)
+
+
+    def delete_related_word_button(self, word_to_button, word):
+        word_to_button.pop(word).destroy()
+        self.update_related_word_buttons(word_to_button)
+
+
+    def update_related_word_buttons(self, word_to_button):
+        for i, button in enumerate(word_to_button.values()):
+            button.grid(column=i, row=0, sticky=tk.NW)
+            self.buttons_to_object = word_to_button
+
+
 
         

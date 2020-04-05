@@ -69,7 +69,7 @@ class voc_model():
                     example_sentence = row[4],
                     example_translation = row[5],
                     description = row[6],
-                    related_words = row[7],
+                    related_words = utils.string_to_list(row[7]),
                     related_image = utils.binary_to_image(row[8])
                 ))
 
@@ -119,7 +119,7 @@ class voc_model():
                 sql_insert_word_values.append(value)
             else:
                 if rel_word_ids != []:
-                    sql_insert_word_values.append(str(rel_word_ids))
+                    sql_insert_word_values.append(str(list(rel_word_ids)))
                 else:
                     sql_insert_word_values.append("")
 
@@ -156,7 +156,28 @@ class voc_model():
             log.error("MODEL: Deleting Word ID {word_id} failed")
          
         self.load_db()
+    
 
+    def save_rel_words(self, rel_ids, word_id):
+        for word_name in form_contents[6]:
+            if word_name != "Empty Vocabulary":
+                    for word_object in self.vocabulary:
+                        if word_object.attributes["word"] == word_name:
+                            rel_word_ids.append(word_object.attributes["word_id"])
+
+
+        conn = sqlite3.connect(self.db_file)
+        sql_update_rel = '''UPDATE VOCABULARY SET [related_words] = ? WHERE word_id == ?'''
+        c = conn.cursor()
+
+        try:
+            c.execute(sql_update_rel, (str(rel_word_ids), word_id))
+            conn.commit()
+            log.debug("MODEL: Updated Related Words from Word ID {word_id}.")
+        except:
+            log.error("MODEL: Failed updating Related Words from Word ID {word_id}.")
+         
+        self.load_db()
 
 
 class word():

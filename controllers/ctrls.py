@@ -36,7 +36,7 @@ class lct_controller():
             self.vocab.load_db(db_file, mode="load")
             self.show_tooltips = False
         else:
-            db_file="data/start.db"
+            db_file="data/new_test.db"
             self.vocab.load_db(db_file, mode="load")
             self.show_tooltips = True
 
@@ -64,28 +64,36 @@ class lct_controller():
         self.main_win.voc_menu_buttons[1].configure(command=self.trigger_new_word)
         
 
-
     def display_data(self, event, word_object):
         # print(word_object.attributes["word_id"])
         for element in self.main_win.gui_displays:
             element[0].configure(text=word_object.attributes[element[3]])
             element[0].bind('<Double-Button-1>', 
-            lambda event: self.editor_switch(event, 
-                                            element, 
+            lambda event, ele=element, wo=word_object: self.editor_switch(event, 
+                                            ele, 
                                             False, 
-                                            word_object))
+                                            wo))
 
         self.main_win.description_header.set_html(html=word_object.attributes["description"])
-        self.main_win.description_header.bind('<Double-Button-1>', lambda event: self.edit_description(event, word_object))
+        self.main_win.description_header.bind('<Double-Button-1>', lambda event, wo=word_object: self.edit_description(event, wo))
 
         img = word_object.attributes["related_image"]
    
         self.main_win.related_image.image = ImageTk.PhotoImage(img, Image.ANTIALIAS)     
         self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')
-        self.main_win.related_image.bind('<Double-Button-1>', lambda event: self.update_related_image(event, word_object))
+        self.main_win.related_image.bind('<Double-Button-1>', lambda event, wo=word_object: self.update_related_image(event, wo))
         self.main_win.voc_menu_buttons[2].configure(command=lambda word_id=word_object.attributes["word_id"]:self.trigger_del_word(word_id))
-        # print(word_object.attributes["related_words"])
-    
+        try:
+            row = 1
+            for i, rel_id in enumerate(word_object.attributes["related_words"]):
+                rel_word = self.id_attributes(rel_id)
+                tk.Label(self.main_win.rel_words_frame, text=rel_word["word"]).grid(row=row, column=i, sticky="nse")
+                if i%3 == 0:
+                    row += 1
+        except TypeError:
+            pass
+        self.main_win.rel_words_header.bind('<Double-Button-1>', lambda event, wo=word_object: self.trigger_rel_editor(event, wo))
+
 
     def display_empty_data(self):
         for element in self.main_win.gui_displays:
@@ -113,17 +121,17 @@ class lct_controller():
             element[not switch].delete(0, tk.END)
             element[not switch].insert(0,element[switch]["text"])
             element[not switch].bind("<Return>", 
-                                    lambda event:self.editor_switch(event, 
-                                                                    element, 
+                                    lambda event, elem=element, wo=word_object:self.editor_switch(event, 
+                                                                    elem, 
                                                                     True, 
-                                                                    word_object,
+                                                                    wo,
                                                                     save=True))
 
             element[not switch].bind("<Escape>", 
-                                    lambda event:self.editor_switch(event, 
-                                                                    element, 
+                                    lambda event, elem=element, wo=word_object:self.editor_switch(event, 
+                                                                    elem, 
                                                                     True, 
-                                                                    word_object,
+                                                                    wo,
                                                                     save=False))
         except:
             pass
@@ -233,10 +241,37 @@ class lct_controller():
     def trigger_del_word(self, word_id):
         self.vocab.delete_word(word_id)
         self.display_vocabulary()
-            
+    
+
+    def id_attributes(self, word_id):
+        for word_object in self.vocab.vocabulary:
+            if word_object.attributes["word_id"] == word_id:
+                return word_object.attributes
+    
+    
+    def trigger_rel_editor(self, event, word_object):
+        print(word_object.attributes["word"])
+        word_list = []
+        if self.vocab.vocabulary != []:
+            for word_object in self.vocab.vocabulary:
+                word_list.append(word_object.attributes["word"])
+        else:
+            word_list = False
+        
+        rel_words = []
+        print(word_object.attributes["related_words"])
+        for rel_id in word_object.attributes["related_words"]:
+            word_name = self.id_attributes(rel_id)
+            rel_words.append(word_name["word"])
+        
+        print(rel_words)
+        
+        self.rel_editor = rel_word_editor(word_list, rel_words)
+        self.rel_editor.submit_button.configure(command=lambda word_id= word_object.attributes["word_id"]: self.save_rel_editor(word_id))
 
 
-        
-        
-        
-
+    def save_rel_editor(self, word_id):
+        related_words = []
+        for key, value in self.rel_editor.word_to_button.items():
+            related_words.append(key)
+        self.vocab.save_rel_words(related_words, word_id)

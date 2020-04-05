@@ -33,6 +33,20 @@ def read_yaml(yamlfile):
         log.error(" trying to load %s.", yamlfile)
         raise err
         raise SystemExit(3)
+
+def string_to_list(string_list):
+    
+    number_list = []
+    try:
+        for letter in string_list:
+            if letter.isnumeric():
+                number_list.append(int(letter))
+    except:
+        pass
+    
+    finally:
+        return number_list
+
     
 
 def convertToBinaryData(image_name):
