@@ -346,14 +346,12 @@ class rel_word_editor():
             row=0, column=1, sticky=tk.W
         )
 
-
-        
         self.word_variable.trace(
             "w",
             partial(self.add_related_word, self.word_variable, self.word_to_button, self.words_frame),
         )
 
-        self.submit_button(self.rel_editor_win, text="Submit")
+        self.submit_button = tk.Button(self.rel_editor_win, text="Submit")
         self.submit_button.grid(row=2, column=0, sticky="nsew")
     
     def add_related_word(self, word_variable, word_to_button, words_frame, *_args):

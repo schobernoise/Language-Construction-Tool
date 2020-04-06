@@ -83,16 +83,25 @@ class lct_controller():
         self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')
         self.main_win.related_image.bind('<Double-Button-1>', lambda event, wo=word_object: self.update_related_image(event, wo))
         self.main_win.voc_menu_buttons[2].configure(command=lambda word_id=word_object.attributes["word_id"]:self.trigger_del_word(word_id))
+        self.main_win.rel_words_header.bind('<Double-Button-1>', lambda event, wo=word_object: self.trigger_rel_editor(event, wo))
         try:
-            row = 1
-            for i, rel_id in enumerate(word_object.attributes["related_words"]):
+            try:
+                for rel_word in self.rel_word_labels:
+                    rel_word.destroy()
+            except:
+                pass
+
+            self.rel_word_labels = []
+            for rel_id in word_object.attributes["related_words"]:
                 rel_word = self.id_attributes(rel_id)
-                tk.Label(self.main_win.rel_words_frame, text=rel_word["word"]).grid(row=row, column=i, sticky="nse")
-                if i%3 == 0:
-                    row += 1
+                self.rel_word_labels.append(tk.Label(self.main_win.rel_words_frame, text=rel_word["word"]))
         except TypeError:
             pass
-        self.main_win.rel_words_header.bind('<Double-Button-1>', lambda event, wo=word_object: self.trigger_rel_editor(event, wo))
+
+        for i, rel_word in enumerate(self.rel_word_labels):
+            rel_word.grid(row=i+1, column=0, sticky="nsew")
+            
+        
 
 
     def display_empty_data(self):
@@ -250,21 +259,17 @@ class lct_controller():
     
     
     def trigger_rel_editor(self, event, word_object):
-        print(word_object.attributes["word"])
         word_list = []
         if self.vocab.vocabulary != []:
-            for word_object in self.vocab.vocabulary:
-                word_list.append(word_object.attributes["word"])
+            for word_object_vocab in self.vocab.vocabulary:
+                word_list.append(word_object_vocab.attributes["word"])
         else:
             word_list = False
         
         rel_words = []
-        print(word_object.attributes["related_words"])
         for rel_id in word_object.attributes["related_words"]:
             word_name = self.id_attributes(rel_id)
             rel_words.append(word_name["word"])
-        
-        print(rel_words)
         
         self.rel_editor = rel_word_editor(word_list, rel_words)
         self.rel_editor.submit_button.configure(command=lambda word_id= word_object.attributes["word_id"]: self.save_rel_editor(word_id))
@@ -275,3 +280,5 @@ class lct_controller():
         for key, value in self.rel_editor.word_to_button.items():
             related_words.append(key)
         self.vocab.save_rel_words(related_words, word_id)
+        self.rel_editor.rel_editor_win.destroy()
+        self.display_vocabulary()

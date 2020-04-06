@@ -158,8 +158,9 @@ class voc_model():
         self.load_db()
     
 
-    def save_rel_words(self, rel_ids, word_id):
-        for word_name in form_contents[6]:
+    def save_rel_words(self, rel_words, word_id):
+        rel_word_ids= []
+        for word_name in rel_words:
             if word_name != "Empty Vocabulary":
                     for word_object in self.vocabulary:
                         if word_object.attributes["word"] == word_name:
