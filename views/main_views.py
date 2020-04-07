@@ -138,13 +138,12 @@ class main_frame(common_win, tk.Toplevel):
 
         ################ RELATED WORDS ####################
 
-        self.rel_words_frame = tk.Frame(self.voc_tab)
+        self.rel_words_frame = tk.Frame(self.voc_tab, padx=20)
         self.rel_words_frame.grid(column=4, row=8, rowspan=3, sticky="nsew")
 
         self.rel_words_header = tk.Label(self.rel_words_frame, text="Related Words", font=("Consolas", 16))
         self.rel_words_header.grid(column=0, row=0, sticky="nw")
 
-        
         ################## MENU FRAME #########################
 
         self.menu_frame = ttk.Frame(self.voc_tab)
@@ -223,6 +222,7 @@ class new_word_form():
             self.words = ["Empty Vocabulary"]
 
         self.create_widgets()
+
 
     def create_widgets(self):
         self.entries = {
@@ -354,6 +354,7 @@ class rel_word_editor():
         self.submit_button = tk.Button(self.rel_editor_win, text="Submit")
         self.submit_button.grid(row=2, column=0, sticky="nsew")
     
+
     def add_related_word(self, word_variable, word_to_button, words_frame, *_args):
         word = word_variable.get()
         if word not in word_to_button:

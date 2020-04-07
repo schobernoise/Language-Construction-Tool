@@ -3,6 +3,7 @@ from tkinter import filedialog
 from tkinter import ttk
 from PIL import Image
 import io
+import random
 
 import time
 import yaml
@@ -48,7 +49,6 @@ def string_to_list(string_list):
         return number_list
 
     
-
 def convertToBinaryData(image_name):
         #Convert digital data to binary format
         if image_name == "":
@@ -65,7 +65,7 @@ def convertToBinaryData(image_name):
 
 def binary_to_image(blobData):
     if blobData == "":
-        img = Image.new('RGB', (500, 1080), (228, 150, 150))
+        img = Image.new('RGB', (500, 1080), random_rgb())
         return img
     else:
         return Image.open(io.BytesIO(blobData))
@@ -89,6 +89,10 @@ def open_file_dialog(file_type):
 
     filename = filedialog.askopenfilename(initialdir = "/data",title = "Select file",filetypes = tuple(file_types))
     return filename 
+
+
+def random_rgb():
+    return (random.randint(0,170), random.randint(0,170), random.randint(0,170))
 
 
 class Config():

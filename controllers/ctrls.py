@@ -36,7 +36,7 @@ class lct_controller():
             self.vocab.load_db(db_file, mode="load")
             self.show_tooltips = False
         else:
-            db_file="data/new_test.db"
+            db_file="data/start.db"
             self.vocab.load_db(db_file, mode="load")
             self.show_tooltips = True
 
@@ -49,7 +49,10 @@ class lct_controller():
         for word_object in self.vocab.vocabulary:
             self.main_win.word_list.insert("", "end", text=word_object.attributes["word"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
             self.main_win.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data(event, wo))
-        self.focus_object(self.main_win.word_list)
+        try:
+            self.focus_object(self.main_win.word_list)
+        except IndexError:
+            self.display_empty_data()
         
     
     def create_voc_menu(self):
@@ -99,17 +102,15 @@ class lct_controller():
             pass
 
         for i, rel_word in enumerate(self.rel_word_labels):
-            rel_word.grid(row=i+1, column=0, sticky="nsew")
+            rel_word.grid(row=i+1, column=0, sticky="nw")
             
         
-
-
     def display_empty_data(self):
         for element in self.main_win.gui_displays:
             element[0].configure(text="")
 
         self.main_win.description_header.set_html(html="")
-        img = Image.new('RGB', (500, 1080), (228, 150, 150))
+        img = Image.new('RGB', (500, 1080), color=utils.random_rgb())
    
         self.main_win.related_image.image = ImageTk.PhotoImage(img)     
         self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')

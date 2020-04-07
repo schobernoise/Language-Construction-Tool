@@ -107,22 +107,13 @@ class voc_model():
     def save_word(self, form_contents):
         sql_insert_word_values = []
 
-        rel_word_ids= []
-        for word_name in form_contents[6]:
-            if word_name != "Empty Vocabulary":
-                for word_object in self.vocabulary:
-                    if word_object.attributes["word"] == word_name:
-                        rel_word_ids.append(word_object.attributes["word_id"])
-
         for i, value in enumerate(form_contents):
             if i != 6:
                 sql_insert_word_values.append(value)
             else:
-                if rel_word_ids != []:
-                    sql_insert_word_values.append(str(list(rel_word_ids)))
-                else:
-                    sql_insert_word_values.append("")
+                sql_insert_word_values.append("")
 
+        
         sql_insert_new_word = '''INSERT INTO VOCABULARY
                                 (word, pos, translation, example_sentence, example_translation, description, related_words, related_image)
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)'''
@@ -130,7 +121,6 @@ class voc_model():
         
         conn = sqlite3.connect(self.db_file)
         c = conn.cursor()
-        # print(sql_insert_word_values[5], sql_insert_word_values[6])
 
         try:
             c.execute(sql_insert_new_word, tuple(sql_insert_word_values))
@@ -138,8 +128,12 @@ class voc_model():
             log.debug("MODEL: Inserted New Word in DB.")
         except:
             log.error("MODEL: Inserting Word failed")
-         
+
         self.load_db()
+
+        for word_object in self.vocabulary:
+            if word_object.attributes["word"] == form_contents[0]:
+                self.save_rel_words(form_contents[6], word_object.attributes["word_id"])
     
 
     def delete_word(self, word_id):
@@ -165,9 +159,26 @@ class voc_model():
                     for word_object in self.vocabulary:
                         if word_object.attributes["word"] == word_name:
                             rel_word_ids.append(word_object.attributes["word_id"])
+        
+        self.manage_rel_words(rel_word_ids, word_id)
+        
+         
+        self.load_db()
+    
 
-
+    def manage_rel_words(self, rel_word_ids, word_id):
         conn = sqlite3.connect(self.db_file)
+        c = conn.cursor()
+
+        for rel_id in rel_word_ids:
+            print(rel_id)
+            c.execute('''SELECT * FROM VOCABULARY WHERE [word_id] = ?''', rel_id)
+            row = c.fetchone()
+            other_ids = utils.string_to_list(row["related_words"])
+            other_ids.append(word_id)
+            c.execute('''UPDATE VOCABULARY SET [related_words] = ? WHERE word_id == ?''', (str(other_ids), rel_id))
+            conn.commit()
+        
         sql_update_rel = '''UPDATE VOCABULARY SET [related_words] = ? WHERE word_id == ?'''
         c = conn.cursor()
 
@@ -177,8 +188,8 @@ class voc_model():
             log.debug("MODEL: Updated Related Words from Word ID {word_id}.")
         except:
             log.error("MODEL: Failed updating Related Words from Word ID {word_id}.")
-         
-        self.load_db()
+        
+
 
 
 class word():
