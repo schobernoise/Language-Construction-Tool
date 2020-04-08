@@ -4,7 +4,7 @@ from tkinter import ttk
 from functools import partial
 from PIL import ImageTk, Image
 import io
-
+from openpyxl import *
 
 from controllers import utils
 from controllers import log
@@ -18,6 +18,7 @@ class lct_controller():
         self.main_win = main_frame(root)
         self.main_win.withdraw() 
         self.create_voc_menu()
+        self.data_handler = data_controller(self.vocab)
 
         self.start_up = start_up
         
@@ -60,7 +61,7 @@ class lct_controller():
         self.main_win.voc_menu_buttons[0].menu.add_command(label="Create new Vocabulary", command=self.trigger_new_vocabulary)
         self.main_win.voc_menu_buttons[0].menu.add_command(label="Open Vocabulary", command=self.trigger_load_vocabulary)
         self.main_win.voc_menu_buttons[0].menu.add_separator()
-        self.main_win.voc_menu_buttons[0].menu.add_command(label="Populate from File...")
+        self.main_win.voc_menu_buttons[0].menu.add_command(label="Populate from File...", command=self.trigger_populate_file)
         self.main_win.voc_menu_buttons[0].menu.add_command(label="Populate from Web...")
         self.main_win.voc_menu_buttons[0].menu.add_separator()
         self.main_win.voc_menu_buttons[0].menu.add_command(label="Exit")
@@ -283,3 +284,37 @@ class lct_controller():
         self.vocab.save_rel_words(related_words, word_id)
         self.rel_editor.rel_editor_win.destroy()
         self.display_vocabulary()
+    
+
+    def trigger_populate_file(self):
+        self.file_imp = file_importer()
+        self.file_imp.file_button.configure(command=self.file_loader)
+        self.file_imp.submit_button.configure(command=self.save_populate_file)
+    
+
+    def file_loader(self):
+        self.temp_file = utils.open_file_dialog("excel")
+        self.file_imp.file_entry.insert(0, self.temp_file)
+
+    
+    def save_populate_file(self):
+        self.data_handler.load_excel(self.file_imp.file_entry.get())
+        self.file_imp.file_imp_win.destroy()
+
+
+
+class data_controller():
+    def __init__(self, vocab):
+        self.vocab = vocab
+
+    def load_excel(self, excel_file):
+        wb = load_workbook(excel_file)
+        sheet_one = wb['voc']
+        print(sheet_one['A5'].value)
+    
+
+    def load_csv(self, csv_file):
+        pass
+
+
+

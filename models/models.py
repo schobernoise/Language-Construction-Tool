@@ -170,14 +170,16 @@ class voc_model():
         conn = sqlite3.connect(self.db_file)
         c = conn.cursor()
 
-        for rel_id in rel_word_ids:
-            print(rel_id)
-            c.execute('''SELECT * FROM VOCABULARY WHERE [word_id] = ?''', rel_id)
-            row = c.fetchone()
-            other_ids = utils.string_to_list(row["related_words"])
-            other_ids.append(word_id)
-            c.execute('''UPDATE VOCABULARY SET [related_words] = ? WHERE word_id == ?''', (str(other_ids), rel_id))
-            conn.commit()
+        # BUG: TWO WAY EDITABILITY OF RELATED WORDS 
+        # Needs new System
+
+        # for rel_id in rel_word_ids:
+        #     c.execute('''SELECT * FROM VOCABULARY WHERE [word_id] = ?''', (rel_id,))
+        #     row = c.fetchone()
+        #     other_ids = utils.string_to_list(row[7])
+        #     other_ids.append(word_id)
+        #     c.execute('''UPDATE VOCABULARY SET [related_words] = ? WHERE word_id == ?''', (str(other_ids), rel_id))
+        #     conn.commit()
         
         sql_update_rel = '''UPDATE VOCABULARY SET [related_words] = ? WHERE word_id == ?'''
         c = conn.cursor()
@@ -189,7 +191,6 @@ class voc_model():
         except:
             log.error("MODEL: Failed updating Related Words from Word ID {word_id}.")
         
-
 
 
 class word():

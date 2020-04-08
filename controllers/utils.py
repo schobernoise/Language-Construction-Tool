@@ -84,6 +84,8 @@ def open_file_dialog(file_type):
         file_types.append(("png files", "*.png"))
     elif file_type == "database":
         file_types.append(("DB files","*.db"))
+    elif file_type == "excel":
+        file_types.append(("Excel files","*.xlsx"))
     
     file_types.append(("all files","*.*"))
 

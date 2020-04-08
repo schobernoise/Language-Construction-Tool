@@ -379,6 +379,27 @@ class rel_word_editor():
             button.grid(column=i, row=0, sticky=tk.NW)
             self.buttons_to_object = word_to_button
 
+class file_importer():
+    def __init__(self):
+        self.file_imp_win = tk.Toplevel()
+        self.file_imp_win.title("Populate Vocabulary from File")
+        # self.file_imp_win.minsize(150, 50) 
+        # self.file_imp_win.resizable(0,0)
+        self.file_imp_win.attributes('-topmost', True)
+
+        self.file_entry = tk.Entry(self.file_imp_win)
+        self.file_entry.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+
+        self.file_button = tk.Button(self.file_entry, text="File...")
+        self.file_button.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
+
+        self.submit_button = tk.Button(self.file_imp_win, text="Submit")
+        self.submit_button.grid(row=1, column=0, columnspan=2, sticky="nsew")
+
+
+
+        
+
 
 
         
