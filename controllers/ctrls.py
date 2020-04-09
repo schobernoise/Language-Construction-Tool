@@ -309,8 +309,8 @@ class data_controller():
 
     def load_excel(self, excel_file):
         wb = load_workbook(excel_file)
-        sheet_one = wb['voc']
-        print(sheet_one['A5'].value)
+        ws = wb.active
+        print(ws['A5'].value)
     
 
     def load_csv(self, csv_file):

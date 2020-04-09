@@ -190,6 +190,19 @@ class voc_model():
             log.debug("MODEL: Updated Related Words from Word ID {word_id}.")
         except:
             log.error("MODEL: Failed updating Related Words from Word ID {word_id}.")
+    
+
+    def populate_database(self, population_words=()):
+        sql_populate_db = '''INSERT INTO VOCABULARY (word, pos, translation, example_sentence, example_translation, description) VALUES (?, ?, ?, ?, ?, ?)'''
+        c = conn.cursor()
+
+        try:
+            c.execute(sql_populate_db, population_words)
+            conn.commit()
+            log.debug("MODEL: Successfully populated Database.")
+        except:
+            log.error("MODEL: Failed populating Database.")
+
         
 
 
@@ -200,7 +213,5 @@ class word():
             self.attributes[key] = value
     
 
-    def callback(self, event=None):
-        print(self.attributes["word"])
 
 

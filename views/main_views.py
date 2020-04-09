@@ -378,6 +378,7 @@ class rel_word_editor():
         for i, button in enumerate(word_to_button.values()):
             button.grid(column=i, row=0, sticky=tk.NW)
             self.buttons_to_object = word_to_button
+            
 
 class file_importer():
     def __init__(self):
