@@ -1,1 +1,2 @@
 log_level: "DEBUG"
+part_of_speech: ["Noun", "Verb", "Participle", "Article", "Pronoun", "Preposition", "Adverb", "Conjunction"]

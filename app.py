@@ -13,7 +13,7 @@ if __name__ == '__main__':
     log.info("WELCOME TO THE LANGUAGE CONSTRUCTION TOOL")
     root = tk.Tk()  # TKINTER OBJECT
     conf = utils.Config()
-    app = lct_controller(root,  start_up=True) # GUI CONTROLLER
+    app = lct_controller(root, conf,  start_up=True) # GUI CONTROLLER
 
     root.lift()
     root.attributes('-topmost', True)

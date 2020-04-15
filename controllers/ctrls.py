@@ -13,12 +13,15 @@ from views.main_views import *
 
 
 class lct_controller():
-    def __init__(self, root, start_up):
+    def __init__(self, root, conf, start_up):
+        self.conf = conf
         self.vocab = voc_model()
         self.main_win = main_frame(root)
         self.main_win.withdraw() 
         self.create_voc_menu()
         self.data_handler = data_controller(self.vocab)
+
+        self.pos_list = self.conf.conf["part_of_speech"]
 
         self.start_up = start_up
         
@@ -30,16 +33,21 @@ class lct_controller():
         self.vocab = voc_model()
 
         if name != "" and metadata != [] and db_file == "":
+            self.main_win.status.set("Creating new Vocabulary...")
             db_file = "data/" + utils.string_unify(name) + ".db"
             self.vocab.load_db(db_file=db_file, metadata=metadata, mode="create")
             self.show_tooltips = False
         elif name == "" and metadata == [] and db_file != "":
+            self.main_win.status.set("Loading Vocabulary {}".format(db_file))
             self.vocab.load_db(db_file, mode="load")
             self.show_tooltips = False
         else:
+            self.main_win.status.set("Loading Start Vocabulary")
             db_file="data/start.db"
             self.vocab.load_db(db_file, mode="load")
             self.show_tooltips = True
+        
+        self.main_win.status.set("Ready...")
 
         self.display_vocabulary()
         self.main_win.title("Language Construction Tool " + self.vocab.metadata["name"])
@@ -85,89 +93,26 @@ class lct_controller():
         
 
     def display_data(self, event, word_object):
-        # print(word_object.attributes["word_id"])
-        for element in self.main_win.gui_displays:
-            element[0].configure(text=word_object.attributes[element[3]])
-            element[0].bind('<Double-Button-1>', 
-            lambda event, ele=element, wo=word_object: self.editor_switch(event, 
-                                            ele, 
-                                            False, 
-                                            wo))
-
-        self.main_win.description_header.set_html(html=word_object.attributes["description"])
-        self.main_win.description_header.bind('<Double-Button-1>', lambda event, wo=word_object: self.edit_description(event, wo))
-
+        
+        self.main_win.description.set_html(html=word_object.attributes["description"])
         img = word_object.attributes["related_image"]
-   
         self.main_win.related_image.image = ImageTk.PhotoImage(img.resize((200, 200), Image.ANTIALIAS))
-
         self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')
-        self.main_win.related_image.bind('<Double-Button-1>', lambda event, wo=word_object: self.update_related_image(event, wo))
+       
         # DELETE BUTTON
         self.main_win.voc_buttons[1].configure(command=lambda word_id=word_object.attributes["word_id"]:self.trigger_del_word(word_id))
         
-        # RELATED WORDS 
-        
-        # self.main_win.rel_words_header.bind('<Double-Button-1>', lambda event, wo=word_object: self.trigger_rel_editor(event, wo))
-        # try:
-        #     try:
-        #         for rel_word in self.rel_word_labels:
-        #             rel_word.destroy()
-        #     except:
-        #         pass
-
-        #     self.rel_word_labels = []
-        #     for rel_id in word_object.attributes["related_words"]:
-        #         rel_word = self.id_attributes(rel_id)
-        #         self.rel_word_labels.append(tk.Label(self.main_win.rel_words_frame, text=rel_word["word"]))
-        # except TypeError:
-        #     pass
-
-        # for i, rel_word in enumerate(self.rel_word_labels):
-        #     rel_word.grid(row=i+1, column=0, sticky="nw")
+        # self.main_win.status.set("Ready...")
             
         
     def display_empty_data(self):
-        for element in self.main_win.gui_displays:
-            element[0].configure(text="")
 
-        self.main_win.description_header.set_html(html="")
+        self.main_win.description.set_html(html="")
         img = Image.new('RGB', (500, 1080), color=utils.random_rgb())
    
         self.main_win.related_image.image = ImageTk.PhotoImage(img)     
         self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')
 
-
-    def editor_switch(self, event, element, switch, word_object, save=False):
-        log.debug("GUI: Switch triggered for " + element[3])
-        if switch == True and save == True:
-            self.vocab.update_word(word_object.attributes["word_id"], 
-                                    element[3], 
-                                    element[switch].get())
-
-        element[switch].grid_forget()
-        element[not switch].grid(column=element[2][0], 
-                                row=element[2][1], 
-                                sticky=element[2][2])
-        try:
-            element[not switch].delete(0, tk.END)
-            element[not switch].insert(0,element[switch]["text"])
-            element[not switch].bind("<Return>", 
-                                    lambda event, elem=element, wo=word_object:self.editor_switch(event, 
-                                                                    elem, 
-                                                                    True, 
-                                                                    wo,
-                                                                    save=True))
-
-            element[not switch].bind("<Escape>", 
-                                    lambda event, elem=element, wo=word_object:self.editor_switch(event, 
-                                                                    elem, 
-                                                                    True, 
-                                                                    wo,
-                                                                    save=False))
-        except:
-            pass
-        self.display_vocabulary()
 
 
     def focus_object(self, tree_view, pos=0):
@@ -215,6 +160,7 @@ class lct_controller():
 
 
     def save_new_vocabulary(self):
+        self.main_win.status.set("Saving new Vocabulary")
         form_contents = []
         for name, entry in self.new_vocab.entries.items():
             form_contents.append(entry[2].get())
@@ -223,7 +169,9 @@ class lct_controller():
         self.display_vocabulary()
         self.display_empty_data()
     
+
     def trigger_load_vocabulary(self):
+        self.main_win.status.set("Loading Vocabulary...")
         voc_filename = utils.open_file_dialog("database")
         self.load_vocabulary(db_file=voc_filename, metadata=[])
         self.display_vocabulary()
@@ -231,18 +179,11 @@ class lct_controller():
 
 
     def trigger_new_word(self):
+        self.main_win.status.set("Opening New Word Editor")
         self.temp_rel_image = ""
-        word_list = []
-        if self.vocab.vocabulary != []:
-            for word_object in self.vocab.vocabulary:
-                word_list.append(word_object.attributes["word"])
-        else:
-            word_list = False
-    
-        self.new_word = new_word_form(word_list)
+        self.new_word = new_word_form(self.pos_list)
         self.new_word.entries["rel_image"][2].configure(command=self.add_related_image)
         self.new_word.submit_button.configure(command=self.save_new_word)
-
         
 
     def add_related_image(self):
@@ -250,16 +191,11 @@ class lct_controller():
     
 
     def save_new_word(self):
-        related_words = []
-        for key, value in self.new_word.word_to_button.items():
-            related_words.append(key)
-       
+        self.main_win.status.set("Saving New Word...")
         form_contents = []
         for name, entry in self.new_word.entries.items():
             if name == "rel_image":
                 form_contents.append(utils.convertToBinaryData(self.temp_rel_image))
-            elif name == "rel_words":
-                form_contents.append(related_words)
             elif name == "description":
                 form_contents.append(entry[2].get("1.0",tk.END))
             else:
@@ -271,6 +207,7 @@ class lct_controller():
             
 
     def trigger_del_word(self, word_id):
+        self.main_win.status.set("Deleting Word...")
         self.vocab.delete_word(word_id)
         self.display_vocabulary()
     
@@ -280,31 +217,6 @@ class lct_controller():
             if word_object.attributes["word_id"] == word_id:
                 return word_object.attributes
     
-    
-    def trigger_rel_editor(self, event, word_object):
-        word_list = []
-        if self.vocab.vocabulary != []:
-            for word_object_vocab in self.vocab.vocabulary:
-                word_list.append(word_object_vocab.attributes["word"])
-        else:
-            word_list = False
-        
-        rel_words = []
-        for rel_id in word_object.attributes["related_words"]:
-            word_name = self.id_attributes(rel_id)
-            rel_words.append(word_name["word"])
-        
-        self.rel_editor = rel_word_editor(word_list, rel_words)
-        self.rel_editor.submit_button.configure(command=lambda word_id= word_object.attributes["word_id"]: self.save_rel_editor(word_id))
-
-
-    def save_rel_editor(self, word_id):
-        related_words = []
-        for key, value in self.rel_editor.word_to_button.items():
-            related_words.append(key)
-        self.vocab.save_rel_words(related_words, word_id)
-        self.rel_editor.rel_editor_win.destroy()
-        self.display_vocabulary()
     
 
     def trigger_populate_file(self):
