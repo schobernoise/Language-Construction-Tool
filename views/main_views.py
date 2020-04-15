@@ -30,6 +30,13 @@ class main_frame(common_win, tk.Toplevel):
 
     
     def build_geruest(self):
+
+        # BUILD MENU
+        self.menu = tk.Menu(self.main_win)
+        self.main_win.configure(menu=self.menu)
+        self.filemenu = tk.Menu(self.menu, tearoff=0)
+        self.vocmenu = tk.Menu(self.menu, tearoff=0)
+        self.conmenu = tk.Menu(self.menu, tearoff=0)
         
         # #########################################
         # CREATE TABS
@@ -42,6 +49,9 @@ class main_frame(common_win, tk.Toplevel):
         self.tab_control.add(self.con_tab, text='Construction')      
         self.tab_control.grid(row=0, column=0, rowspan=12, columnspan=12, sticky="nsew")  
 
+        s = ttk.Style()
+        s.configure('TNotebook', tabposition='ne') #'ne' as in compass direction
+        
         ################### 12 GRID SYSTEM ######################
         
         for i in range(12):
@@ -54,11 +64,14 @@ class main_frame(common_win, tk.Toplevel):
 
         column_width=100
 
-        self.word_list = ttk.Treeview(self.voc_tab, show="tree")
-        self.word_list.grid(column=0, row=0,  rowspan=12, sticky="wnse") 
+        self.word_list = ttk.Treeview(self.voc_tab)
+        self.word_list.grid(column=0, row=0,  rowspan=11, sticky="wnse") 
         self.word_list["columns"]=("translation")
         self.word_list.column("translation", width=column_width)
         self.word_list.column("#0", width=column_width)
+
+        self.word_list.heading("#0",text="Transliteration")
+        self.word_list.heading("translation",text="Translation")
 
         ###### COLOR BUG FIX ###########
         self.style = ttk.Style()
@@ -74,19 +87,23 @@ class main_frame(common_win, tk.Toplevel):
         ########## WORD HEADER ################
         
         self.word_header = []
-        self.word_header.append(tk.Label(self.header_frame, text="", font=("Consolas", 36)))
+        self.word_header.append(tk.Label(self.header_frame, text="", font=("Consolas", 36, "bold")))
         self.word_header.append(ttk.Entry(self.header_frame))
         self.word_header.append([0, 0, "nw"])
         self.word_header.append("word")
         self.word_header[0].grid(column=self.word_header[2][0], row=self.word_header[2][1], sticky=self.word_header[2][2])
         self.gui_displays.append(self.word_header)
 
+        ############ PHONETIC ######################
+
+        self.phonetic_header = []
+
         ########### PART OF SPEECH ###################
 
         self.pos_header = []
-        self.pos_header.append(tk.Label(self.header_frame, text="", font=("Times New Roman", 24)))
+        self.pos_header.append(tk.Label(self.header_frame, text="", font=("Consolas", 16)))
         self.pos_header.append(ttk.Entry(self.header_frame))
-        self.pos_header.append([1, 0, "we"])
+        self.pos_header.append([0, 2, "nw"])
         self.pos_header.append("pos")
         self.pos_header[0].grid(column=self.pos_header[2][0], row=self.pos_header[2][1], sticky=self.pos_header[2][2])
         self.gui_displays.append(self.pos_header)
@@ -94,7 +111,7 @@ class main_frame(common_win, tk.Toplevel):
         ########### TRANSLATION ###################
 
         self.translation_header = []
-        self.translation_header.append(tk.Label(self.header_frame, text="", font=("Consolas", 12)))
+        self.translation_header.append(tk.Label(self.header_frame, text="", font=("Consolas", 32)))
         self.translation_header.append(ttk.Entry(self.header_frame))
         self.translation_header.append([0, 1, "nw"])
         self.translation_header.append("translation")
@@ -104,9 +121,9 @@ class main_frame(common_win, tk.Toplevel):
         ########### EXAMPLE SENTENCE ###################
 
         self.example_sentence_header = []
-        self.example_sentence_header.append(tk.Label(self.header_frame, text="", font=("Consolas", 12)))
+        self.example_sentence_header.append(tk.Label(self.header_frame, text="", font=("Consolas", 12), pady=20))
         self.example_sentence_header.append(ttk.Entry(self.header_frame))
-        self.example_sentence_header.append([0, 2, "nw"])
+        self.example_sentence_header.append([0, 3, "sw"])
         self.example_sentence_header.append("example_sentence")
         self.example_sentence_header[0].grid(column=self.example_sentence_header[2][0], row=self.example_sentence_header[2][1], sticky=self.example_sentence_header[2][2])
         self.gui_displays.append(self.example_sentence_header)
@@ -114,9 +131,9 @@ class main_frame(common_win, tk.Toplevel):
         ########### EXAMPLE TRANSLATION ###################
 
         self.example_translation_header = []
-        self.example_translation_header.append(tk.Label(self.header_frame, text="", font=("Consolas", 12)))
+        self.example_translation_header.append(tk.Label(self.header_frame, text="", font=("Consolas", 12), pady=20))
         self.example_translation_header.append(ttk.Entry(self.header_frame))
-        self.example_translation_header.append([0, 3, "nw"])
+        self.example_translation_header.append([0, 4, "sw"])
         self.example_translation_header.append("example_translation")
         self.example_translation_header[0].grid(column=self.example_translation_header[2][0], row=self.example_translation_header[2][1], sticky=self.example_translation_header[2][2])
         self.gui_displays.append(self.example_translation_header)
@@ -133,36 +150,38 @@ class main_frame(common_win, tk.Toplevel):
 
         ################## RELATED IMAGE ######################
 
-        self.related_image  = tk.Canvas(self.voc_tab)
-        self.related_image.grid(column=10, row=0, rowspan=12, columnspan=2, sticky="nesw")
+        ttk.Separator(self.voc_tab, orient="vertical").grid(row=0, column=11, rowspan=12, sticky="nesw")
+
+        self.related_image = tk.Canvas(self.voc_tab, width=200, height=200)
+        self.related_image.grid(column=12, row=1, sticky="nesw")
 
         ################ RELATED WORDS ####################
 
-        self.rel_words_frame = tk.Frame(self.voc_tab, padx=20)
-        self.rel_words_frame.grid(column=4, row=8, rowspan=3, sticky="nsew")
+        # self.rel_words_frame = tk.Frame(self.voc_tab, padx=20)
+        # self.rel_words_frame.grid(column=4, row=8, rowspan=3, sticky="nsew")
 
-        self.rel_words_header = tk.Label(self.rel_words_frame, text="Related Words", font=("Consolas", 16))
-        self.rel_words_header.grid(column=0, row=0, sticky="nw")
+        # self.rel_words_header = tk.Label(self.rel_words_frame, text="Related Words", font=("Consolas", 16))
+        # self.rel_words_header.grid(column=0, row=0, sticky="nw")
 
-        ################## MENU FRAME #########################
+        ################## BUTTON FRAME #########################
 
-        self.menu_frame = ttk.Frame(self.voc_tab)
+        self.button_frame = ttk.Frame(self.voc_tab)
 
-        voc_menu_labels = ["add", "delete"]
-        self.voc_menu_buttons = []
+        voc_button_labels = ["add", "delete"]
+        self.voc_buttons = []
 
-        self.voc_menu_buttons.append(tk.Menubutton(self.menu_frame, text="File", relief=tk.RAISED))
-        for label in voc_menu_labels:
-            self.voc_menu_buttons.append(tk.Button(self.menu_frame, text=label))
+        for label in voc_button_labels:
+            self.voc_buttons.append(tk.Button(self.button_frame, text=label))
 
-        # Create pull down menu
-        self.voc_menu_buttons[0].menu = tk.Menu(self.voc_menu_buttons[0], tearoff = 0)
-        self.voc_menu_buttons[0]["menu"] = self.voc_menu_buttons[0].menu
-
-        for i, button in enumerate(self.voc_menu_buttons):
-            button.grid(column=i, row=0, sticky="nsew")
+        h=0
+        for i, button in enumerate(self.voc_buttons):
+            button.grid(column=h, row=0, sticky="nsew", columnspan=2)
+            h = h+2
         
-        self.menu_frame.grid(column=4, row=0, sticky="nw")
+        self.button_frame.grid(column=0, row=11, rowspan=4, columnspan=4, sticky="nsew")
+        for i in range(4):
+            self.button_frame.rowconfigure(i, weight=1)
+            self.button_frame.columnconfigure(i, weight=1)
     
 
     def fixed_map(self, option):

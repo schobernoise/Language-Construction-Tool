@@ -57,15 +57,31 @@ class lct_controller():
         
     
     def create_voc_menu(self):
-        # Add some commands
-        self.main_win.voc_menu_buttons[0].menu.add_command(label="Create new Vocabulary", command=self.trigger_new_vocabulary)
-        self.main_win.voc_menu_buttons[0].menu.add_command(label="Open Vocabulary", command=self.trigger_load_vocabulary)
-        self.main_win.voc_menu_buttons[0].menu.add_separator()
-        self.main_win.voc_menu_buttons[0].menu.add_command(label="Populate from File...", command=self.trigger_populate_file)
-        self.main_win.voc_menu_buttons[0].menu.add_command(label="Populate from Web...")
-        self.main_win.voc_menu_buttons[0].menu.add_separator()
-        self.main_win.voc_menu_buttons[0].menu.add_command(label="Exit")
-        self.main_win.voc_menu_buttons[1].configure(command=self.trigger_new_word)
+
+        # FILEMENU
+        self.main_win.menu.add_cascade(label="File", menu=self.main_win.filemenu)
+        self.main_win.filemenu.add_command(label="Create new Vocabulary", command=self.trigger_new_vocabulary)
+        self.main_win.filemenu.add_command(label="Open Vocabulary", command=self.trigger_load_vocabulary)
+        self.main_win.filemenu.add_separator()
+        self.main_win.filemenu.add_command(label="Exit")
+
+        # VOC MENU
+        self.main_win.menu.add_cascade(label="Vocabulary", menu=self.main_win.vocmenu)
+        self.main_win.vocmenu.add_command(label="Edit Info")
+        self.main_win.vocmenu.add_command(label="Import XLS/CSV")
+        self.main_win.vocmenu.add_separator()
+        self.main_win.vocmenu.add_command(label="Populate from File...", command=self.trigger_populate_file)
+        self.main_win.vocmenu.add_command(label="Populate from Web...")
+        
+
+        # CON MENU
+        self.main_win.menu.add_cascade(label="Construction", menu=self.main_win.conmenu)
+        self.main_win.conmenu.add_command(label="Export Batch...")
+        self.main_win.conmenu.add_command(label="Feed File")
+
+        # VOC BUTTONS
+        
+        self.main_win.voc_buttons[0].configure(command=self.trigger_new_word)
         
 
     def display_data(self, event, word_object):
@@ -83,27 +99,32 @@ class lct_controller():
 
         img = word_object.attributes["related_image"]
    
-        self.main_win.related_image.image = ImageTk.PhotoImage(img, Image.ANTIALIAS)     
+        self.main_win.related_image.image = ImageTk.PhotoImage(img.resize((200, 200), Image.ANTIALIAS))
+
         self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')
         self.main_win.related_image.bind('<Double-Button-1>', lambda event, wo=word_object: self.update_related_image(event, wo))
-        self.main_win.voc_menu_buttons[2].configure(command=lambda word_id=word_object.attributes["word_id"]:self.trigger_del_word(word_id))
-        self.main_win.rel_words_header.bind('<Double-Button-1>', lambda event, wo=word_object: self.trigger_rel_editor(event, wo))
-        try:
-            try:
-                for rel_word in self.rel_word_labels:
-                    rel_word.destroy()
-            except:
-                pass
+        # DELETE BUTTON
+        self.main_win.voc_buttons[1].configure(command=lambda word_id=word_object.attributes["word_id"]:self.trigger_del_word(word_id))
+        
+        # RELATED WORDS 
+        
+        # self.main_win.rel_words_header.bind('<Double-Button-1>', lambda event, wo=word_object: self.trigger_rel_editor(event, wo))
+        # try:
+        #     try:
+        #         for rel_word in self.rel_word_labels:
+        #             rel_word.destroy()
+        #     except:
+        #         pass
 
-            self.rel_word_labels = []
-            for rel_id in word_object.attributes["related_words"]:
-                rel_word = self.id_attributes(rel_id)
-                self.rel_word_labels.append(tk.Label(self.main_win.rel_words_frame, text=rel_word["word"]))
-        except TypeError:
-            pass
+        #     self.rel_word_labels = []
+        #     for rel_id in word_object.attributes["related_words"]:
+        #         rel_word = self.id_attributes(rel_id)
+        #         self.rel_word_labels.append(tk.Label(self.main_win.rel_words_frame, text=rel_word["word"]))
+        # except TypeError:
+        #     pass
 
-        for i, rel_word in enumerate(self.rel_word_labels):
-            rel_word.grid(row=i+1, column=0, sticky="nw")
+        # for i, rel_word in enumerate(self.rel_word_labels):
+        #     rel_word.grid(row=i+1, column=0, sticky="nw")
             
         
     def display_empty_data(self):
