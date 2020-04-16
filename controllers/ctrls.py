@@ -76,7 +76,7 @@ class lct_controller():
         # VOC MENU
         self.main_win.menu.add_cascade(label="Vocabulary", menu=self.main_win.vocmenu)
         self.main_win.vocmenu.add_command(label="Edit Info")
-        self.main_win.vocmenu.add_command(label="Import XLS/CSV")
+        self.main_win.vocmenu.add_command(label="Import XLS/CSV", command=self.trigger_import)
         self.main_win.vocmenu.add_separator()
         self.main_win.vocmenu.add_command(label="Populate from File...", command=self.trigger_populate_file)
         self.main_win.vocmenu.add_command(label="Populate from Web...")
@@ -93,26 +93,46 @@ class lct_controller():
         
 
     def display_data(self, event, word_object):
-        
+        self.main_win.word_header.configure(text=word_object.attributes["word"])
+        self.main_win.phonetics_label.configure(text=word_object.attributes["phonetics"])
+        self.main_win.pos_label.configure(text=word_object.attributes["pos"])
+        self.main_win.translation_label.configure(text=word_object.attributes["translation"])
+        self.main_win.example_label.configure(text=word_object.attributes["example_sentence"])
+        self.main_win.example_translation_label.configure(text=word_object.attributes["example_translation"])
         self.main_win.description.set_html(html=word_object.attributes["description"])
         img = word_object.attributes["related_image"]
         self.main_win.related_image.image = ImageTk.PhotoImage(img.resize((200, 200), Image.ANTIALIAS))
         self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')
-       
+        self.main_win.related_image.bind('<Double-Button-1>', lambda event, wo=word_object: self.update_related_image(event, wo))
         # DELETE BUTTON
         self.main_win.voc_buttons[1].configure(command=lambda word_id=word_object.attributes["word_id"]:self.trigger_del_word(word_id))
         
+        self.display_voc_info()
         # self.main_win.status.set("Ready...")
             
         
     def display_empty_data(self):
-
-        self.main_win.description.set_html(html="")
+        self.main_win.word_header.configure(text="-")
+        self.main_win.phonetics_label.configure(text="-")
+        self.main_win.pos_label.configure(text="-")
+        self.main_win.translation_label.configure(text="-")
+        self.main_win.example_label.configure(text="-")
+        self.main_win.example_translation_label.configure(text="-")
+        self.main_win.description.set_html(html="-")
         img = Image.new('RGB', (500, 1080), color=utils.random_rgb())
    
         self.main_win.related_image.image = ImageTk.PhotoImage(img)     
         self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')
 
+        self.display_voc_info()
+
+
+    def display_voc_info(self):
+        self.main_win.voc_name_label.configure(text=self.vocab.metadata["name"])
+        self.main_win.author_label.configure(text=self.vocab.metadata["author"])
+        self.main_win.trans_lang_label.configure(text=self.vocab.metadata["language"])
+        self.main_win.word_count.configure(text=str(len(self.vocab.vocabulary)))
+        self.main_win.voc_description.configure(text=self.vocab.metadata["notes"])
 
 
     def focus_object(self, tree_view, pos=0):
@@ -218,6 +238,14 @@ class lct_controller():
                 return word_object.attributes
     
     
+    def trigger_import(self):
+        temp_file = utils.open_file_dialog("excel_csv")
+
+        # if file ending contains xlsx take load_excel function
+        self.data_handler.load_excel(temp_file)
+
+        # else csv, take csv read function
+
 
     def trigger_populate_file(self):
         self.file_imp = file_importer()
@@ -226,7 +254,7 @@ class lct_controller():
     
 
     def file_loader(self):
-        self.temp_file = utils.open_file_dialog("excel")
+        self.temp_file = utils.open_file_dialog("excel_csv")
         self.file_imp.file_entry.insert(0, self.temp_file)
 
     
@@ -241,9 +269,10 @@ class data_controller():
         self.vocab = vocab
 
     def load_excel(self, excel_file):
-        wb = load_workbook(excel_file)
+        wb = load_workbook(excel_file, read_only=True)
         ws = wb.active
-        print(ws['A5'].value)
+        for row in ws.rows:
+            print(row[0].value)
     
 
     def load_csv(self, csv_file):

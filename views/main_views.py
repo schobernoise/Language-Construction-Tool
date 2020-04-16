@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from tk_html_widgets import HTMLLabel
 
+from controllers import utils
+
 from functools import partial
 
 class common_win:
@@ -65,7 +67,7 @@ class main_frame(common_win, tk.Toplevel):
         column_width=100
 
         self.word_list = ttk.Treeview(self.voc_tab)
-        self.word_list.grid(column=0, row=0,  rowspan=11, columnspan=4, sticky="wnse") 
+        self.word_list.grid(column=0, row=1,  rowspan=10, columnspan=4, sticky="wnse") 
         self.word_list["columns"]=("translation")
         self.word_list.column("translation", width=column_width)
         self.word_list.column("#0", width=column_width)
@@ -78,6 +80,14 @@ class main_frame(common_win, tk.Toplevel):
         self.style.map('Treeview', foreground=self.fixed_map('foreground'),
         background=self.fixed_map('background'))
 
+
+        ################## SEARCH BAR #############################
+
+        self.search_box = SearchBox(self.voc_tab, command=self.command, placeholder="Search for word", entry_highlightthickness=0)
+        self.search_box.grid(column=0, row=0, rowspan=1, columnspan=5, sticky="nsew")
+        
+        # for i in range(4):
+        #     self.search_box.columnconfigure(i, weight=1)
         
         #############################################################
         ######################## WORD FRAME #########################
@@ -185,6 +195,7 @@ class main_frame(common_win, tk.Toplevel):
         self.description_frame.grid(column=1, row=7, sticky="nsew")
         self.word_frame.grid(column=6, row=1, columnspan=5, rowspan=10, sticky="nsew")
 
+
             ############## SIDE BAR ###########################
             ##################################################
         
@@ -199,8 +210,8 @@ class main_frame(common_win, tk.Toplevel):
 
         ################ VOC INFO FRAME ##########################
 
-        self.voc_info_frame = tk.LabelFrame(self.main_win, text="Vocabulary Info")
-        self.voc_info_frame.grid(column=11, row=8, sticky="nsew", padx=5, pady=5)
+        self.voc_info_frame = tk.LabelFrame(self.voc_tab, text="Vocabulary Info")
+        self.voc_info_frame.grid(column=12, row=9, sticky="nsew", padx=5, pady=5)
 
         tk.Label(self.voc_info_frame, text="Vocabulary Name", font=("Consolas", 10,"bold")).grid(column=0, row=0, sticky="nw", padx=5, pady=5)
         self.voc_name_label = tk.Label(self.voc_info_frame, text="placeholder")
@@ -244,6 +255,10 @@ class main_frame(common_win, tk.Toplevel):
         elm[:2] != ('!disabled', '!selected')]
     
 
+    def command(self, text):
+        print("search command", "searching:%s"%text)
+    
+
 class new_vocabulary_form():
     def __init__(self):
         self.new_vocab_win = tk.Toplevel()
@@ -273,7 +288,132 @@ class new_vocabulary_form():
         self.submit_button = tk.Button(self.new_vocab_win, text="Create Vocabulary")
         self.submit_button.grid(row=len(self.entries), padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
 
+
+class Placeholder_State(object):
+     __slots__ = 'normal_color', 'normal_font', 'placeholder_text', 'placeholder_color', 'placeholder_font', 'contains_placeholder'
+
+def add_placeholder_to(entry, placeholder, color="grey", font=None):
+    normal_color = entry.cget("fg")
+    normal_font = entry.cget("font")
+    
+    if font is None:
+        font = normal_font
+
+    state = Placeholder_State()
+    state.normal_color=normal_color
+    state.normal_font=normal_font
+    state.placeholder_color=color
+    state.placeholder_font=font
+    state.placeholder_text = placeholder
+    state.contains_placeholder=True
+
+    def on_focusin(event, entry=entry, state=state):
+        if state.contains_placeholder:
+            entry.delete(0, "end")
+            entry.config(fg = state.normal_color, font=state.normal_font)
         
+            state.contains_placeholder = False
+
+    def on_focusout(event, entry=entry, state=state):
+        if entry.get() == '':
+            entry.insert(0, state.placeholder_text)
+            entry.config(fg = state.placeholder_color, font=state.placeholder_font)
+            
+            state.contains_placeholder = True
+
+    entry.insert(0, placeholder)
+    entry.config(fg = color, font=font)
+
+    entry.bind('<FocusIn>', on_focusin, add="+")
+    entry.bind('<FocusOut>', on_focusout, add="+")
+    
+    entry.placeholder_state = state
+
+    return state
+
+
+class SearchBox(tk.Frame):
+    def __init__(self, master, entry_width=30, entry_font=None, entry_background="white", entry_highlightthickness=1, button_text="Search", button_ipadx=10, button_background="#009688", button_foreground="white", button_font=None, opacity=0.8, placeholder=None, placeholder_font=None, placeholder_color="grey", spacing=3, command=None):
+        tk.Frame.__init__(self, master)
+        
+        self._command = command
+
+        self.entry = tk.Entry(self, width=entry_width, background=entry_background, highlightcolor=button_background, highlightthickness=entry_highlightthickness)
+        self.entry.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, ipady=1, padx=(0,spacing))
+        
+        if entry_font:
+            self.entry.configure(font=entry_font)
+
+        if placeholder:
+            add_placeholder_to(self.entry, placeholder, color=placeholder_color, font=placeholder_font)
+
+        self.entry.bind("<Escape>", lambda event: self.entry.nametowidget(".").focus())
+        self.entry.bind("<Return>", self._on_execute_command)
+
+        opacity = float(opacity)
+
+        if button_background.startswith("#"):
+            r,g,b = utils.hex2rgb(button_background)
+        else:
+            # Color name
+            r,g,b = master.winfo_rgb(button_background)
+
+        r = int(opacity*r)
+        g = int(opacity*g)
+        b = int(opacity*b)
+
+        if r <= 255 and g <= 255 and b <=255:
+            self._button_activebackground = '#%02x%02x%02x' % (r,g,b)
+        else:
+            self._button_activebackground = '#%04x%04x%04x' % (r,g,b)
+
+        self._button_background = button_background
+
+        self.button_label = tk.Label(self, text=button_text, background=button_background, foreground=button_foreground, font=button_font)
+        if entry_font:
+            self.button_label.configure(font=button_font)
+            
+        self.button_label.pack(side=tk.LEFT, fill=tk.Y, expand=True, ipadx=button_ipadx)
+        
+        self.button_label.bind("<Enter>", self._state_active)
+        self.button_label.bind("<Leave>", self._state_normal)
+
+        self.button_label.bind("<ButtonRelease-1>", self._on_execute_command)
+
+    def get_text(self):
+        entry = self.entry
+        if hasattr(entry, "placeholder_state"):
+            if entry.placeholder_state.contains_placeholder:
+                return ""
+            else:
+                return entry.get()
+        else:
+            return entry.get()
+        
+    def set_text(self, text):
+        entry = self.entry
+        if hasattr(entry, "placeholder_state"):
+            entry.placeholder_state.contains_placeholder = False
+
+        entry.delete(0, "END")
+        entry.insert(0, text)
+        
+    def clear(self):
+        self.entry_var.set("")
+        
+    def focus(self):
+        self.entry.focus()
+
+    def _on_execute_command(self, event):
+        text = self.get_text()
+        self._command(text)
+
+    def _state_normal(self, event):
+        self.button_label.configure(background=self._button_background)
+
+    def _state_active(self, event):
+        self.button_label.configure(background=self._button_activebackground)
+
 
 class new_word_form():
     def __init__(self, pos_list):

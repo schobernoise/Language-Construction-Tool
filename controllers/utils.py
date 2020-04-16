@@ -63,6 +63,7 @@ def convertToBinaryData(image_name):
                 log.error("UTILS: Reading Image failed")    
                 return ""
 
+
 def binary_to_image(blobData):
     if blobData == "":
         img = Image.new('RGB', (500, 1080), random_rgb())
@@ -70,6 +71,21 @@ def binary_to_image(blobData):
     else:
         return Image.open(io.BytesIO(blobData))
 
+
+def hex2rgb(str_rgb):
+    try:
+        rgb = str_rgb[1:]
+
+        if len(rgb) == 6:
+            r, g, b = rgb[0:2], rgb[2:4], rgb[4:6]
+        elif len(rgb) == 3:
+            r, g, b = rgb[0] * 2, rgb[1] * 2, rgb[2] * 2
+        else:
+            raise ValueError()
+    except:
+        raise ValueError("Invalid value %r provided for rgb color."% str_rgb)
+
+    return tuple(int(v, 16) for v in (r, g, b))
 
 
 def string_unify(db_name):
@@ -84,8 +100,9 @@ def open_file_dialog(file_type):
         file_types.append(("png files", "*.png"))
     elif file_type == "database":
         file_types.append(("DB files","*.db"))
-    elif file_type == "excel":
+    elif file_type == "excel_csv":
         file_types.append(("Excel files","*.xlsx"))
+        file_types.append(("CSV files","*.csv"))
     
     file_types.append(("all files","*.*"))
 

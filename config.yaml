@@ -1,2 +1,4 @@
 log_level: "DEBUG"
-part_of_speech: ["Noun", "Verb", "Participle", "Article", "Pronoun", "Preposition", "Adverb", "Conjunction"]
+part_of_speech: ["Noun", "Verb", "Adjective", "Adverb", "Pronoun", "Preposition", "Conjunction", "Interjection", "Article"]
+tool_tips: True
+
