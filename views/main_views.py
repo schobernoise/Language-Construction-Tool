@@ -93,7 +93,8 @@ class main_frame(common_win, tk.Toplevel):
         
         ################# POS CHOOSER ###############################
 
-        
+        # Spinbox for choosing Part of speech
+        # Elements also to add: All, Unassigned
 
         
         #############################################################
