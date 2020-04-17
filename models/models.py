@@ -5,8 +5,10 @@ from PIL import Image
 import io
 
 class voc_model():
-    def __init__(self):
-        pass
+    def __init__(self, conf):
+        self.word_attribute_headings = conf.conf["word_attributes"]
+        self.metadata_headings = conf.conf["vocabulary_metadata"]
+
 
     def load_db(self, db_file="", metadata=[], mode="load"):
         if db_file=="":
@@ -19,21 +21,22 @@ class voc_model():
 
         if mode == "create":
             sql_create_voc = '''CREATE TABLE VOCABULARY
-                                ([word_id] INTEGER PRIMARY KEY,
-                                [word] varchar(255) NOT NULL,
-                                [phonetics] varchar(255) NOT NULL,
-                                [translation] TEXT NOT NULL,
-                                [pos] varchar(255) NOT NULL,
-                                [example_sentence] TEXT NOT NULL,
-                                [example_translation] TEXT NOT NULL,
-                                [description] TEXT NOT NULL,
-                                [related_image] BLOB NOT NULL)'''
+                                ({} INTEGER PRIMARY KEY,
+                                {} varchar(255) NOT NULL,
+                                {} varchar(255) NOT NULL,
+                                {} TEXT NOT NULL,
+                                {} varchar(255) NOT NULL,
+                                {} TEXT NOT NULL,
+                                {} TEXT NOT NULL,
+                                {} TEXT NOT NULL,
+                                {} BLOB NOT NULL)'''.format(*self.word_attribute_headings)
+            
 
             sql_create_meta = ''' CREATE TABLE METADATA
-                                ([name] varchar(255),
-                                [author] varchar(255),
-                                [language] varchar(255),
-                                [notes] TEXT)'''
+                                ({} varchar(255),
+                                {} varchar(255),
+                                {} varchar(255),
+                                {} TEXT)'''.format(*self.metadata_headings)
 
             
             sql_insert_meta = '''INSERT INTO METADATA VALUES(?,?,?,?)'''
@@ -45,13 +48,12 @@ class voc_model():
             c.execute(sql_insert_meta, tuple(metadata))
             conn.commit()
 
-            self.metadata = {
-                            "name": metadata[0],
-                            "author": metadata[1],
-                            "language": metadata[2],
-                            "notes": metadata[3]
-                        }
+            # METADATA ASSIGNMENT
 
+            self.metadata = {}
+
+            for i, heading in enumerate(self.metadata_headings):
+                self.metadata[heading] = metadata[i]
             
         elif mode =="load":
             sql_load_voc = "SELECT * FROM VOCABULARY"
@@ -61,17 +63,15 @@ class voc_model():
             rows = c.fetchall()
             conn.commit()
             for row in rows:
-                self.vocabulary.append(word(
-                    word_id = row[0],
-                    word = row[1],
-                    phonetics = row[2],
-                    pos = row[3],
-                    translation = row[4],
-                    example_sentence = row[5],
-                    example_translation = row[6],
-                    description = row[7],
-                    related_image = utils.binary_to_image(row[8])
-                ))
+                word_args = {}
+                for i, value in enumerate(row):
+                    if self.word_attribute_headings[i] == "related_image":
+                        word_args[self.word_attribute_headings[i]] = utils.binary_to_image(value)
+                    else:
+                        word_args[self.word_attribute_headings[i]] = value
+
+                # print(word_args)
+                self.vocabulary.append(word(**word_args))
 
             sql_load_meta = "SELECT * FROM METADATA"
             
@@ -80,12 +80,10 @@ class voc_model():
             rows = c.fetchall()
             conn.commit()
 
-            self.metadata = {
-                        "name": rows[0][0],
-                        "author": rows[0][1],
-                        "language": rows[0][2],
-                        "notes": rows[0][3]
-                    }
+            self.metadata = {}
+            for i, heading in enumerate(self.metadata_headings):
+                self.metadata[heading] = rows[0][i]
+
 
     
     def update_word(self, id, column, value):
@@ -108,7 +106,6 @@ class voc_model():
         sql_insert_word_values = []
 
         sql_insert_new_word = '''INSERT INTO VOCABULARY
-                                (word, phonetics, pos, translation, example_sentence, example_translation, description, related_image)
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)'''
     
         
@@ -125,32 +122,42 @@ class voc_model():
         self.load_db()
     
 
-    def import_words_db(self, import_dict):
+    def import_words_from_file(self, import_dict):
         
-        sql_import_word = '''INSERT INTO VOCABULARY VALUES (?,?,?,?,?,?,?)'''
+        sql_import_word = '''INSERT INTO VOCABULARY ({},{},{},{},{},{},{},{})
+                        VALUES (?,?,?,?,?,?,?,?)'''.format(*self.word_attribute_headings[1:])
         conn = sqlite3.connect(self.db_file)
         c = conn.cursor()
 
         word_values = []
-        
+
         for imp_word in import_dict:
             temp_list = []
-            
-            for key, value in imp_word.items():
-                temp_list.append(value)
+            for heading in self.word_attribute_headings:
+                if heading != "word_id":
+                    try:
+                        temp_list.append(imp_word[heading])
+                    except:
+                        temp_list.append("-")
+
             word_values.append(tuple(temp_list))
-        try:
-            c.executemany(sql_import_word, word_values)
-            conn.commit()
-            log.debug("MODEL: Imported Word from File")
-        except:
-            log.error("MODEL: Importing Word from File failed")
+
+        print(word_values)
+
+        c.executemany(sql_import_word, word_values)
+        conn.commit()
+        # try:
+        #     c.executemany(sql_import_word, word_values)
+        #     conn.commit()
+        #     log.debug("MODEL: Imported Word from File")
+        # except:
+        #     log.error("MODEL: Importing Word from File failed")
          
         self.load_db()
 
     
     def delete_word(self, word_id):
-        print(word_id)
+        # print(word_id)
         conn = sqlite3.connect(self.db_file)
         c = conn.cursor()
         sql_del_word = '''DELETE FROM VOCABULARY WHERE [word_id] = ?'''

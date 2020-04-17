@@ -15,7 +15,7 @@ from views.main_views import *
 class lct_controller():
     def __init__(self, root, conf, start_up):
         self.conf = conf
-        self.vocab = voc_model()
+        self.vocab = voc_model(self.conf)
         self.main_win = main_frame(root)
         self.main_win.withdraw() 
         self.create_voc_menu()
@@ -30,7 +30,6 @@ class lct_controller():
             self.start_up = False
     
     def load_vocabulary(self, name="", db_file="", metadata=[]):
-        self.vocab = voc_model()
 
         if name != "" and metadata != [] and db_file == "":
             self.main_win.status.set("Creating new Vocabulary...")
@@ -56,7 +55,8 @@ class lct_controller():
     def display_vocabulary(self):
         self.main_win.word_list.delete(*self.main_win.word_list.get_children())
         for word_object in self.vocab.vocabulary:
-            self.main_win.word_list.insert("", "end", text=word_object.attributes["word"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
+            # print(word_object.attributes)
+            self.main_win.word_list.insert("", "end", text=word_object.attributes["transliteration"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
             self.main_win.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data(event, wo))
         try:
             self.focus_object(self.main_win.word_list)
@@ -93,7 +93,7 @@ class lct_controller():
         
 
     def display_data(self, event, word_object):
-        self.main_win.word_header.configure(text=word_object.attributes["word"])
+        self.main_win.word_header.configure(text=word_object.attributes["transliteration"])
         self.main_win.phonetics_label.configure(text=word_object.attributes["phonetics"])
         self.main_win.pos_label.configure(text=word_object.attributes["pos"])
         self.main_win.translation_label.configure(text=word_object.attributes["translation"])
@@ -285,7 +285,7 @@ class data_controller():
                         temp_word[heading] = row[i].value
                 import_dict.append(temp_word)
                 
-        self.vocab.import_words_db(import_dict)
+        self.vocab.import_words_from_file(import_dict)
 
             
 

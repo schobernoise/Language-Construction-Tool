@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 from tk_html_widgets import HTMLLabel
-
 from controllers import utils
 
 from functools import partial
@@ -84,10 +83,18 @@ class main_frame(common_win, tk.Toplevel):
         ################## SEARCH BAR #############################
 
         self.search_box = SearchBox(self.voc_tab, command=self.command, placeholder="Search for word", entry_highlightthickness=0)
-        self.search_box.grid(column=0, row=0, rowspan=1, columnspan=5, sticky="nsew")
+        self.search_box.grid(column=0, row=0, rowspan=1, columnspan=4, sticky="nsew")
         
-        # for i in range(4):
-        #     self.search_box.columnconfigure(i, weight=1)
+        for i in range(4):
+            self.search_box.columnconfigure(i, weight=1)
+            if i == 1:
+                self.search_box.rowconfigure(i, weight=1)
+        
+        
+        ################# POS CHOOSER ###############################
+
+        
+
         
         #############################################################
         ######################## WORD FRAME #########################
@@ -339,7 +346,7 @@ class SearchBox(tk.Frame):
         self._command = command
 
         self.entry = tk.Entry(self, width=entry_width, background=entry_background, highlightcolor=button_background, highlightthickness=entry_highlightthickness)
-        self.entry.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, ipady=1, padx=(0,spacing))
+        self.entry.grid(column=0, row=0, columnspan=3, rowspan=1, sticky="nsew")
         
         if entry_font:
             self.entry.configure(font=entry_font)
@@ -373,7 +380,7 @@ class SearchBox(tk.Frame):
         if entry_font:
             self.button_label.configure(font=button_font)
             
-        self.button_label.pack(side=tk.LEFT, fill=tk.Y, expand=True, ipadx=button_ipadx)
+        self.button_label.grid(column=3, row=0, columnspan=1, rowspan=1, sticky="nsew")
         
         self.button_label.bind("<Enter>", self._state_active)
         self.button_label.bind("<Leave>", self._state_normal)

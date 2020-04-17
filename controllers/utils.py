@@ -65,7 +65,7 @@ def convertToBinaryData(image_name):
 
 
 def binary_to_image(blobData):
-    if blobData == "":
+    if blobData == "" or blobData == "-":
         img = Image.new('RGB', (500, 1080), random_rgb())
         return img
     else:
