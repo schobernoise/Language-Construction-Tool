@@ -264,7 +264,6 @@ class lct_controller():
         self.file_imp.file_imp_win.destroy()
 
 
-
 class data_controller():
     def __init__(self, vocab):
         self.vocab = vocab
@@ -279,15 +278,13 @@ class data_controller():
                 for heading in row:
                     if heading.value != None:
                         headings.append(heading.value)
-                print(headings)
             else:
-                word = {}
+                temp_word = {}
                 for i, heading in enumerate(headings):
-                    
                     if row[i].value != None:
-                        word[heading] = row[i].value
-                    import_dict.append(word)
-        
+                        temp_word[heading] = row[i].value
+                import_dict.append(temp_word)
+                
         self.vocab.import_words_db(import_dict)
 
             
