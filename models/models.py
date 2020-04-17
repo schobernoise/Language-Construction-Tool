@@ -107,8 +107,6 @@ class voc_model():
     def save_word(self, form_contents):
         sql_insert_word_values = []
 
-
-        
         sql_insert_new_word = '''INSERT INTO VOCABULARY
                                 (word, phonetics, pos, translation, example_sentence, example_translation, description, related_image)
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)'''
@@ -125,6 +123,31 @@ class voc_model():
             log.error("MODEL: Inserting Word failed")
 
         self.load_db()
+    
+
+    def import_words_db(self, import_dict):
+        
+        # sql_import_word = '''INSERT INTO VOCABULARY VALUES (?,?,?,?,?,?,?)'''
+        # conn = sqlite3.connect(self.db_file)
+        # c = conn.cursor()
+
+        word_values = []
+
+        for imp_word in import_dict:
+            temp_list = []
+            print(imp_word)
+            for key, value in imp_word:
+                temp_list.append(value)
+            word_values.append(tuple(temp_list))
+
+        # try:
+        #     c.executemany(sql_import_word, word_values)
+        #     conn.commit()
+        #     log.debug("MODEL: Imported Word from File")
+        # except:
+        #     log.error("MODEL: Importing Word from File failed")
+         
+        # self.load_db()
 
     
     def delete_word(self, word_id):

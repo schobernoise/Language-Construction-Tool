@@ -243,6 +243,7 @@ class lct_controller():
 
         # if file ending contains xlsx take load_excel function
         self.data_handler.load_excel(temp_file)
+        self.display_vocabulary()
 
         # else csv, take csv read function
 
@@ -269,10 +270,28 @@ class data_controller():
         self.vocab = vocab
 
     def load_excel(self, excel_file):
-        wb = load_workbook(excel_file, read_only=True)
+        wb = load_workbook(excel_file)
         ws = wb.active
-        for row in ws.rows:
-            print(row[0].value)
+        import_dict = []
+        headings = []
+        for i, row in enumerate(ws.rows):
+            if i == 0:
+                for heading in row:
+                    if heading.value != None:
+                        headings.append(heading.value)
+                print(headings)
+            else:
+                word = {}
+                for i, heading in enumerate(headings):
+                    
+                    if row[i].value != None:
+                        word[heading] = row[i].value
+                    import_dict.append(word)
+        
+        self.vocab.import_words_db(import_dict)
+
+            
+
     
 
     def load_csv(self, csv_file):
