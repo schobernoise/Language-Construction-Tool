@@ -16,7 +16,9 @@ class lct_controller():
     def __init__(self, root, conf, start_up):
         self.conf = conf
         self.vocab = voc_model(self.conf)
-        self.main_win = main_frame(root)
+        self.display_data_functions = [self.display_data, self.display_empty_data]
+        self.main_win = main_frame(root, self.display_data_functions, self.vocab)
+        self.vocabulary_viewer_instances = [self.main_win.fixed_vocab_viewer]
         self.main_win.withdraw() 
         self.create_voc_menu()
         self.data_handler = data_controller(self.vocab)
@@ -28,7 +30,8 @@ class lct_controller():
         if self.start_up == True:
             self.load_vocabulary()
             self.start_up = False
-    
+        
+
     def load_vocabulary(self, name="", db_file="", metadata=[]):
 
         if name != "" and metadata != [] and db_file == "":
@@ -48,20 +51,8 @@ class lct_controller():
         
         self.main_win.status.set("Ready...")
 
-        self.display_vocabulary()
+        self.refresh_vocabulary()
         self.main_win.title("Language Construction Tool " + self.vocab.metadata["name"])
-        
-
-    def display_vocabulary(self):
-        self.main_win.word_list.delete(*self.main_win.word_list.get_children())
-        for word_object in self.vocab.vocabulary:
-            # print(word_object.attributes)
-            self.main_win.word_list.insert("", "end", text=word_object.attributes["transliteration"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
-            self.main_win.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data(event, wo))
-        try:
-            self.focus_object(self.main_win.word_list)
-        except IndexError:
-            self.display_empty_data()
         
     
     def create_voc_menu(self):
@@ -90,6 +81,7 @@ class lct_controller():
         # VOC BUTTONS
         
         self.main_win.voc_buttons[0].configure(command=self.trigger_new_word)
+        self.main_win.clone_button.configure(command=self.trigger_vocabulary_instance)
         
 
     def display_data(self, event, word_object):
@@ -135,11 +127,23 @@ class lct_controller():
         self.main_win.voc_description.configure(text=self.vocab.metadata["notes"])
 
 
-    def focus_object(self, tree_view, pos=0):
-        child_id = tree_view.get_children()[int(pos)]
-        tree_view.focus(child_id)
-        tree_view.selection_set(child_id)
-    
+    def refresh_vocabulary(self):
+        # create an array for all instances of the vocabulary viewer
+        # refresh all of them every time this function gets called
+        for voc_viewer in self.vocabulary_viewer_instances:
+            voc_viewer.display_vocabulary()
+
+
+    def trigger_vocabulary_instance(self):
+        vocab_win = tk.Toplevel()
+        vocab_win.maxsize(400, 1000)
+        vocab_win.title("LCT Vocab Viewer")
+        vocab_win.attributes('-topmost', True)
+        vocab_instance = vocab_viewer(vocab_win, self.display_data_functions, self.vocab)
+        self.vocabulary_viewer_instances.append(vocab_instance)
+        vocab_instance.pack(fill="both", expand=tk.YES)
+        self.refresh_vocabulary()
+
 
     def edit_description(self, event, word_object):
         self.desc_edit = tk.Toplevel()
@@ -162,14 +166,14 @@ class lct_controller():
                                 "description", 
                                 self.desc_text_edit.get("1.0",tk.END))
         self.desc_edit.destroy()
-        self.display_vocabulary()
+        self.refresh_vocabulary()
 
     
     def update_related_image(self, event, word_object):
         image_filename = utils.open_file_dialog("image")
         if image_filename != "":
             self.vocab.update_word(word_object.attributes["word_id"], "related_image", utils.convertToBinaryData(image_filename))  
-            self.display_vocabulary()
+            self.refresh_vocabulary()
         else:
             pass
 
@@ -186,7 +190,7 @@ class lct_controller():
             form_contents.append(entry[2].get())
         self.load_vocabulary(name=form_contents[0], metadata=form_contents)
         self.new_vocab.new_vocab_win.destroy()
-        self.display_vocabulary()
+        self.refresh_vocabulary()
         self.display_empty_data()
     
 
@@ -194,7 +198,7 @@ class lct_controller():
         self.main_win.status.set("Loading Vocabulary...")
         voc_filename = utils.open_file_dialog("database")
         self.load_vocabulary(db_file=voc_filename, metadata=[])
-        self.display_vocabulary()
+        self.refresh_vocabulary()
         self.display_empty_data()
 
 
@@ -223,13 +227,13 @@ class lct_controller():
         
         self.vocab.save_word(form_contents)
         self.new_word.new_word_win.destroy()
-        self.display_vocabulary()
+        self.refresh_vocabulary()
             
 
     def trigger_del_word(self, word_id):
         self.main_win.status.set("Deleting Word...")
         self.vocab.delete_word(word_id)
-        self.display_vocabulary()
+        self.refresh_vocabulary()
     
 
     def id_attributes(self, word_id):
@@ -243,7 +247,7 @@ class lct_controller():
 
         # if file ending contains xlsx take load_excel function
         self.data_handler.load_excel(temp_file)
-        self.display_vocabulary()
+        self.refresh_vocabulary()
 
         # else csv, take csv read function
 

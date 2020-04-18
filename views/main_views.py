@@ -13,9 +13,11 @@ class common_win:
         pass
 
 class main_frame(common_win, tk.Toplevel):
-    def __init__(self, master):
+    def __init__(self, master, display_data_functions, vocab):
         tk.Toplevel.__init__(self, master)
         super().__init__()
+        self.display_data_functions = display_data_functions
+        self.vocab = vocab
         self.main_win = master 
         self.protocol('WM_DELETE_WINDOW', self.main_win.destroy)
 
@@ -61,40 +63,20 @@ class main_frame(common_win, tk.Toplevel):
             self.voc_tab.columnconfigure(i, weight = 1)
             self.voc_tab.rowconfigure(i, weight = 1)
 
-        ################# TREE VIEW ############################
+        ################### VOCAB VIEWER ########################
 
-        column_width=100
+        self.fixed_vocab_viewer = vocab_viewer(self.voc_tab, self.display_data_functions, self.vocab)
+        self.fixed_vocab_viewer.grid(column=0, row=0, rowspan=10, columnspan=4, sticky="nsew")
 
-        self.word_list = ttk.Treeview(self.voc_tab)
-        self.word_list.grid(column=0, row=1,  rowspan=10, columnspan=4, sticky="wnse") 
-        self.word_list["columns"]=("translation")
-        self.word_list.column("translation", width=column_width)
-        self.word_list.column("#0", width=column_width)
-
-        self.word_list.heading("#0",text="Transliteration")
-        self.word_list.heading("translation",text="Translation")
-
-        ###### COLOR BUG FIX ###########
-        self.style = ttk.Style()
-        self.style.map('Treeview', foreground=self.fixed_map('foreground'),
-        background=self.fixed_map('background'))
-
-
-        ################## SEARCH BAR #############################
-
-        self.search_box = SearchBox(self.voc_tab, command=self.command, placeholder="Search for word", entry_highlightthickness=0)
-        self.search_box.grid(column=0, row=0, rowspan=1, columnspan=4, sticky="nsew")
+        for i in range(12):
+            self.fixed_vocab_viewer.rowconfigure(i, weight=1)
+            if i < 4:
+                self.fixed_vocab_viewer.columnconfigure(i, weight=1)
         
-        for i in range(4):
-            self.search_box.columnconfigure(i, weight=1)
-            if i == 1:
-                self.search_box.rowconfigure(i, weight=1)
-        
-        
-        ################# POS CHOOSER ###############################
+        ################# CLONE BUTTON ###########################
 
-        # Spinbox for choosing Part of speech
-        # Elements also to add: All, Unassigned
+        self.clone_button = tk.Button(self.voc_tab, text="Clone Vocabulary Viewer")
+        self.clone_button.grid(row=11, column=0, rowspan=1, columnspan=4, sticky="nsew")
 
         
         #############################################################
@@ -190,7 +172,7 @@ class main_frame(common_win, tk.Toplevel):
             button.grid(column=h, row=0, sticky="nsew", columnspan=2)
             h = h+2
         
-        self.button_frame.grid(column=0, row=11, rowspan=4, columnspan=4, sticky="nsew")
+        self.button_frame.grid(column=0, row=10, rowspan=1, columnspan=4, sticky="nsew")
         for i in range(4):
             self.button_frame.rowconfigure(i, weight=1)
             self.button_frame.columnconfigure(i, weight=1)
@@ -250,6 +232,75 @@ class main_frame(common_win, tk.Toplevel):
         self.status.set("Ready...")
     
 
+class vocab_viewer(tk.Frame):
+    def __init__(self, master, display_data_functions, vocab):
+        tk.Frame.__init__(self, master)
+        self.create_widgets()
+        self.display_data_functions = display_data_functions
+        self.vocab = vocab
+
+    
+    def create_widgets(self):
+
+        ################# TREE VIEW ############################
+
+        column_width=100
+
+        self.word_list = ttk.Treeview(self)
+        self.word_list.grid(column=0, row=2,  rowspan=10, columnspan=4, sticky="wnse") 
+        self.word_list["columns"]=("translation")
+        self.word_list.column("translation", width=column_width)
+        self.word_list.column("#0", width=column_width)
+
+        self.word_list.heading("#0",text="Transliteration")
+        self.word_list.heading("translation",text="Translation")
+
+        ###### COLOR BUG FIX ###########
+        self.style = ttk.Style()
+        self.style.map('Treeview', foreground=self.fixed_map('foreground'),
+        background=self.fixed_map('background'))
+
+        for i in range(12):
+            self.word_list.rowconfigure(i, weight=1)
+            if i < 4:
+                self.word_list.columnconfigure(i, weight=1)
+
+
+        ################## SEARCH BAR #############################
+
+        self.search_box = SearchBox(self, command=self.command, placeholder="Search for word", entry_highlightthickness=0)
+        self.search_box.grid(column=0, row=0, rowspan=1, columnspan=4, sticky="nsew")
+        
+        for i in range(4):
+            self.search_box.columnconfigure(i, weight=1)
+            if i == 1:
+                self.search_box.rowconfigure(i, weight=1)
+        
+        
+        ################# POS CHOOSER ###############################
+
+        self.pos_chooser = tk.Spinbox(self)
+        self.pos_chooser.grid(column=0, row=1, rowspan=1, columnspan=4, sticky="nsew")
+
+
+    def display_vocabulary(self):
+        self.word_list.delete(*self.word_list.get_children())
+        for word_object in self.vocab.vocabulary:
+            # print(word_object.attributes)
+            self.word_list.insert("", "end", text=word_object.attributes["transliteration"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
+            self.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data_functions[0](event, wo))
+        try:
+            self.focus_object(self.word_list)
+        except IndexError:
+            self.display_data_functions[1]()
+    
+
+    def focus_object(self, tree_view, pos=0):
+        child_id = tree_view.get_children()[int(pos)]
+        tree_view.focus(child_id)
+        tree_view.selection_set(child_id)
+
+    
     def fixed_map(self, option):
         # Fix for setting text colour for Tkinter 8.6.9
         # From: https://core.tcl.tk/tk/info/509cafafae
@@ -265,7 +316,7 @@ class main_frame(common_win, tk.Toplevel):
 
     def command(self, text):
         print("search command", "searching:%s"%text)
-    
+
 
 class new_vocabulary_form():
     def __init__(self):
@@ -472,7 +523,6 @@ class new_word_form():
         self.submit_button = tk.Button(self.new_word_win, text="Add New Word")
         self.submit_button.grid(row=len(self.entries)+3, padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
 
-       
 
 class file_importer():
     def __init__(self):
