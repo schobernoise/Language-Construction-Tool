@@ -71,6 +71,9 @@ class lct_controller():
         self.main_win.vocmenu.add_separator()
         self.main_win.vocmenu.add_command(label="Populate from File...", command=self.trigger_populate_file)
         self.main_win.vocmenu.add_command(label="Populate from Web...")
+        self.main_win.vocmenu.add_separator()
+        self.main_win.vocmenu.add_command(label="Edit word")
+
         
 
         # CON MENU
@@ -135,6 +138,9 @@ class lct_controller():
 
 
     def trigger_vocabulary_instance(self):
+        log.debug("Creating new Instance of Vocabulary Viewer.")
+        self.main_win.status.set("Creating new Instance of Vocabulary Viewer.")
+
         vocab_win = tk.Toplevel()
         vocab_win.minsize(300, 600)
         vocab_win.maxsize(400, 1024)
@@ -150,31 +156,8 @@ class lct_controller():
             if i < 4:
                 vocab_win.columnconfigure(i, weight=1)
                 vocab_instance.columnconfigure(i, weight=1)
-        self.refresh_vocabulary()
+        vocab_instance.display_vocabulary()
 
-
-    def edit_description(self, event, word_object):
-        self.desc_edit = tk.Toplevel()
-        self.desc_edit.geometry("300x300")
-        self.desc_edit.title("Edit Description")
-        self.desc_edit.resizable(0,0)
-        self.desc_edit.attributes('-topmost', True)
-
-        self.desc_text_edit = tk.Text(self.desc_edit, height=15, wrap=tk.WORD)
-        self.desc_text_edit.pack()
-        self.desc_text_edit.insert(tk.END, word_object.attributes["description"])
-
-        self.desc_edit.bind("<Control-s>", lambda event:self.close_description(event, word_object.attributes["word_id"]))
-
-        tk.Button(self.desc_edit, text="Submit", width=100, command=lambda event:self.close_description(event, word_object.attributes["word_id"])).pack(side="bottom")
-
-
-    def close_description(self, event, w_id):
-        self.vocab.update_word(w_id, 
-                                "description", 
-                                self.desc_text_edit.get("1.0",tk.END))
-        self.desc_edit.destroy()
-        self.refresh_vocabulary()
 
     
     def update_related_image(self, event, word_object):

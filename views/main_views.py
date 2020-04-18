@@ -239,8 +239,6 @@ class vocab_viewer(tk.Frame):
         self.display_data_functions = display_data_functions
         self.create_widgets()
         
-        
-
     
     def create_widgets(self):
 
@@ -270,7 +268,7 @@ class vocab_viewer(tk.Frame):
 
         ################## SEARCH BAR #############################
 
-        self.search_box = SearchBox(self, command=self.command, placeholder="Search for word", entry_highlightthickness=0)
+        self.search_box = SearchBox(self, command=self.display_vocabulary, placeholder="Search for word", entry_highlightthickness=0)
         self.search_box.grid(column=0, row=0, rowspan=1, columnspan=4, sticky="nsew")
         
         for i in range(4):
@@ -287,22 +285,25 @@ class vocab_viewer(tk.Frame):
 
         self.pos_chooser = tk.Spinbox(self, textvariable=pos_var, values=tuple(pos_chooser_list), command = self.display_vocabulary)
         self.pos_chooser.grid(column=0, row=1, rowspan=1, columnspan=4, sticky="nsew")
-        pos_var.set(pos_chooser_list[5])
+        pos_var.set(pos_chooser_list[0])
 
-        self.pos_chooser.bind("<<Increment>>", self.display_vocabulary)
-        self.pos_chooser.bind("<<Decrement>>", self.display_vocabulary)
+        for i in range(4):
+            self.pos_chooser.columnconfigure(i, weight=1)
+            if i == 1:
+                self.pos_chooser.rowconfigure(i, weight=1)
 
 
-    def display_vocabulary(self):
+    def display_vocabulary(self, text=""):
         self.word_list.delete(*self.word_list.get_children())
-        print(self.pos_chooser.get())
+        
         for word_object in self.vocab.vocabulary:
-            if word_object.attributes["pos"] == self.pos_chooser.get() or self.pos_chooser.get() == "all":
-                self.word_list.insert("", "end", text=word_object.attributes["transliteration"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
-                self.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data_functions[0](event, wo))
-            elif self.pos_chooser == "unassigned" and word_object.attributes["pos"] == "-":
-                self.word_list.insert("", "end", text=word_object.attributes["transliteration"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
-                self.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data_functions[0](event, wo))
+            if text in word_object.attributes["transliteration"] or text in word_object.attributes["translation"] or text == "":
+                if word_object.attributes["pos"] == self.pos_chooser.get() or self.pos_chooser.get() == "all":
+                    self.word_list.insert("", "end", text=word_object.attributes["transliteration"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
+                    self.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data_functions[0](event, wo))
+                elif self.pos_chooser == "unassigned" and word_object.attributes["pos"] == "-":
+                    self.word_list.insert("", "end", text=word_object.attributes["transliteration"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
+                    self.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data_functions[0](event, wo))
         try:
             self.focus_object(self.word_list)
         except IndexError:
@@ -328,8 +329,8 @@ class vocab_viewer(tk.Frame):
         elm[:2] != ('!disabled', '!selected')]
     
 
-    def command(self, text):
-        print("search command", "searching:%s"%text)
+    # def command(self, text):
+    #     print("search command", "searching:%s"%text)
 
 
 class new_vocabulary_form():

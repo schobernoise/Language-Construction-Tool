@@ -2,24 +2,9 @@
 
 **Recent Plans**
 
-- Make own class out of treeview sidebar, in its own frame
-- Make edit word Button
-- Implement a pos-chooser, like a spinbox or Combobox (test this)
-- Make the search work
-- Make Sorting work
+- Remodel Add Word and Edit Word Form
 
-
-**Undockable multiple Treeviews**
-
-- Make a Button, so a user can make multiple, free floating
-instances of the sidebar, to compare words and stuff
-- in each of the sidebars he can search and choose pos
-- Make a "Clone Floaty" Button
-
-- For this to work, the functions display vocabulary and
-display data has to be given as paramters in each instance,
-so they can use it on their own
-- especially so they can use the pos chooser and search bar
+- Make a plan for the Construction Tab
 
 
 **Image Imports**
@@ -38,3 +23,7 @@ if not, build it new.
 **Database builder**
 - Make own Database builder script
 - Makes the start.db at first start
+
+
+**Visualization Tab**
+- Tools to visualize the users vocabulary
