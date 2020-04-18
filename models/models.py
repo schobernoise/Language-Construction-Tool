@@ -8,6 +8,7 @@ class voc_model():
     def __init__(self, conf):
         self.word_attribute_headings = conf.conf["word_attributes"]
         self.metadata_headings = conf.conf["vocabulary_metadata"]
+        self.pos_list = conf.conf["part_of_speech"]
 
 
     def load_db(self, db_file="", metadata=[], mode="load"):

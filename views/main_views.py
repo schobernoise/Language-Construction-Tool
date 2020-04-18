@@ -235,9 +235,11 @@ class main_frame(common_win, tk.Toplevel):
 class vocab_viewer(tk.Frame):
     def __init__(self, master, display_data_functions, vocab):
         tk.Frame.__init__(self, master)
-        self.create_widgets()
-        self.display_data_functions = display_data_functions
         self.vocab = vocab
+        self.display_data_functions = display_data_functions
+        self.create_widgets()
+        
+        
 
     
     def create_widgets(self):
@@ -279,16 +281,28 @@ class vocab_viewer(tk.Frame):
         
         ################# POS CHOOSER ###############################
 
-        self.pos_chooser = tk.Spinbox(self)
+        
+        pos_chooser_list = ["all", "unassigned"] + self.vocab.pos_list
+        pos_var = tk.StringVar(self)
+
+        self.pos_chooser = tk.Spinbox(self, textvariable=pos_var, values=tuple(pos_chooser_list), command = self.display_vocabulary)
         self.pos_chooser.grid(column=0, row=1, rowspan=1, columnspan=4, sticky="nsew")
+        pos_var.set(pos_chooser_list[5])
+
+        self.pos_chooser.bind("<<Increment>>", self.display_vocabulary)
+        self.pos_chooser.bind("<<Decrement>>", self.display_vocabulary)
 
 
     def display_vocabulary(self):
         self.word_list.delete(*self.word_list.get_children())
+        print(self.pos_chooser.get())
         for word_object in self.vocab.vocabulary:
-            # print(word_object.attributes)
-            self.word_list.insert("", "end", text=word_object.attributes["transliteration"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
-            self.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data_functions[0](event, wo))
+            if word_object.attributes["pos"] == self.pos_chooser.get() or self.pos_chooser.get() == "all":
+                self.word_list.insert("", "end", text=word_object.attributes["transliteration"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
+                self.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data_functions[0](event, wo))
+            elif self.pos_chooser == "unassigned" and word_object.attributes["pos"] == "-":
+                self.word_list.insert("", "end", text=word_object.attributes["transliteration"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
+                self.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data_functions[0](event, wo))
         try:
             self.focus_object(self.word_list)
         except IndexError:

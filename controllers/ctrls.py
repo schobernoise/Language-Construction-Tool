@@ -136,12 +136,20 @@ class lct_controller():
 
     def trigger_vocabulary_instance(self):
         vocab_win = tk.Toplevel()
-        vocab_win.maxsize(400, 1000)
+        vocab_win.minsize(300, 600)
+        vocab_win.maxsize(400, 1024)
         vocab_win.title("LCT Vocab Viewer")
         vocab_win.attributes('-topmost', True)
         vocab_instance = vocab_viewer(vocab_win, self.display_data_functions, self.vocab)
         self.vocabulary_viewer_instances.append(vocab_instance)
-        vocab_instance.pack(fill="both", expand=tk.YES)
+        vocab_instance.grid(row=0, column=0, columnspan=4, rowspan=12, sticky="nsew")
+        
+        for i in range(12):
+            vocab_win.rowconfigure(i, weight=1)
+            vocab_instance.rowconfigure(i, weight=1)
+            if i < 4:
+                vocab_win.columnconfigure(i, weight=1)
+                vocab_instance.columnconfigure(i, weight=1)
         self.refresh_vocabulary()
 
 
