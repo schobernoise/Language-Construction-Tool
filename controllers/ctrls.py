@@ -132,6 +132,7 @@ class lct_controller():
     def refresh_vocabulary(self):
         # create an array for all instances of the vocabulary viewer
         # refresh all of them every time this function gets called
+        
         for voc_viewer in self.vocabulary_viewer_instances:
             voc_viewer.display_vocabulary()
 
