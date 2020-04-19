@@ -86,19 +86,18 @@ class voc_model():
                 self.metadata[heading] = rows[0][i]
 
 
-    
-    def update_word(self, id, column, value):
 
+    def update_word(self, form_contents, word_id):
         conn = sqlite3.connect(self.db_file)
-        sql_update_word = '''UPDATE VOCABULARY SET {} = ? WHERE word_id == ?'''.format(column)
-        c = conn.cursor()
-
         try:
-            c.execute(sql_update_word, (value, id))
-            conn.commit()
-            log.debug("MODEL: Updated Word ID {}, column {}, {}".format(id, column, value))
+            log.debug("MODEL: Updated Word ID {}").format(word_id)
+            for key, value in form_contents.items():
+                sql_update_word = '''UPDATE VOCABULARY SET {} = ? WHERE word_id == ?'''.format(key)
+                c = conn.cursor()
+                c.execute(sql_update_word, (value, word_id))
+                conn.commit()
         except:
-            log.error("MODEL: Updating Word ID {} failed".format(id))
+            log.error("MODEL: Updating Word ID {} failed".format(word_id))
          
         self.load_db()
         

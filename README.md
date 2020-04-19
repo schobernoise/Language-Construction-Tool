@@ -4,6 +4,8 @@
 
 - Remodel Add Word and Edit Word Form
 
+- Remodel Vocab Windows
+
 - Make a plan for the Construction Tab
 
 

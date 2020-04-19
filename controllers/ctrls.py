@@ -72,8 +72,6 @@ class lct_controller():
         self.main_win.vocmenu.add_command(label="Populate from File...", command=self.trigger_populate_file)
         self.main_win.vocmenu.add_command(label="Populate from Web...")
         self.main_win.vocmenu.add_separator()
-        self.main_win.vocmenu.add_command(label="Edit word")
-
         
 
         # CON MENU
@@ -88,6 +86,12 @@ class lct_controller():
         
 
     def display_data(self, event, word_object):
+        try:
+            self.main_win.vocmenu.delete("Edit Word")
+        except:
+            pass
+        self.main_win.vocmenu.add_command(label="Edit word", command=lambda wo=word_object:self.trigger_edit_word(wo))
+
         self.main_win.word_header.configure(text=word_object.attributes["transliteration"])
         self.main_win.phonetics_label.configure(text=word_object.attributes["phonetics"])
         self.main_win.pos_label.configure(text=word_object.attributes["pos"])
@@ -194,10 +198,10 @@ class lct_controller():
 
 
     def trigger_new_word(self):
-        self.main_win.status.set("Opening New Word Editor")
+        self.main_win.status.set("Opening Word Editor")
         self.temp_rel_image = ""
-        self.new_word = new_word_form(self.pos_list)
-        self.new_word.entries["rel_image"][2].configure(command=self.add_related_image)
+        self.new_word = word_form(self.pos_list)
+        self.new_word.entries["related_image"][2].configure(command=self.add_related_image)
         self.new_word.submit_button.configure(command=self.save_new_word)
         
 
@@ -209,15 +213,56 @@ class lct_controller():
         self.main_win.status.set("Saving New Word...")
         form_contents = []
         for name, entry in self.new_word.entries.items():
-            if name == "rel_image":
+            if name == "related_image":
                 form_contents.append(utils.convertToBinaryData(self.temp_rel_image))
             elif name == "description":
                 form_contents.append(entry[2].get("1.0",tk.END))
+            elif name == "pos":
+                form_contents[name] = self.new_word.default_pos.get()
             else:
                 form_contents.append(entry[2].get())
         
         self.vocab.save_word(form_contents)
-        self.new_word.new_word_win.destroy()
+        self.new_word.word_win.destroy()
+        self.refresh_vocabulary()
+    
+
+    def trigger_edit_word(self, word_object):
+        
+        self.main_win.status.set("Opening Word Editor")
+        self.temp_rel_image = ""
+        self.edit_word = word_form(self.pos_list)
+        self.edit_word.default_pos.set(word_object.attributes["pos"])
+        self.edit_word.entries["related_image"][2].configure(command=self.add_related_image)
+        self.edit_word.submit_button.configure(command=lambda w_id=word_object.attributes["word_id"]:self.update_edit_word(w_id))
+
+        for name, entry in self.edit_word.entries.items(): 
+            try:
+                if name != "description":
+                    entry[2].insert(0, word_object.attributes[name])
+                else:
+                    entry[2].insert(tk.END, word_object.attributes[name])
+            except:
+                pass
+
+
+    def update_edit_word(self, word_id):
+        self.main_win.status.set("Updating Word...")
+        form_contents = {}
+        for name, entry in self.edit_word.entries.items():
+            if name == "related_image":
+                if self.temp_rel_image != "":
+                    form_contents[name] = utils.convertToBinaryData(self.temp_rel_image)
+            elif name == "description":
+                form_contents[name] = entry[2].get("1.0",tk.END)
+            elif name == "pos":
+                form_contents[name] = self.edit_word.default_pos.get()
+            else:
+                print(name)
+                form_contents[name] = entry[2].get()
+        
+        self.vocab.update_word(form_contents, word_id)
+        self.edit_word.word_win.destroy()
         self.refresh_vocabulary()
             
 

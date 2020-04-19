@@ -63,6 +63,12 @@ def convertToBinaryData(image_name):
                 log.error("UTILS: Reading Image failed")    
                 return ""
 
+def check_user_input(input):
+    pass
+
+def check_image_input(image_input):
+    pass
+
 
 def binary_to_image(blobData):
     if blobData == "" or blobData == "-":

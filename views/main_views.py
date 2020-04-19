@@ -489,42 +489,42 @@ class SearchBox(tk.Frame):
         self.button_label.configure(background=self._button_activebackground)
 
 
-class new_word_form():
+class word_form():
     def __init__(self, pos_list):
         self.pos_list = pos_list
-        self.new_word_win = tk.Toplevel()
-        self.new_word_win.geometry("800x520")
-        self.new_word_win.title("Create New Word")
-        self.new_word_win.resizable(0,0)
-        self.new_word_win.attributes('-topmost', True)
+        self.word_win = tk.Toplevel()
+        self.word_win.geometry("800x520")
+        self.word_win.title("Word Editor")
+        self.word_win.resizable(0,0)
+        self.word_win.attributes('-topmost', True)
 
         self.create_widgets()
 
 
     def create_widgets(self):
         self.entries = {
-            "word" : ["Word Literal"],
+            "transliteration" : ["Word Literal"],
             "phonetics" : ["Phonetics"],
             "pos" : ["Part of Speech"],
             "translation" : ["Translation"],
             "example_sentence": ["Example Sentence"],
             "example_translation" : ["Example Translation"],
             "description" : ["Description"],
-            "rel_image" : ["Related Image"]
+            "related_image" : ["Related Image"]
                         }
         
         for name, entry in self.entries.items():
-            entry.append(tk.Label(self.new_word_win, text=entry[0], padx=10, pady=10))
+            entry.append(tk.Label(self.word_win, text=entry[0], padx=10, pady=10))
             if name == "description":
-                entry.append(tk.Text(self.new_word_win, height=10))
-            elif name == "phonetics":
-                self.default_pos = tk.StringVar(self.new_word_win)
+                entry.append(tk.Text(self.word_win, height=10))
+            elif name == "pos":
+                self.default_pos = tk.StringVar(self.word_win)
                 self.default_pos.set(self.pos_list[0]) # default value
-                entry.append(tk.OptionMenu(self.new_word_win, self.default_pos, *self.pos_list))
-            elif name == "rel_image":
-                entry.append(tk.Button(self.new_word_win, text="Choose File..."))
+                entry.append(tk.OptionMenu(self.word_win, self.default_pos, *self.pos_list))
+            elif name == "related_image":
+                entry.append(tk.Button(self.word_win, text="Choose File..."))
             else:
-                entry.append(tk.Entry(self.new_word_win))
+                entry.append(ttk.Entry(self.word_win, justify='center'))
             
         row = 0
         for name, entry in self.entries.items(): 
@@ -535,7 +535,7 @@ class new_word_form():
         
         ############### SUBMIT BUTTON #####################
 
-        self.submit_button = tk.Button(self.new_word_win, text="Add New Word")
+        self.submit_button = tk.Button(self.word_win, text="Submit")
         self.submit_button.grid(row=len(self.entries)+3, padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
 
 
