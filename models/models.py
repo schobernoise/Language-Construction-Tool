@@ -200,6 +200,8 @@ class voc_model():
         except:
             log.error("MODEL: Failed populating Database.")
 
+            # I will populate you bro
+
         
 
 
