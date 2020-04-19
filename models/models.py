@@ -160,14 +160,14 @@ class voc_model():
 
         print(word_values)
 
-        c.executemany(sql_import_word, word_values)
-        conn.commit()
-        # try:
-        #     c.executemany(sql_import_word, word_values)
-        #     conn.commit()
-        #     log.debug("MODEL: Imported Word from File")
-        # except:
-        #     log.error("MODEL: Importing Word from File failed")
+        # c.executemany(sql_import_word, word_values)
+        # conn.commit()
+        try:
+            c.executemany(sql_import_word, word_values)
+            conn.commit()
+            log.debug("MODEL: Imported Word from File")
+        except:
+            log.error("MODEL: Importing Word from File failed")
          
         self.load_db()
 
