@@ -100,6 +100,22 @@ class voc_model():
             log.error("MODEL: Updating Word ID {} failed".format(word_id))
          
         self.load_db()
+
+    
+    def update_vocabulary_metadata(self, form_contents):
+        conn = sqlite3.connect(self.db_file)
+        try:
+            log.debug("MODEL: Updated Vocabulary Metadata.")
+            for key, value in form_contents.items():
+                sql_update_word = '''UPDATE METADATA SET {} = ?'''.format(key)
+                c = conn.cursor()
+                c.execute(sql_update_word, (value,))
+                conn.commit()
+        except:
+            log.error("MODEL: Updating Vocabulary Metadata failed")
+         
+        self.load_db()
+    
         
     
     def save_word(self, form_contents):

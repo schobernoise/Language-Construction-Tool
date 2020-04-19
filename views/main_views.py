@@ -161,7 +161,7 @@ class main_frame(common_win, tk.Toplevel):
 
         self.button_frame = ttk.Frame(self.voc_tab)
 
-        voc_button_labels = ["add", "delete"]
+        voc_button_labels = ["add", "delete", "edit"]
         self.voc_buttons = []
 
         for label in voc_button_labels:
@@ -173,7 +173,7 @@ class main_frame(common_win, tk.Toplevel):
             h = h+2
         
         self.button_frame.grid(column=0, row=10, rowspan=1, columnspan=4, sticky="nsew")
-        for i in range(4):
+        for i in range(6):
             self.button_frame.rowconfigure(i, weight=1)
             self.button_frame.columnconfigure(i, weight=1)
 
@@ -265,10 +265,18 @@ class vocab_viewer(tk.Frame):
             if i < 4:
                 self.word_list.columnconfigure(i, weight=1)
 
+        ################ UPPER FRAME #####################
+
+        self.upper_frame = tk.Frame(self)
+        self.upper_frame.grid(row=0, column=0, rowspan=2, columnspan=4, sticky="nsew")
+
+        for i in range(4):
+            self.upper_frame.columnconfigure(i, weight=1)
+
 
         ################## SEARCH BAR #############################
 
-        self.search_box = SearchBox(self, command=self.display_vocabulary, placeholder="Search for word", entry_highlightthickness=0)
+        self.search_box = SearchBox(self.upper_frame, command=self.display_vocabulary, placeholder="Search for word", entry_highlightthickness=0)
         self.search_box.grid(column=0, row=0, rowspan=1, columnspan=4, sticky="nsew")
         
         for i in range(4):
@@ -283,7 +291,7 @@ class vocab_viewer(tk.Frame):
         pos_chooser_list = ["all", "unassigned"] + self.vocab.pos_list
         pos_var = tk.StringVar(self)
 
-        self.pos_chooser = tk.Spinbox(self, textvariable=pos_var, values=tuple(pos_chooser_list), command = self.display_vocabulary)
+        self.pos_chooser = tk.Spinbox(self.upper_frame, textvariable=pos_var, values=tuple(pos_chooser_list), command = self.display_vocabulary)
         self.pos_chooser.grid(column=0, row=1, rowspan=1, columnspan=4, sticky="nsew")
         pos_var.set(pos_chooser_list[0])
 
@@ -333,13 +341,12 @@ class vocab_viewer(tk.Frame):
     #     print("search command", "searching:%s"%text)
 
 
-class new_vocabulary_form():
+class edit_vocabulary_form():
     def __init__(self):
-        self.new_vocab_win = tk.Toplevel()
-        self.new_vocab_win.geometry("280x200")
-        self.new_vocab_win.title("New Vocabulary")
-        self.new_vocab_win.resizable(0,0)
-        self.new_vocab_win.attributes('-topmost', True)
+        self.edit_vocab_win = tk.Toplevel()
+        self.edit_vocab_win.title("New Vocabulary")
+        self.edit_vocab_win.resizable(0,0)
+        self.edit_vocab_win.attributes('-topmost', True)
         self.create_widgets()
     
 
@@ -352,14 +359,17 @@ class new_vocabulary_form():
                         }
         row = 0
         for name, entry in self.entries.items():
-            entry.append(tk.Label(self.new_vocab_win, text=entry[0], padx=10, pady=10))
-            entry.append(tk.Entry(self.new_vocab_win))
+            entry.append(tk.Label(self.edit_vocab_win, text=entry[0], padx=10, pady=10))
+            entry.append(ttk.Entry(self.edit_vocab_win, font=("Calibri 14"), justify='center'))
             for i, entropy in enumerate(entry):
                 if i != 0:
                     entropy.grid(row=row, column=i-1, sticky="nsew")
             row += 1
         
-        self.submit_button = tk.Button(self.new_vocab_win, text="Create Vocabulary")
+        for i in range(4):
+            self.edit_vocab_win.columnconfigure(i, weight=1)
+        
+        self.submit_button = tk.Button(self.edit_vocab_win, text="Submit Vocabulary")
         self.submit_button.grid(row=len(self.entries), padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
 
 
@@ -524,7 +534,7 @@ class word_form():
             elif name == "related_image":
                 entry.append(tk.Button(self.word_win, text="Choose File..."))
             else:
-                entry.append(ttk.Entry(self.word_win, justify='center'))
+                entry.append(ttk.Entry(self.word_win, justify='center', font=("Calibri 14")))
             
         row = 0
         for name, entry in self.entries.items(): 
@@ -535,7 +545,7 @@ class word_form():
         
         ############### SUBMIT BUTTON #####################
 
-        self.submit_button = tk.Button(self.word_win, text="Submit")
+        self.submit_button = tk.Button(self.word_win, text="Submit Word")
         self.submit_button.grid(row=len(self.entries)+3, padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
 
 

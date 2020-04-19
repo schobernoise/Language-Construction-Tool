@@ -45,7 +45,7 @@ class lct_controller():
             self.show_tooltips = False
         else:
             self.main_win.status.set("Loading Start Vocabulary")
-            db_file="data/start.db"
+            db_file=self.conf.conf["start_db"]
             self.vocab.load_db(db_file, mode="load")
             self.show_tooltips = True
         
@@ -66,12 +66,11 @@ class lct_controller():
 
         # VOC MENU
         self.main_win.menu.add_cascade(label="Vocabulary", menu=self.main_win.vocmenu)
-        self.main_win.vocmenu.add_command(label="Edit Info")
+        self.main_win.vocmenu.add_command(label="Edit Info", command=self.trigger_update_vocabulary)
         self.main_win.vocmenu.add_command(label="Import XLS/CSV", command=self.trigger_import)
         self.main_win.vocmenu.add_separator()
-        self.main_win.vocmenu.add_command(label="Populate from File...", command=self.trigger_populate_file)
+        self.main_win.vocmenu.add_command(label="Populate from Text...", command=self.trigger_populate_file)
         self.main_win.vocmenu.add_command(label="Populate from Web...")
-        self.main_win.vocmenu.add_separator()
         
 
         # CON MENU
@@ -86,11 +85,6 @@ class lct_controller():
         
 
     def display_data(self, event, word_object):
-        try:
-            self.main_win.vocmenu.delete("Edit Word")
-        except:
-            pass
-        self.main_win.vocmenu.add_command(label="Edit word", command=lambda wo=word_object:self.trigger_edit_word(wo))
 
         self.main_win.word_header.configure(text=word_object.attributes["transliteration"])
         self.main_win.phonetics_label.configure(text=word_object.attributes["phonetics"])
@@ -105,7 +99,8 @@ class lct_controller():
         self.main_win.related_image.bind('<Double-Button-1>', lambda event, wo=word_object: self.update_related_image(event, wo))
         # DELETE BUTTON
         self.main_win.voc_buttons[1].configure(command=lambda word_id=word_object.attributes["word_id"]:self.trigger_del_word(word_id))
-        
+        # EDIT BUTTON
+        self.main_win.voc_buttons[2].configure(command=lambda wo=word_object:self.trigger_edit_word(wo))
         self.display_voc_info()
         # self.main_win.status.set("Ready...")
             
@@ -174,9 +169,26 @@ class lct_controller():
 
     
     def trigger_new_vocabulary(self):
-        self.new_vocab = new_vocabulary_form()
+        self.new_vocab = edit_vocabulary_form()
         self.new_vocab.submit_button.configure(command=self.save_new_vocabulary)
+    
 
+    def trigger_update_vocabulary(self):
+        self.update_vocab = edit_vocabulary_form()
+        self.update_vocab.submit_button.configure(command=self.save_update_vocabulary)
+
+        for name, entry in self.update_vocab.entries.items():
+            entry[2].insert(0, self.vocab.metadata[name])
+    
+
+    def save_update_vocabulary(self):
+        self.main_win.status.set("Updating Vocabulary Metadata")
+        form_contents = {}
+        for name, entry in self.update_vocab.entries.items():
+            form_contents[name] = entry[2].get()
+        self.vocab.update_vocabulary_metadata(form_contents)
+        self.update_vocab.edit_vocab_win.destroy()
+        self.refresh_vocabulary()
 
     def save_new_vocabulary(self):
         self.main_win.status.set("Saving new Vocabulary")
@@ -184,7 +196,7 @@ class lct_controller():
         for name, entry in self.new_vocab.entries.items():
             form_contents.append(entry[2].get())
         self.load_vocabulary(name=form_contents[0], metadata=form_contents)
-        self.new_vocab.new_vocab_win.destroy()
+        self.new_vocab.edit_vocab_win.destroy()
         self.refresh_vocabulary()
         self.display_empty_data()
     
@@ -258,7 +270,6 @@ class lct_controller():
             elif name == "pos":
                 form_contents[name] = self.edit_word.default_pos.get()
             else:
-                print(name)
                 form_contents[name] = entry[2].get()
         
         self.vocab.update_word(form_contents, word_id)
@@ -327,9 +338,6 @@ class data_controller():
                 
         self.vocab.import_words_from_file(import_dict)
 
-            
-
-    
 
     def load_csv(self, csv_file):
         pass
