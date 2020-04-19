@@ -503,7 +503,7 @@ class word_form():
     def __init__(self, pos_list):
         self.pos_list = pos_list
         self.word_win = tk.Toplevel()
-        self.word_win.geometry("800x520")
+        
         self.word_win.title("Word Editor")
         self.word_win.resizable(0,0)
         self.word_win.attributes('-topmost', True)
