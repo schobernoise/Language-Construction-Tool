@@ -29,10 +29,12 @@ class main_frame(common_win, tk.Toplevel):
 
         ###########  BUILD GUI ##################
 
-        self.build_geruest()
+        self.build_tabs()
+        self.build_voc_tab()
+        self.build_con_tab()
 
     
-    def build_geruest(self):
+    def build_tabs(self):
 
         # BUILD MENU
         self.menu = tk.Menu(self.main_win)
@@ -62,6 +64,14 @@ class main_frame(common_win, tk.Toplevel):
             self.main_win.rowconfigure(i, weight = 1)
             self.voc_tab.columnconfigure(i, weight = 1)
             self.voc_tab.rowconfigure(i, weight = 1)
+            self.con_tab.columnconfigure(i, weight = 1)
+            self.con_tab.rowconfigure(i, weight = 1)
+    
+    ###################################################
+    # VOCABULARY TAB
+    #####################################################
+    
+    def build_voc_tab(self):
 
         ################### VOCAB VIEWER ########################
 
@@ -230,6 +240,24 @@ class main_frame(common_win, tk.Toplevel):
         self.status_bar = tk.Label(self.main_win, textvariable=self.status, anchor=tk.W, bd=1, relief=tk.SUNKEN)
         self.status_bar.grid(row=12, column=0, columnspan=12, rowspan=1, sticky="nwes")
         self.status.set("Ready...")
+
+
+    ###################################################
+    # CONSTRUCTION TAB
+    #####################################################
+
+    def build_con_tab(self):
+
+        self.table_frame = tk.Frame(self.con_tab)
+        self.table_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+
+        height = 10
+        width = 3
+        for i in range(height): #Rows
+            for j in range(width): #Columns
+                b = tk.Entry(self.table_frame, text="")
+                b.grid(row=i, column=j)
+        
     
 
 class vocab_viewer(tk.Frame):
