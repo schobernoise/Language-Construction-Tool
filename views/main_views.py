@@ -12,10 +12,12 @@ class common_win:
     def _quit(self):
         pass
 
+
 class main_frame(common_win, tk.Toplevel):
-    def __init__(self, master, display_data_functions, vocab):
+    def __init__(self, master, display_data_functions, vocab, conf):
         tk.Toplevel.__init__(self, master)
         super().__init__()
+        self.construction_config = conf.conf["construction_config"]
         self.display_data_functions = display_data_functions
         self.vocab = vocab
         self.main_win = master 
@@ -248,17 +250,80 @@ class main_frame(common_win, tk.Toplevel):
 
     def build_con_tab(self):
 
-        self.table_frame = tk.Frame(self.con_tab)
-        self.table_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        ################# TABLE ###############################
 
-        height = 10
-        width = 3
-        for i in range(height): #Rows
-            for j in range(width): #Columns
-                b = tk.Entry(self.table_frame, text="")
-                b.grid(row=i, column=j)
+        self.table_frame = tk.Frame(self.con_tab)
+        self.table_frame.grid(row=2, column=1, rowspan=10, columnspan=4, padx=10, pady=10, sticky="nsew")
+
+        height = self.construction_config["height"]
+        width = self.construction_config["width"]
+
+        # for i in range(height):
+        #     self.table_frame.rowconfigure(i, weight=1)
+
+        # for i in range(width):
+        #     self.table_frame.columnconfigure(i, weight=1)
+
+        self.table = []
+        k = 0
+        for j in range(height): #Rows
+            for i in range(width): #Columns
+                self.table.append(tk.Entry(self.table_frame, text="", justify="center"))
+                self.table[k].grid(row=i, column=j, sticky="nsew")
+                k += 1
+
+        ################# FRAMES #####################################
         
-    
+        self.parameters_frame = tk.Frame(self.con_tab) 
+        self.letters_frame = tk.LabelFrame(self.con_tab, text="Word components")
+        self.scale_frame = tk.LabelFrame(self.con_tab, text="Combination")
+        self.config_frame = tk.LabelFrame(self.con_tab, text="Configuration")
+
+        self.parameters_frame.grid(row=2, column=5, columnspan=5, sticky="nsew")
+        self.letters_frame.grid(row=2, column=5, sticky="nsew")
+        self.scale_frame.grid(row=3, column=5, sticky="nsew")
+        self.config_frame.grid(row=5, column=5, sticky="nsew")
+
+
+        #################### LETTER ENTRIES #############################
+
+        tk.Label(self.letters_frame, text="Consonants").grid(row=0, column=0, sticky="nsew")
+        self.cons_entry = tk.Entry(self.letters_frame)
+        self.cons_entry.grid(row=1, column=0, sticky="nsew")
+
+        tk.Label(self.letters_frame, text="Vowels").grid(row=2, column=0, sticky="nsew")
+        self.vow_entry = tk.Entry(self.letters_frame)
+        self.vow_entry.grid(row=3, column=0, sticky="nsew")
+
+        tk.Label(self.letters_frame, text="Special Characters").grid(row=4, column=0, sticky="nsew")
+        self.spec_entry = tk.Entry(self.letters_frame)
+        self.spec_entry.grid(row=5, column=0, sticky="nsew")
+
+
+        ################### SCALES #######################################
+
+        tk.Label(self.scale_frame, text="Consonants").grid(row=0, column=0, sticky="w")
+        self.cons_scale = tk.Scale(self.scale_frame, from_=0, to=99, tickinterval=20, orient=tk.HORIZONTAL)
+        self.cons_scale.grid(row=1, column=0, columnspan=4, sticky="nsew")
+
+        tk.Label(self.scale_frame, text="Vowels").grid(row=2, column=0, sticky="w")
+        self.vow_scale = tk.Scale(self.scale_frame, from_=0, to=99, tickinterval=20, orient=tk.HORIZONTAL)
+        self.vow_scale.grid(row=3, column=0, columnspan=4, sticky="nsew")
+
+        tk.Label(self.scale_frame, text="Special Characters").grid(row=4, column=0, sticky="w")
+        self.spec_scale = tk.Scale(self.scale_frame, from_=0, to=99, tickinterval=20, orient=tk.HORIZONTAL)
+        self.spec_scale.grid(row=5, column=0, columnspan=4, sticky="nsew")
+
+        ###################### CONFIGURATION ###############################
+
+        tk.Label(self.config_frame, text="Min. Size").grid(row=0, column=0, sticky="nsew")
+        self.minsize_entry = tk.Entry(self.config_frame)
+        self.minsize_entry.grid(row=0, column=1, sticky="nsew") 
+
+        tk.Label(self.config_frame, text="Max. Size").grid(row=1, column=0, sticky="nsew")
+        self.maxsize_entry = tk.Entry(self.config_frame)
+        self.maxsize_entry.grid(row=1, column=1, sticky="nsew") 
+        
 
 class vocab_viewer(tk.Frame):
     def __init__(self, master, display_data_functions, vocab):
@@ -292,6 +357,12 @@ class vocab_viewer(tk.Frame):
             self.word_list.rowconfigure(i, weight=1)
             if i < 4:
                 self.word_list.columnconfigure(i, weight=1)
+
+        ############# SCROLLBAR ########################
+        
+        self.vsb = ttk.Scrollbar(self, orient="vertical", command=self.word_list.yview)
+        self.vsb.grid(row=2, column=4, columnspan=1, rowspan=10, sticky="nsew")
+        self.word_list.configure(yscrollcommand=self.vsb.set)
 
         ################ UPPER FRAME #####################
 

@@ -1,84 +1,86 @@
 import numpy as np
+import random
 
-from lct import log
-from lct.utils import utils
 
-def gen_words(self, word_count=30, min_size=2, max_size=6):
+def gen_words(letter_parts, word_count=30, min_size=2, max_size=6):
         
         letters_list = np.random.randint(low = min_size, high = max_size, size = word_count)
         word = ""
+        gen_words_list = []
 
         for letter_num in letters_list:
                 prob = random.random()
-                word = ["a"] * letter_num
+                word = [" "] * letter_num
 
                 for i in range(len(word)):
                     # FIRST CHAR CHOOSER
                     if i == 0:
                         if prob <=  0.33:
-                            word[0] = random.choice(self.kons)
+                            word[0] = random.choice(letter_parts["consonants"])
 
                         elif prob > 0.33 and prob < 0.66:
-                            word[0] = random.choice(self.vo)
+                            word[0] = random.choice(letter_parts["vowels"])
 
                         elif prob >= 0.66:
-                            word[0] = random.choice(self.vospec)
+                            word[0] = random.choice(letter_parts["special_vowels"])
                     
                     else:
                         prob = random.random()  #Generate a new value for probability
 
                         # Char before WAS A KONS
-                        for char in self.kons:
+                        for char in letter_parts["consonants"]:
                             if char == word[i-1]:
 
                                 if prob <= 0.03:
-                                    word[i] = random.choice(self.vospec)
+                                    word[i] = random.choice(letter_parts["consonants"])
 
                                 if prob > 0.03 and prob < 0.95:
-                                    word[i] = random.choice(self.vospec)
+                                    word[i] = random.choice(letter_parts["vowels"])
 
 
                                 if prob >= 0.95:
-                                    word[i] = random.choice(self.kons)
+                                    word[i] = random.choice(letter_parts["special_vowels"])
 
                             else: 
                                 pass
 
                         # Char before WAS A SPECIAL VOWEL
-                        for char in self.vospec:
+                        for char in letter_parts["special_vowels"]:
                             if char == word[i-1]:
                                 # PROBABILITY FOR  SEPCIAL VOWEL: 1%
                                 if prob <= 0.01:
-                                    word[i] = random.choice(self.vo)
+                                    word[i] = random.choice(letter_parts["vowels"])
 
                                 # PROBABILITY FOR KONS: 97.4%
                                 if prob > 0.01 and prob < 0.975:
-                                    word[i] = random.choice(self.kons)
+                                    word[i] = random.choice(letter_parts["consonants"])
 
                                 # PROBABILITY FOR SPECIAL VOWEL: 2.5%
                                 if prob >= 0.975:
-                                    word[i] = random.choice(self.vospec)
+                                    word[i] = random.choice(letter_parts["special_vowels"])
 
                             else:
                                 pass
 
                         # Char before  WAS A VOWEL
-                        for char in self.vo:
+                        for char in letter_parts["vowels"]:
                             if char == word[i-1]:
                                 # PROBABILITY FOR  SEPCIAL VOWEL: 5%
                                 if prob <= 0.05:
-                                    word[i] = random.choice(self.vospec)
+                                    word[i] = random.choice(letter_parts["special_vowels"])
                                 # PROBABILITY FOR KONS: 90%
                                 if prob > 0.05 and prob < 0.95:
-                                    word[i] = random.choice(self.kons)
+                                    word[i] = random.choice(letter_parts["consonants"])
                                 # PROBABILITY FOR VOWEL: 5%
                                 if prob >= 0.95:
-                                    word[i] = random.choice(self.vo)
+                                    word[i] = random.choice(letter_parts["vowels"])
                             else:
                                 pass
 
                 word = "".join(word)
-                self.gen_words_list.append(word)
+                gen_words_list.append(word)
                 word = []
 
-        return self.gen_words_list
+        gen_words_set = list(set(gen_words_list))
+        return gen_words_set
+

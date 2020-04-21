@@ -6,8 +6,6 @@
 
 - BUG Edit Word: Image gets overwritten with ""
 
-- Make Scrollbar for Treeview
-
 - Make Related Image not change every reload: write color in db
 
 - Make a Populate from Text Window
@@ -22,8 +20,6 @@
 **Export Function**
 - Menu Point: Export Vocabulary as XLS/CSV/TXT
 - Menu Point: Pretty Print Vocabulary (Duden Style)
-
-
 
 
 **Construction Tab**

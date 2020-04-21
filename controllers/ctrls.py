@@ -9,6 +9,7 @@ from openpyxl import *
 from controllers import utils
 from controllers import log
 from models.models import voc_model
+from models import generators
 from views.main_views import *
 
 
@@ -17,11 +18,12 @@ class lct_controller():
         self.conf = conf
         self.vocab = voc_model(self.conf)
         self.display_data_functions = [self.display_data, self.display_empty_data]
-        self.main_win = main_frame(root, self.display_data_functions, self.vocab)
+        self.main_win = main_frame(root, self.display_data_functions, self.vocab, self.conf)
         self.vocabulary_viewer_instances = [self.main_win.fixed_vocab_viewer]
         self.main_win.withdraw() 
         self.create_voc_menu()
         self.data_handler = data_controller(self.vocab)
+        self.config_scales()
 
         self.pos_list = self.conf.conf["part_of_speech"]
 
@@ -55,6 +57,12 @@ class lct_controller():
         self.main_win.title("Language Construction Tool " + self.vocab.metadata["name"])
         
     
+    def config_scales(self):
+        self.main_win.cons_scale.configure(command=self.populate_wordlist)
+        self.main_win.vow_scale.configure(command=self.populate_wordlist)
+        self.main_win.spec_scale.configure(command=self.populate_wordlist)
+    
+
     def create_voc_menu(self):
 
         # FILEMENU
@@ -157,7 +165,6 @@ class lct_controller():
                 vocab_win.columnconfigure(i, weight=1)
                 vocab_instance.columnconfigure(i, weight=1)
         vocab_instance.display_vocabulary()
-
 
     
     def update_related_image(self, event, word_object):
@@ -314,6 +321,23 @@ class lct_controller():
     def save_populate_file(self):
         self.data_handler.load_excel(self.file_imp.file_entry.get())
         self.file_imp.file_imp_win.destroy()
+    
+
+    def populate_wordlist(self, value):
+        self.letter_parts = {}
+        self.letter_parts["consonants"] = self.conf.conf["consonants"]
+        self.letter_parts["special_vowels"] = self.conf.conf["special_vowels"]
+        self.letter_parts["vowels"] = self.conf.conf["vowels"]
+
+        self.generated_word_list = generators.gen_words(self.letter_parts, word_count=(self.conf.conf["construction_config"]["height"]*self.conf.conf["construction_config"]["width"])-1)
+
+        k = 0
+        for j in range(self.conf.conf["construction_config"]["height"]): #Rows
+            for i in range(self.conf.conf["construction_config"]["width"]): #Columns
+                self.main_win.table[k].delete(0, 'end')
+                self.main_win.table[k].insert(0, self.generated_word_list[k])
+                k += 1
+
 
 
 class data_controller():
@@ -342,6 +366,11 @@ class data_controller():
 
     def load_csv(self, csv_file):
         pass
+
+
+    
+
+
 
     
 
