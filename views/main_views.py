@@ -44,6 +44,7 @@ class main_frame(common_win, tk.Toplevel):
         self.filemenu = tk.Menu(self.menu, tearoff=0)
         self.vocmenu = tk.Menu(self.menu, tearoff=0)
         self.conmenu = tk.Menu(self.menu, tearoff=0)
+        self.helpmenu = tk.Menu(self.menu, tearoff=0)
         
         # #########################################
         # CREATE TABS
@@ -276,18 +277,18 @@ class main_frame(common_win, tk.Toplevel):
         
         self.parameters_frame = tk.Frame(self.con_tab) 
         self.letters_frame = tk.LabelFrame(self.parameters_frame, text="Word components")
-        self.scale_frame = tk.LabelFrame(self.parameters_frame, text="Combination")
+        self.combination_frame = tk.LabelFrame(self.parameters_frame, text="Combination")
         self.config_frame = tk.LabelFrame(self.parameters_frame, text="Configuration")
 
-        self.parameters_frame.grid(row=2, column=4, columnspan=6, sticky="nsew")
+        self.parameters_frame.grid(row=2, column=5, columnspan=6, sticky="nsew")
         self.letters_frame.grid(row=0, column=0, columnspan=6, sticky="nsew")
-        self.scale_frame.grid(row=3, column=0, columnspan=6, sticky="nsew")
-        self.config_frame.grid(row=5, column=0, columnspan=6, sticky="nsew")
+        self.combination_frame.grid(row=3, column=0, columnspan=6, sticky="nsew")
+        self.config_frame.grid(row=7, column=0, columnspan=6, sticky="nsew")
 
-        for i in range(6):
+        for i in range(10):
             self.parameters_frame.columnconfigure(i, weight=1)
             self.letters_frame.columnconfigure(i, weight=1)
-            self.scale_frame.columnconfigure(i, weight=1)
+            self.combination_frame.columnconfigure(i, weight=1)
             self.config_frame.columnconfigure(i, weight=1)
 
         #################### LETTER ENTRIES #############################
@@ -306,18 +307,33 @@ class main_frame(common_win, tk.Toplevel):
 
 
         ################### SCALES #######################################
+        tk.Label(self.combination_frame, text="Probability Distribution, based on Last Char").grid(row=0, column=0, sticky="w")
+        self.prob_frame = tk.Frame(self.combination_frame)
+        self.prob_frame.grid(row=1, column=0, sticky="nsew")
 
-        tk.Label(self.scale_frame, text="Consonants").grid(row=0, column=0, sticky="w")
-        self.cons_scale = tk.Scale(self.scale_frame, from_=0, to=99, tickinterval=20, orient=tk.HORIZONTAL)
-        self.cons_scale.grid(row=1, column=0, columnspan=4, sticky="nsew")
+        prob_entries = {}
+        prob_entries["cons"] = []
+        prob_entries["vow"] = []
+        prob_entries["spec"] = []
+        
+        tk.Label(self.prob_frame, text="Consonants", width=10, padx=5).grid(row=0, column=1, sticky="nsew")
+        tk.Label(self.prob_frame, text="CONS", font=("Calibri 10")).grid(row=1, column=0, sticky="nsew")
+        for i in range(3):
+            prob_entries["cons"].append(tk.Entry(self.prob_frame, width=5))
+            prob_entries["cons"][i].grid(row=i+1, column=1, sticky="nsew")
 
-        tk.Label(self.scale_frame, text="Vowels").grid(row=2, column=0, sticky="w")
-        self.vow_scale = tk.Scale(self.scale_frame, from_=0, to=99, tickinterval=20, orient=tk.HORIZONTAL)
-        self.vow_scale.grid(row=3, column=0, columnspan=4, sticky="nsew")
-
-        tk.Label(self.scale_frame, text="Special Characters").grid(row=4, column=0, sticky="w")
-        self.spec_scale = tk.Scale(self.scale_frame, from_=0, to=99, tickinterval=20, orient=tk.HORIZONTAL)
-        self.spec_scale.grid(row=5, column=0, columnspan=4, sticky="nsew")
+        tk.Label(self.prob_frame, text="Vowels", width=10, padx=5).grid(row=0, column=2, sticky="nsew")
+        tk.Label(self.prob_frame, text="VOW", font=("Calibri 10")).grid(row=2, column=0, sticky="nsew")
+        for i in range(3):
+            prob_entries["vow"].append(tk.Entry(self.prob_frame, width=5))
+            prob_entries["vow"][i].grid(row=i+1, column=2, sticky="nsew")
+        
+        
+        tk.Label(self.prob_frame, text="Spec. Characters", width=10, padx=5).grid(row=0, column=3, sticky="nsew")
+        tk.Label(self.prob_frame, text="SPEC", font=("Calibri 10")).grid(row=3, column=0, sticky="nsew")
+        for i in range(3):
+            prob_entries["spec"].append(tk.Entry(self.prob_frame, width=5))
+            prob_entries["spec"][i].grid(row=i+1, column=3, sticky="nsew")
 
         ###################### CONFIGURATION ###############################
 
@@ -328,6 +344,11 @@ class main_frame(common_win, tk.Toplevel):
         tk.Label(self.config_frame, text="Max. Size").grid(row=1, column=0, sticky="nsew")
         self.maxsize_entry = tk.Entry(self.config_frame, width=5)
         self.maxsize_entry.grid(row=1, column=1, sticky="nsew") 
+
+        #################### GERNATE ##########################
+
+        self.generate_button = tk.Button(self.parameters_frame, text="Generate Batch!")
+        self.generate_button.grid(row=10, column=0, columnspan=6, sticky="nsew")
     
 
 class vocab_viewer(tk.Frame):
@@ -456,6 +477,35 @@ class vocab_viewer(tk.Frame):
                 self.treeview_sort_column(tv, col, not reverse))
 
 
+class populate_from_text():
+    def __init__(self):
+        self.file_populate_win = tk.Toplevel()
+        self.file_populate_win.title("Populate Vocabulary from File")
+        self.file_populate_win.resizable(0,0)
+        self.file_populate_win.attributes('-topmost', True)
+        self.create_widgets()
+    
+
+    def create_widgets(self):
+
+        ########## FILE FRAME #################
+
+        self.file_frame = tk.LabelFrame(self.file_populate_win, text="Choose PDF-File")
+        self.file_frame.grid(row=0, column=0, sticky="nsew")
+        self.file_chooser = tk.Button(self.file_frame, text="Choose File...")
+        self.file_chooser.grid(row=0, column=0, sticky="nsew")
+        self.file_label = tk.Label(self.file_frame, text="...")
+        self.file_label.grid(row=1, column=0, sticky="nsew")
+
+
+        ############## CONFIGURATOR ##################
+
+        
+
+
+
+
+
 class edit_vocabulary_form():
     def __init__(self):
         self.edit_vocab_win = tk.Toplevel()
@@ -487,6 +537,9 @@ class edit_vocabulary_form():
         self.submit_button = tk.Button(self.edit_vocab_win, text="Submit Vocabulary")
         self.submit_button.grid(row=len(self.entries), padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
 
+
+# Thanks to Miguel Martínez for the Search Bar Class
+# http://code.activestate.com/recipes/580773-tkinter-search-box/
 
 class Placeholder_State(object):
      __slots__ = 'normal_color', 'normal_font', 'placeholder_text', 'placeholder_color', 'placeholder_font', 'contains_placeholder'

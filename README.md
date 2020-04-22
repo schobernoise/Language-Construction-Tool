@@ -2,18 +2,20 @@
 
 **Recent Plans**
 
-- Make Column Sorting Functions
-
-- Make Generate exactly as much words as needed
-
 - Make a Populate from Text Window
 
 - Make a populate from web Window
 
+
+- Make Column Sorting Functions
+
+- Make Generate exactly as much words as needed
+
+- Make Info Window
+
 - Make an "Open Recent Vocabulary" Menu Entry
 
-- Make a help Menu with Info
-
+- Asynchronous Tasks
 
 
 **Export Function**

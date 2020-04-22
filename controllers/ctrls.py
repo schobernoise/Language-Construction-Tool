@@ -5,9 +5,13 @@ from functools import partial
 from PIL import ImageTk, Image
 import io
 from openpyxl import *
+import PyPDF2 
+import textract
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk import *
 
-from controllers import utils
-from controllers import log
+from controllers import utils, log
 from models.models import voc_model
 from models import generators
 from views.main_views import *
@@ -23,7 +27,7 @@ class lct_controller():
         self.main_win.withdraw() 
         self.create_voc_menu()
         self.data_handler = data_controller(self.vocab)
-        self.config_scales()
+        self.construction_config()
 
         self.pos_list = self.conf.conf["part_of_speech"]
 
@@ -57,14 +61,23 @@ class lct_controller():
         self.main_win.title("Language Construction Tool " + self.vocab.metadata["name"])
         
     
-    def config_scales(self):
-        self.main_win.cons_entry.insert(0, self.conf.conf["consonants"])
-        self.main_win.vow_entry.insert(0, self.conf.conf["vowels"])
-        self.main_win.spec_entry.insert(0, self.conf.conf["special_vowels"])
+    def construction_config(self):
+        
+        for letter in self.conf.conf["consonants"]:
+            self.main_win.cons_entry.insert(0, letter)
+        for letter in self.conf.conf["vowels"]:
+            self.main_win.vow_entry.insert(0, letter)
+        for letter in self.conf.conf["special_vowels"]:
+            self.main_win.spec_entry.insert(0, letter)
 
-        self.main_win.cons_scale.configure(command=self.populate_wordlist)
-        self.main_win.vow_scale.configure(command=self.populate_wordlist)
-        self.main_win.spec_scale.configure(command=self.populate_wordlist)
+        self.main_win.minsize_entry.insert(0,str(2))
+        self.main_win.maxsize_entry.insert(0,str(6))
+
+        # self.main_win.cons_scale.configure(command=self.populate_wordlist)
+        # self.main_win.vow_scale.configure(command=self.populate_wordlist)
+        # self.main_win.spec_scale.configure(command=self.populate_wordlist)
+
+        self.main_win.generate_button.configure(command=self.populate_wordlist)
     
 
     def create_voc_menu(self):
@@ -72,7 +85,8 @@ class lct_controller():
         # FILEMENU
         self.main_win.menu.add_cascade(label="File", menu=self.main_win.filemenu)
         self.main_win.filemenu.add_command(label="Create new Vocabulary", command=self.trigger_new_vocabulary)
-        self.main_win.filemenu.add_command(label="Open Vocabulary", command=self.trigger_load_vocabulary)
+        self.main_win.filemenu.add_command(label="Open Vocabulary...", command=self.trigger_load_vocabulary)
+        self.main_win.filemenu.add_command(label="Open Recent")
         self.main_win.filemenu.add_separator()
         self.main_win.filemenu.add_command(label="Exit")
 
@@ -81,7 +95,7 @@ class lct_controller():
         self.main_win.vocmenu.add_command(label="Edit Info", command=self.trigger_update_vocabulary)
         self.main_win.vocmenu.add_command(label="Import XLS/CSV", command=self.trigger_import)
         self.main_win.vocmenu.add_separator()
-        self.main_win.vocmenu.add_command(label="Populate from Text...", command=self.trigger_populate_file)
+        self.main_win.vocmenu.add_command(label="Populate from Text...", command=self.trigger_populate_from_text)
         self.main_win.vocmenu.add_command(label="Populate from Web...")
         
 
@@ -89,6 +103,11 @@ class lct_controller():
         self.main_win.menu.add_cascade(label="Construction", menu=self.main_win.conmenu)
         self.main_win.conmenu.add_command(label="Export Batch...")
         self.main_win.conmenu.add_command(label="Feed File")
+
+        # HELP MENU
+        self.main_win.menu.add_cascade(label="Help", menu=self.main_win.helpmenu)
+        self.main_win.helpmenu.add_command(label="Open Documentation")
+        self.main_win.helpmenu.add_command(label="Info")
 
         # VOC BUTTONS
         
@@ -327,13 +346,16 @@ class lct_controller():
         self.file_imp.file_imp_win.destroy()
     
 
-    def populate_wordlist(self, value):
+    def populate_wordlist(self):
         self.letter_parts = {}
         self.letter_parts["consonants"] = self.main_win.cons_entry.get()
         self.letter_parts["special_vowels"] = self.main_win.spec_entry.get()
         self.letter_parts["vowels"] = self.main_win.vow_entry.get()
 
-        self.generated_word_list = generators.gen_words(self.letter_parts, word_count=(self.conf.conf["construction_config"]["height"]*self.conf.conf["construction_config"]["width"])-1)
+        self.generated_word_list = generators.gen_words(self.letter_parts, 
+                                            min_size=self.main_win.minsize_entry.get(), 
+                                            max_size=self.main_win.maxsize_entry.get(),
+                                            word_count=(self.conf.conf["construction_config"]["height"]*self.conf.conf["construction_config"]["width"])-1)
 
         k = 0
         for j in range(self.conf.conf["construction_config"]["width"]): #Rows
@@ -344,7 +366,20 @@ class lct_controller():
                 except:
                     pass
                 k += 1
+    
 
+    def trigger_populate_from_text(self):
+        self.population_window = populate_from_text()
+        self.population_window.file_chooser.configure(command=self.pdf_loader)
+    
+    def pdf_loader(self):
+        self.temp_file = utils.open_file_dialog("pdf")
+        if self.temp_file != "":
+            self.population_window.file_label.configure(text=self.temp_file)
+    
+
+    def save_populate_from_text(self):
+        pass
 
 
 class data_controller():
@@ -373,6 +408,53 @@ class data_controller():
 
     def load_csv(self, csv_file):
         pass
+
+    def pdf_extractor(self, filename, word_count=20, min_size=10, max_size=20 ):
+
+        #open allows you to read the file.
+        pdfFileObj = open(filename,'rb')
+        #The pdfReader variable is a readable object that will be parsed.
+        pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
+        #Discerning the number of pages will allow us to parse through all the pages.
+        num_pages = pdfReader.numPages
+        count = 0
+        text = ""
+        #The while loop will read each page.
+        while count < num_pages:
+            pageObj = pdfReader.getPage(count)
+            count +=1
+            text += pageObj.extractText()
+        #This if statement exists to check if the above library returned words. It's done because PyPDF2 cannot read scanned files.
+        if text != "":
+            text = text
+        #If the above returns as False, we run the OCR library textract to #convert scanned/image based PDF files into text.
+        else:
+            text = textract.process(fileurl, method='tesseract', language='de')
+        #Now we have a text variable that contains all the text derived from our PDF file. Type print(text) to see what it contains. It likely contains a lot of spaces, possibly junk such as '\n,' etc.
+        #Now, we will clean our text variable and return it as a list of keywords.
+
+        #The word_tokenize() function will break our text phrases into individual words.
+        tokens = word_tokenize(text)
+        
+        #We'll create a new list that contains punctuation we wish to clean.
+        punctuations = ['(',')',';',':','[',']',',']
+        #We initialize the stopwords variable, which is a list of words like "The," "I," "and," etc. that don't hold much value as keywords.
+        stop_words = stopwords.words('german') 
+        #We create a list comprehension that only returns a list of words that are NOT IN stop_words and NOT IN punctuations.
+        keywords = [word for word in tokens if not word in stop_words and not word in punctuations]
+
+        parametric_words = [w for w in keywords if len(w) > min_size and len(w) < max_size]
+
+        fdist1 = FreqDist(parametric_words)
+        fdist_counts = fdist1.most_common(word_count)
+
+        final_wordlist = []
+
+        for word in fdist_counts:
+            temp_list = list(word)
+            final_wordlist.append(temp_list[0])
+
+        return(final_wordlist)
 
 
     

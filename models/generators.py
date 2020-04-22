@@ -2,6 +2,7 @@ import numpy as np
 import random
 
 
+
 def gen_words(letter_parts, word_count=30, min_size=2, max_size=6):
         
         letters_list = np.random.randint(low = min_size, high = max_size, size = word_count)
