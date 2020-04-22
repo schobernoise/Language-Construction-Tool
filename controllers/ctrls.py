@@ -3,6 +3,8 @@ from tkinter import filedialog
 from tkinter import ttk
 from functools import partial
 from PIL import ImageTk, Image
+import numpy as np
+import random
 import io
 import openpyxl as oxl
 import PyPDF2 
@@ -10,10 +12,11 @@ import textract
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk import *
+from bs4 import BeautifulSoup
+import requests
 
 from controllers import utils, log
 from models.models import voc_model
-from models import generators
 from views.main_views import *
 
 
@@ -25,8 +28,8 @@ class lct_controller():
         self.main_win = main_frame(root, self.display_data_functions, self.vocab, self.conf)
         self.vocabulary_viewer_instances = [self.main_win.fixed_vocab_viewer]
         self.main_win.withdraw() 
+        self.data_handler = data_controller(self.vocab, self.conf)
         self.create_voc_menu()
-        self.data_handler = data_controller(self.vocab)
         self.construction_config()
 
         self.pos_list = self.conf.conf["part_of_speech"]
@@ -96,7 +99,10 @@ class lct_controller():
         self.main_win.vocmenu.add_command(label="Import XLS/CSV", command=self.trigger_xls_import)
         self.main_win.vocmenu.add_separator()
         self.main_win.vocmenu.add_command(label="Populate from Text...", command=self.trigger_populate_from_text)
-        self.main_win.vocmenu.add_command(label="Populate from Web...")
+        self.main_win.vocmenu.add_command(label="Populate from Web...", command=self.data_handler.get_words_from_web)
+        self.main_win.vocmenu.add_separator()
+        self.main_win.vocmenu.add_command(label="Export XLS/CSV/TXT")
+        self.main_win.vocmenu.add_command(label="Pretty Print PDF with LaTeX")
         
 
         # CON MENU
@@ -341,7 +347,7 @@ class lct_controller():
         self.letter_parts["special_vowels"] = self.main_win.spec_entry.get()
         self.letter_parts["vowels"] = self.main_win.vow_entry.get()
 
-        self.generated_word_list = generators.gen_words(self.letter_parts, 
+        self.generated_word_list = self.data_handler.gen_words(self.letter_parts, 
                                             min_size=self.main_win.minsize_entry.get(), 
                                             max_size=self.main_win.maxsize_entry.get(),
                                             word_count=(self.conf.conf["construction_config"]["height"]*self.conf.conf["construction_config"]["width"])-1)
@@ -389,8 +395,9 @@ class lct_controller():
 
 
 class data_controller():
-    def __init__(self, vocab):
+    def __init__(self, vocab, conf):
         self.vocab = vocab
+        self.conf = conf
 
     def load_excel(self, excel_file):
         wb = oxl.load_workbook(excel_file)
@@ -462,6 +469,105 @@ class data_controller():
 
         return(final_wordlist)
 
+
+    def gen_words(self, letter_parts, word_count=30, min_size=2, max_size=6):
+        
+        letters_list = np.random.randint(low = min_size, high = max_size, size = word_count)
+        word = ""
+        gen_words_list = []
+
+        for letter_num in letters_list:
+                prob = random.random()
+                word = [" "] * letter_num
+
+                for i in range(len(word)):
+                    # FIRST CHAR CHOOSER
+                    if i == 0:
+                        if prob <=  0.33:
+                            word[0] = random.choice(letter_parts["consonants"])
+
+                        elif prob > 0.33 and prob < 0.66:
+                            word[0] = random.choice(letter_parts["vowels"])
+
+                        elif prob >= 0.66:
+                            word[0] = random.choice(letter_parts["special_vowels"])
+                    
+                    else:
+                        prob = random.random()  #Generate a new value for probability
+
+                        # Char before WAS A KONS
+                        for char in letter_parts["consonants"]:
+                            if char == word[i-1]:
+
+                                if prob <= 0.03:
+                                    word[i] = random.choice(letter_parts["consonants"])
+
+                                elif prob > 0.03 and prob < 0.95:
+                                    word[i] = random.choice(letter_parts["vowels"])
+
+                                elif prob >= 0.95:
+                                    word[i] = random.choice(letter_parts["special_vowels"])
+
+                            else: 
+                                pass
+
+                        # Char before WAS A SPECIAL VOWEL
+                        for char in letter_parts["special_vowels"]:
+                            if char == word[i-1]:
+
+                                if prob <= 0.01:
+                                    word[i] = random.choice(letter_parts["vowels"])
+
+                                elif prob > 0.01 and prob < 0.975:
+                                    word[i] = random.choice(letter_parts["consonants"])
+
+                                elif prob >= 0.975:
+                                    word[i] = random.choice(letter_parts["special_vowels"])
+                            else:
+                                pass
+
+                        # Char before  WAS A VOWEL
+                        for char in letter_parts["vowels"]:
+                            if char == word[i-1]:
+
+                                if prob <= 0.05:
+                                    word[i] = random.choice(letter_parts["special_vowels"])
+
+                                elif prob > 0.05 and prob < 0.95:
+                                    word[i] = random.choice(letter_parts["consonants"])
+
+                                elif prob >= 0.95:
+                                    word[i] = random.choice(letter_parts["vowels"])
+                            else:
+                                pass
+
+                word = "".join(word)
+                gen_words_list.append(word)
+                word = []
+
+        gen_words_set = list(set(gen_words_list))
+        return gen_words_set
+
+    
+    def get_words_from_web(self):
+        scraper_websites = self.conf.conf["scraper_websites"]
+
+        headers = requests.utils.default_headers()
+        headers.update({ 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
+        
+        req = requests.get(scraper_websites[0], headers)
+        soup = BeautifulSoup(req.content, 'html.parser')
+        links = {}
+        output = soup.find_all("a", attrs={"style" : "color: #0000ff;"})
+
+        for link in output:
+            # print(link)
+            name = link.find("a").text
+            links[name] = link.get("href")
+
+        print(links)
+
+        # scrape_url = scraper_websites[0] + "1000-most-common-" + language + "-words/"
 
     
 

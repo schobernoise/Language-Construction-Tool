@@ -4,7 +4,6 @@
 
 - Make a populate from web Window
 
-
 - Make Column Sorting Functions
 
 - Make Generate exactly as much words as needed
@@ -42,6 +41,7 @@ but is inserted in an entry widget
 - There have not to be images for all words, but words for all images
 - Check this with import
 
+
 **Check Integrity Class**
 - On Startup, the integrity class checks all crucial modules
 - Database Check: Is the start.db in place and right,
@@ -61,6 +61,7 @@ if not, build it new.
 - Check images from the user if too big etc...
 - Add/Edit Word: Check for double entries, alert user
 - Import XLS: Check for double entries, alert user
+- Make user not able to type in more than need for EVERY Entry
 
 **API**
 - Make a CLI-script for API purposes
