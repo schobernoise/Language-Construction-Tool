@@ -190,21 +190,24 @@ class voc_model():
         self.load_db()
     
     
+    def populate_database(self, population_words):
+        temp_words = []
+        for word in population_words:
+            temp_words.append(("-","-","-",word,"-","-","-","-"))
 
-    def populate_database(self, population_words=()):
-        sql_populate_db = '''INSERT INTO VOCABULARY (word, phonetics, pos, translation, example_sentence, example_translation, description) VALUES (?, ?, ?, ?, ?, ?, ?)'''
+        sql_populate_db = '''INSERT INTO VOCABULARY ({},{},{},{},{},{},{},{})
+                        VALUES (?,?,?,?,?,?,?,?)'''.format(*self.word_attribute_headings[1:])
+        conn = sqlite3.connect(self.db_file)
         c = conn.cursor()
-
         try:
-            c.execute(sql_populate_db, population_words)
+            c.executemany(sql_populate_db, temp_words)
             conn.commit()
             log.debug("MODEL: Successfully populated Database.")
         except:
             log.error("MODEL: Failed populating Database.")
-
-            # I will populate you bro
-
         
+        self.load_db()
+
 
 
 class word():

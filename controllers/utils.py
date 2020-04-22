@@ -116,6 +116,8 @@ def open_file_dialog(file_type):
     elif file_type == "excel_csv":
         file_types.append(("Excel files","*.xlsx"))
         file_types.append(("CSV files","*.csv"))
+    elif file_type == "pdf":
+        file_types.append(("PDF files","*.pdf"))
     
     file_types.append(("all files","*.*"))
 

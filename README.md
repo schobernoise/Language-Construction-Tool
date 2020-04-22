@@ -2,8 +2,6 @@
 
 **Recent Plans**
 
-- Make a Populate from Text Window
-
 - Make a populate from web Window
 
 

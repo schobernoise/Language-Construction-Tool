@@ -494,15 +494,50 @@ class populate_from_text():
         self.file_frame.grid(row=0, column=0, sticky="nsew")
         self.file_chooser = tk.Button(self.file_frame, text="Choose File...")
         self.file_chooser.grid(row=0, column=0, sticky="nsew")
-        self.file_label = tk.Label(self.file_frame, text="...")
-        self.file_label.grid(row=1, column=0, sticky="nsew")
+        self.warning_label = tk.Label(self.file_frame, text="", foreground="red")
+        self.warning_label.grid(row=1, column=0, sticky="nsew")
 
 
         ############## CONFIGURATOR ##################
 
-        
+        self.config_frame = tk.LabelFrame(self.file_populate_win, text="Configure")
+        self.config_frame.grid(row=2, column=0, sticky="nsew")
 
+        self.config_var = tk.IntVar(self.file_populate_win)
+        self.config_var.set(1)
 
+        # OPTION 1
+
+        self.radio_one = tk.Radiobutton(self.config_frame, variable=self.config_var, value=1)
+        self.radio_one.grid(row=0, column=0, sticky="nsew")
+
+        tk.Label(self.config_frame, text="Pick the").grid(row=0, column=1, sticky="nsew")
+        self.wc_entry = tk.Entry(self.config_frame, width=4)
+        self.wc_entry.grid(row=0, column=2, sticky="nsew")
+        tk.Label(self.config_frame, text="most used words with min. length").grid(row=0, column=3, sticky="nsew")
+        self.min_entry = tk.Entry(self.config_frame, width=4)
+        self.min_entry.grid(row=0, column=4, sticky="nsew")
+        tk.Label(self.config_frame, text="and max. length").grid(row=0, column=5, sticky="nsew")
+        self.max_entry = tk.Entry(self.config_frame, width=4)
+        self.max_entry.grid(row=0, column=6, sticky="nsew")
+
+        # OPTION 2
+
+        # self.radio_two = tk.Radiobutton(self.config_frame, variable=self.config_var, value=2)
+        # self.radio_two.grid(row=1, column=0, sticky="nsew")
+
+        # tk.Label(self.config_frame, text="Pick the").grid(row=1, column=1, sticky="nsew")
+        # self.wc_entry = tk.Entry(self.config_frame, width=4)
+        # self.wc_entry.grid(row=1, column=2, sticky="nsew")
+        # tk.Label(self.config_frame, text="most used words with min. length").grid(row=1, column=3, sticky="nsew")
+        # self.min_entry = tk.Entry(self.config_frame, width=4)
+        # self.min_entry.grid(row=1, column=4, sticky="nsew")
+        # tk.Label(self.config_frame, text="and max. length").grid(row=1, column=5, sticky="nsew")
+        # self.max_entry = tk.Entry(self.config_frame, width=4)
+        # self.max_entry.grid(row=1, column=6, sticky="nsew")
+
+        self.analyze_button = tk.Button(self.file_populate_win, text="Analyze Text!")
+        self.analyze_button.grid(row=3, column=0, sticky="nsew")
 
 
 

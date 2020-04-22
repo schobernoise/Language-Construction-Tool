@@ -4,7 +4,7 @@ from tkinter import ttk
 from functools import partial
 from PIL import ImageTk, Image
 import io
-from openpyxl import *
+import openpyxl as oxl
 import PyPDF2 
 import textract
 from nltk.tokenize import word_tokenize
@@ -73,11 +73,11 @@ class lct_controller():
         self.main_win.minsize_entry.insert(0,str(2))
         self.main_win.maxsize_entry.insert(0,str(6))
 
-        # self.main_win.cons_scale.configure(command=self.populate_wordlist)
-        # self.main_win.vow_scale.configure(command=self.populate_wordlist)
-        # self.main_win.spec_scale.configure(command=self.populate_wordlist)
+        # self.main_win.cons_scale.configure(command=self.generate_wordlist)
+        # self.main_win.vow_scale.configure(command=self.generate_wordlist)
+        # self.main_win.spec_scale.configure(command=self.generate_wordlist)
 
-        self.main_win.generate_button.configure(command=self.populate_wordlist)
+        self.main_win.generate_button.configure(command=self.generate_wordlist)
     
 
     def create_voc_menu(self):
@@ -93,7 +93,7 @@ class lct_controller():
         # VOC MENU
         self.main_win.menu.add_cascade(label="Vocabulary", menu=self.main_win.vocmenu)
         self.main_win.vocmenu.add_command(label="Edit Info", command=self.trigger_update_vocabulary)
-        self.main_win.vocmenu.add_command(label="Import XLS/CSV", command=self.trigger_import)
+        self.main_win.vocmenu.add_command(label="Import XLS/CSV", command=self.trigger_xls_import)
         self.main_win.vocmenu.add_separator()
         self.main_win.vocmenu.add_command(label="Populate from Text...", command=self.trigger_populate_from_text)
         self.main_win.vocmenu.add_command(label="Populate from Web...")
@@ -320,7 +320,7 @@ class lct_controller():
                 return word_object.attributes
     
     
-    def trigger_import(self):
+    def trigger_xls_import(self):
         temp_file = utils.open_file_dialog("excel_csv")
 
         # if file ending contains xlsx take load_excel function
@@ -329,24 +329,13 @@ class lct_controller():
 
         # else csv, take csv read function
 
-
-    def trigger_populate_file(self):
-        self.file_imp = file_importer()
-        self.file_imp.file_button.configure(command=self.file_loader)
-        self.file_imp.submit_button.configure(command=self.save_populate_file)
     
-
-    def file_loader(self):
-        self.temp_file = utils.open_file_dialog("excel_csv")
-        self.file_imp.file_entry.insert(0, self.temp_file)
-
-    
-    def save_populate_file(self):
+    def save_populate_xls(self):
         self.data_handler.load_excel(self.file_imp.file_entry.get())
         self.file_imp.file_imp_win.destroy()
     
 
-    def populate_wordlist(self):
+    def generate_wordlist(self):
         self.letter_parts = {}
         self.letter_parts["consonants"] = self.main_win.cons_entry.get()
         self.letter_parts["special_vowels"] = self.main_win.spec_entry.get()
@@ -366,20 +355,37 @@ class lct_controller():
                 except:
                     pass
                 k += 1
-    
 
     def trigger_populate_from_text(self):
+        self.temp_file = ""
         self.population_window = populate_from_text()
+        self.population_window.wc_entry.insert(0, 20)
+        self.population_window.min_entry.insert(0, 7)
+        self.population_window.max_entry.insert(0, 15)
         self.population_window.file_chooser.configure(command=self.pdf_loader)
+        self.population_window.analyze_button.configure(command=self.save_populate_from_text)
     
+
     def pdf_loader(self):
         self.temp_file = utils.open_file_dialog("pdf")
         if self.temp_file != "":
-            self.population_window.file_label.configure(text=self.temp_file)
+            self.population_window.file_chooser.configure(text=self.temp_file)
     
 
     def save_populate_from_text(self):
-        pass
+        if self.temp_file != "":
+            if self.population_window.config_var.get() == 1:
+                population_words = self.data_handler.pdf_extractor(self.temp_file, 
+                            word_count=int(self.population_window.wc_entry.get()),
+                            min_size=int(self.population_window.min_entry.get()),
+                            max_size=int(self.population_window.max_entry.get())
+                            )
+            
+            self.vocab.populate_database(population_words)
+            self.population_window.file_populate_win.destroy()
+            self.refresh_vocabulary()
+        else:
+            self.population_window.warning_label.configure(text="Please choose a File!")
 
 
 class data_controller():
@@ -387,7 +393,7 @@ class data_controller():
         self.vocab = vocab
 
     def load_excel(self, excel_file):
-        wb = load_workbook(excel_file)
+        wb = oxl.load_workbook(excel_file)
         ws = wb.active
         import_dict = []
         headings = []
