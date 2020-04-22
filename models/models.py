@@ -86,11 +86,10 @@ class voc_model():
                 self.metadata[heading] = rows[0][i]
 
 
-
     def update_word(self, form_contents, word_id):
         conn = sqlite3.connect(self.db_file)
         try:
-            log.debug("MODEL: Updated Word ID {}").format(word_id)
+            log.debug("MODEL: Updated Word ID {}".format(word_id))
             for key, value in form_contents.items():
                 sql_update_word = '''UPDATE VOCABULARY SET {} = ? WHERE word_id == ?'''.format(key)
                 c = conn.cursor()
@@ -121,10 +120,13 @@ class voc_model():
     def save_word(self, form_contents):
         sql_insert_word_values = []
 
-        sql_insert_new_word = '''INSERT INTO VOCABULARY
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?)'''
+        for key, value in form_contents.items():
+            sql_insert_word_values.append(value)
+
+
+        sql_insert_new_word = '''INSERT INTO VOCABULARY ({},{},{},{},{},{},{},{})
+                                VALUES (?,?,?,?,?,?,?,?)'''.format(*self.word_attribute_headings[1:])
     
-        
         conn = sqlite3.connect(self.db_file)
         c = conn.cursor()
 

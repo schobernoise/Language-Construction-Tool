@@ -1,3 +1,5 @@
+# -*- coding: iso-8859-1 -*-
+
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
@@ -16,8 +18,8 @@ from controllers import log
 def read_yaml(yamlfile):
     """expects path/file"""
     try:
-        with open(str(yamlfile), "r") as fyamlfile:
-            return yaml.load(fyamlfile, Loader=yaml.SafeLoader)
+        with open(str(yamlfile), "r", encoding = "utf-8") as fyamlfile:
+            return yaml.safe_load(fyamlfile)
     except IOError as errio:
         log.error("Can't find %s.", yamlfile)
         #raise errio
@@ -52,7 +54,11 @@ def string_to_list(string_list):
 def convertToBinaryData(image_name):
         #Convert digital data to binary format
         if image_name == "":
-            return ""
+            img = Image.new('RGB', (200, 200), random_rgb())
+            with io.BytesIO() as output:
+                img.save(output, format="JPEG")
+                blobData = output.getvalue()
+            return blobData
         else:
             try:
                 with open(image_name, 'rb') as file:
@@ -62,6 +68,7 @@ def convertToBinaryData(image_name):
             except:
                 log.error("UTILS: Reading Image failed")    
                 return ""
+
 
 def check_user_input(input):
     pass

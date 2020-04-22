@@ -58,6 +58,10 @@ class lct_controller():
         
     
     def config_scales(self):
+        self.main_win.cons_entry.insert(0, self.conf.conf["consonants"])
+        self.main_win.vow_entry.insert(0, self.conf.conf["vowels"])
+        self.main_win.spec_entry.insert(0, self.conf.conf["special_vowels"])
+
         self.main_win.cons_scale.configure(command=self.populate_wordlist)
         self.main_win.vow_scale.configure(command=self.populate_wordlist)
         self.main_win.spec_scale.configure(command=self.populate_wordlist)
@@ -231,16 +235,16 @@ class lct_controller():
 
     def save_new_word(self):
         self.main_win.status.set("Saving New Word...")
-        form_contents = []
+        form_contents = {}
         for name, entry in self.new_word.entries.items():
             if name == "related_image":
-                form_contents.append(utils.convertToBinaryData(self.temp_rel_image))
+                form_contents[name] = utils.convertToBinaryData(self.temp_rel_image)
             elif name == "description":
-                form_contents.append(entry[2].get("1.0",tk.END))
+                form_contents[name] = entry[2].get("1.0",tk.END)
             elif name == "pos":
                 form_contents[name] = self.new_word.default_pos.get()
             else:
-                form_contents.append(entry[2].get())
+                form_contents[name] = entry[2].get()
         
         self.vocab.save_word(form_contents)
         self.new_word.word_win.destroy()
@@ -325,17 +329,20 @@ class lct_controller():
 
     def populate_wordlist(self, value):
         self.letter_parts = {}
-        self.letter_parts["consonants"] = self.conf.conf["consonants"]
-        self.letter_parts["special_vowels"] = self.conf.conf["special_vowels"]
-        self.letter_parts["vowels"] = self.conf.conf["vowels"]
+        self.letter_parts["consonants"] = self.main_win.cons_entry.get()
+        self.letter_parts["special_vowels"] = self.main_win.spec_entry.get()
+        self.letter_parts["vowels"] = self.main_win.vow_entry.get()
 
         self.generated_word_list = generators.gen_words(self.letter_parts, word_count=(self.conf.conf["construction_config"]["height"]*self.conf.conf["construction_config"]["width"])-1)
 
         k = 0
-        for j in range(self.conf.conf["construction_config"]["height"]): #Rows
-            for i in range(self.conf.conf["construction_config"]["width"]): #Columns
+        for j in range(self.conf.conf["construction_config"]["width"]): #Rows
+            for i in range(self.conf.conf["construction_config"]["height"]): #Columns
                 self.main_win.table[k].delete(0, 'end')
-                self.main_win.table[k].insert(0, self.generated_word_list[k])
+                try:
+                    self.main_win.table[k].insert(0, self.generated_word_list[k])
+                except:
+                    pass
                 k += 1
 
 

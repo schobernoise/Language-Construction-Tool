@@ -4,9 +4,7 @@
 
 - Make Column Sorting Functions
 
-- BUG Edit Word: Image gets overwritten with ""
-
-- Make Related Image not change every reload: write color in db
+- Make Generate exactly as much words as needed
 
 - Make a Populate from Text Window
 
@@ -15,6 +13,7 @@
 - Make an "Open Recent Vocabulary" Menu Entry
 
 - Make a help Menu with Info
+
 
 
 **Export Function**
@@ -29,6 +28,13 @@ a custom list.
 - The list gets read and written in the config.yaml,
 but is inserted in an entry widget
 
+**Word Generation**
+-  Härtegrad der Betonung (B, P) (C,Z)
+	
+-  Öffnung des mundes (M, N, O)
+
+-  Schärfegrad (des Zischens) (S, Z, C)
+
 **Image Imports**
 
 - User can place images in a folder called "related_images" next to the excel sheet
@@ -40,7 +46,7 @@ but is inserted in an entry widget
 - On Startup, the integrity class checks all crucial modules
 - Database Check: Is the start.db in place and right,
 if not, build it new.
-- Also for the config file
+- Also for the config file, it has to build it on first startup
 
 **Database builder**
 - Make own Database builder script

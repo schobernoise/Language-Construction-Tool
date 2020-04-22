@@ -1,10 +1,11 @@
-log_level: "DEBUG"
-part_of_speech: ["Noun", "Verb", "Adjective", "Adverb", "Pronoun", "Preposition", "Conjunction", "Interjection", "Article"]
-word_attributes: ["word_id", "transliteration", "phonetics", "pos", "translation", "example_sentence", "example_translation", "description", "related_image"]
-vocabulary_metadata: ["name", "author", "language", "notes"]
+# -*- coding: iso-8859-1 -*-
+log_level: DEBUG
+part_of_speech: [Noun, Verb, Adjective, Adverb, Pronoun, Preposition, Conjunction, Interjection, Article]
+word_attributes: [word_id, transliteration, phonetics, pos, translation, example_sentence, example_translation, description, related_image]
+vocabulary_metadata: [name, author, language, notes]
 start_db: "data/test_drei.db"
-consonants: [c,z,x,s,sch,ð,d,f,v,w,qu,ch,g,k, b,p,m,n,h,j,rr]
-special_vowels: [ah,ä,eh,ie,ö, oo, ü]
+consonants: [c,z,x,s,sch,ð,d,f,v,w,qu,ch,g,k,b,p,m,n,h,j,rr]
+special_vowels: [ah,ä,eh,ie,ö,oo,ü]
 vowels: [a,e,i,o,u]
-construction_config: {"height" : 4, "width" : 20}
+construction_config: {"width" : 4, "height" : 30}
 

@@ -266,8 +266,8 @@ class main_frame(common_win, tk.Toplevel):
 
         self.table = []
         k = 0
-        for j in range(height): #Rows
-            for i in range(width): #Columns
+        for j in range(width): #Rows
+            for i in range(height): #Columns
                 self.table.append(tk.Entry(self.table_frame, text="", justify="center"))
                 self.table[k].grid(row=i, column=j, sticky="nsew")
                 k += 1
@@ -275,15 +275,20 @@ class main_frame(common_win, tk.Toplevel):
         ################# FRAMES #####################################
         
         self.parameters_frame = tk.Frame(self.con_tab) 
-        self.letters_frame = tk.LabelFrame(self.con_tab, text="Word components")
-        self.scale_frame = tk.LabelFrame(self.con_tab, text="Combination")
-        self.config_frame = tk.LabelFrame(self.con_tab, text="Configuration")
+        self.letters_frame = tk.LabelFrame(self.parameters_frame, text="Word components")
+        self.scale_frame = tk.LabelFrame(self.parameters_frame, text="Combination")
+        self.config_frame = tk.LabelFrame(self.parameters_frame, text="Configuration")
 
-        self.parameters_frame.grid(row=2, column=5, columnspan=5, sticky="nsew")
-        self.letters_frame.grid(row=2, column=5, sticky="nsew")
-        self.scale_frame.grid(row=3, column=5, sticky="nsew")
-        self.config_frame.grid(row=5, column=5, sticky="nsew")
+        self.parameters_frame.grid(row=2, column=4, columnspan=6, sticky="nsew")
+        self.letters_frame.grid(row=0, column=0, columnspan=6, sticky="nsew")
+        self.scale_frame.grid(row=3, column=0, columnspan=6, sticky="nsew")
+        self.config_frame.grid(row=5, column=0, columnspan=6, sticky="nsew")
 
+        for i in range(6):
+            self.parameters_frame.columnconfigure(i, weight=1)
+            self.letters_frame.columnconfigure(i, weight=1)
+            self.scale_frame.columnconfigure(i, weight=1)
+            self.config_frame.columnconfigure(i, weight=1)
 
         #################### LETTER ENTRIES #############################
 
@@ -317,13 +322,13 @@ class main_frame(common_win, tk.Toplevel):
         ###################### CONFIGURATION ###############################
 
         tk.Label(self.config_frame, text="Min. Size").grid(row=0, column=0, sticky="nsew")
-        self.minsize_entry = tk.Entry(self.config_frame)
+        self.minsize_entry = tk.Entry(self.config_frame, width=5)
         self.minsize_entry.grid(row=0, column=1, sticky="nsew") 
 
         tk.Label(self.config_frame, text="Max. Size").grid(row=1, column=0, sticky="nsew")
-        self.maxsize_entry = tk.Entry(self.config_frame)
+        self.maxsize_entry = tk.Entry(self.config_frame, width=5)
         self.maxsize_entry.grid(row=1, column=1, sticky="nsew") 
-        
+    
 
 class vocab_viewer(tk.Frame):
     def __init__(self, master, display_data_functions, vocab):
@@ -345,8 +350,10 @@ class vocab_viewer(tk.Frame):
         self.word_list.column("translation", width=column_width)
         self.word_list.column("#0", width=column_width)
 
-        self.word_list.heading("#0",text="Transliteration")
-        self.word_list.heading("translation",text="Translation")
+        self.word_list.heading("#0",text="Transliteration", command=lambda: \
+                            self.treeview_sort_column(self.word_list, "#0", False))
+        self.word_list.heading("translation",text="Translation", command=lambda: \
+                            self.treeview_sort_column(self.word_list, "translation", False))
 
         ###### COLOR BUG FIX ###########
         self.style = ttk.Style()
@@ -436,8 +443,17 @@ class vocab_viewer(tk.Frame):
         elm[:2] != ('!disabled', '!selected')]
     
 
-    # def command(self, text):
-    #     print("search command", "searching:%s"%text)
+    def treeview_sort_column(self, tv, col, reverse):
+        f = [(tv.set(k, col), k) for k in tv.get_children('')]
+        l = sorted(f, reverse=reverse, key = lambda s: list(s)[0].lower())
+
+        # rearrange items in sorted positions
+        for index, (val, k) in enumerate(l):
+            tv.move(k, '', index)
+
+        # reverse sort next time
+        tv.heading(col, command=lambda: \
+                self.treeview_sort_column(tv, col, not reverse))
 
 
 class edit_vocabulary_form():
