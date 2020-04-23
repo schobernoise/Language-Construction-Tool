@@ -95,9 +95,9 @@ class lct_controller():
         
 
         # CON MENU
-        self.main_win.menu.add_cascade(label="Construction", menu=self.main_win.conmenu)
-        self.main_win.conmenu.add_command(label="Export Batch...")
-        self.main_win.conmenu.add_command(label="Feed File")
+        self.main_win.menu.add_cascade(label="Generation", menu=self.main_win.genmenu)
+        self.main_win.genmenu.add_command(label="Export Batch...")
+        self.main_win.genmenu.add_command(label="Feed File")
 
         # HELP MENU
         self.main_win.menu.add_cascade(label="Help", menu=self.main_win.helpmenu)

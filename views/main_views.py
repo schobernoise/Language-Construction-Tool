@@ -33,6 +33,7 @@ class main_frame(common_win, tk.Toplevel):
 
         self.build_tabs()
         self.build_voc_tab()
+        self.build_gen_tab()
         self.build_con_tab()
 
     
@@ -43,7 +44,7 @@ class main_frame(common_win, tk.Toplevel):
         self.main_win.configure(menu=self.menu)
         self.filemenu = tk.Menu(self.menu, tearoff=0)
         self.vocmenu = tk.Menu(self.menu, tearoff=0)
-        self.conmenu = tk.Menu(self.menu, tearoff=0)
+        self.genmenu = tk.Menu(self.menu, tearoff=0)
         self.helpmenu = tk.Menu(self.menu, tearoff=0)
         
         # #########################################
@@ -53,10 +54,14 @@ class main_frame(common_win, tk.Toplevel):
         self.tab_control = ttk.Notebook(self.main_win)            
         self.voc_tab = ttk.Frame(self.tab_control)                     
         self.tab_control.add(self.voc_tab, text="Vocabulary")          
+        self.gen_tab = ttk.Frame(self.tab_control)                     
+        self.tab_control.add(self.gen_tab, text='Generation') 
         self.con_tab = ttk.Frame(self.tab_control)                     
-        self.tab_control.add(self.con_tab, text='Construction')      
+        self.tab_control.add(self.con_tab, text='Construction (Experimental)')        
         self.tab_control.grid(row=0, column=0, rowspan=12, columnspan=12, sticky="nsew")  
 
+        
+        
         s = ttk.Style()
         s.configure('TNotebook', tabposition='ne') #'ne' as in compass direction
         
@@ -67,8 +72,8 @@ class main_frame(common_win, tk.Toplevel):
             self.main_win.rowconfigure(i, weight = 1)
             self.voc_tab.columnconfigure(i, weight = 1)
             self.voc_tab.rowconfigure(i, weight = 1)
-            self.con_tab.columnconfigure(i, weight = 1)
-            self.con_tab.rowconfigure(i, weight = 1)
+            self.gen_tab.columnconfigure(i, weight = 1)
+            self.gen_tab.rowconfigure(i, weight = 1)
     
     ###################################################
     # VOCABULARY TAB
@@ -249,11 +254,11 @@ class main_frame(common_win, tk.Toplevel):
     # CONSTRUCTION TAB
     #####################################################
 
-    def build_con_tab(self):
+    def build_gen_tab(self):
 
         ################# TABLE ###############################
 
-        self.table_frame = tk.Frame(self.con_tab)
+        self.table_frame = tk.Frame(self.gen_tab)
         self.table_frame.grid(row=2, column=1, rowspan=10, columnspan=4, padx=10, pady=10, sticky="nsew")
 
         height = self.construction_config["height"]
@@ -275,7 +280,7 @@ class main_frame(common_win, tk.Toplevel):
 
         ################# FRAMES #####################################
         
-        self.parameters_frame = tk.Frame(self.con_tab) 
+        self.parameters_frame = tk.Frame(self.gen_tab) 
         self.letters_frame = tk.LabelFrame(self.parameters_frame, text="Word components")
         self.combination_frame = tk.LabelFrame(self.parameters_frame, text="Combination")
         self.config_frame = tk.LabelFrame(self.parameters_frame, text="Configuration")
@@ -345,10 +350,15 @@ class main_frame(common_win, tk.Toplevel):
         self.maxsize_entry = tk.Entry(self.config_frame, width=5)
         self.maxsize_entry.grid(row=1, column=1, sticky="nsew") 
 
-        #################### GERNATE ##########################
+        #################### GENERATE ##########################
 
         self.generate_button = tk.Button(self.parameters_frame, text="Generate Batch!")
         self.generate_button.grid(row=10, column=0, columnspan=6, sticky="nsew")
+    
+
+    def build_con_tab(self):
+        pass
+
     
 
 class vocab_viewer(tk.Frame):
