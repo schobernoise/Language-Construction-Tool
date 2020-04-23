@@ -540,7 +540,6 @@ class populate_from_text():
         self.analyze_button.grid(row=3, column=0, sticky="nsew")
 
 
-
 class edit_vocabulary_form():
     def __init__(self):
         self.edit_vocab_win = tk.Toplevel()
@@ -752,22 +751,43 @@ class word_form():
         self.submit_button.grid(row=len(self.entries)+3, padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
 
 
-class file_importer():
+class populate_from_web():
     def __init__(self):
-        self.file_imp_win = tk.Toplevel()
-        self.file_imp_win.title("Populate Vocabulary from File")
-        # self.file_imp_win.minsize(150, 50) 
-        # self.file_imp_win.resizable(0,0)
-        self.file_imp_win.attributes('-topmost', True)
+        self.populate_web_win = tk.Toplevel()
+        self.populate_web_win.title("Populate Vocabulary from Web")
+        self.populate_web_win.attributes('-topmost', True)
 
-        self.file_entry = tk.Entry(self.file_imp_win)
-        self.file_entry.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+        self.chooser_frame = tk.LabelFrame(self.populate_web_win, text="Choose Web Service")
+        self.chooser_frame.grid(row=0, column=0, sticky="nsew")
 
-        self.file_button = tk.Button(self.file_entry, text="File...")
-        self.file_button.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
+        self.default_service = tk.StringVar(self.populate_web_win)
+        self.service_chooser = tk.OptionMenu(self.chooser_frame, self.default_service)
+        self.service_chooser.grid(row=0, column=0, sticky="nsew")
 
-        self.submit_button = tk.Button(self.file_imp_win, text="Submit")
-        self.submit_button.grid(row=1, column=0, columnspan=2, sticky="nsew")
+        self.default_language = tk.StringVar(self.populate_web_win)
+        self.language_chooser = tk.OptionMenu(self.chooser_frame, self.default_language)
+        self.language_chooser.grid(row=0, column=1, sticky="nsew")
+
+        self.default_import = tk.StringVar(self.populate_web_win)
+        self.default_import.set("translation")
+        self.import_option = tk.OptionMenu(self.chooser_frame, self.default_import, ("transliteration", "translation"))
+        self.import_option.grid(row=0, column=2, sticky="nsew")
+
+        # class MyOptionMenu(OptionMenu):
+        #     def __init__(self, master, status, *options):
+        #         self.var = StringVar(master)
+        #         self.var.set(status)
+        #         OptionMenu.__init__(self, master, self.var, *options)
+        #         self.config(font=('calibri',(10)),bg='white',width=12)
+        #         self['menu'].config(font=('calibri',(10)),bg='white')
+
+        # root = Tk()
+        # mymenu1 = MyOptionMenu(root, 'Select status', 'a','b','c')
+        # mymenu2 = MyOptionMenu(root, 'Select another status', 'd','e','f')
+        # mymenu1.pack()
+        # mymenu2.pack()
+
+
 
 
 

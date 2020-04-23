@@ -3,19 +3,8 @@ from tkinter import filedialog
 from tkinter import ttk
 from functools import partial
 from PIL import ImageTk, Image
-import numpy as np
-import random
-import io
-import openpyxl as oxl
-import PyPDF2 
-import textract
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk import *
-from bs4 import BeautifulSoup
-import requests
 
-from controllers import utils, log
+from controllers import utils, log, data
 from models.models import voc_model
 from views.main_views import *
 
@@ -28,7 +17,7 @@ class lct_controller():
         self.main_win = main_frame(root, self.display_data_functions, self.vocab, self.conf)
         self.vocabulary_viewer_instances = [self.main_win.fixed_vocab_viewer]
         self.main_win.withdraw() 
-        self.data_handler = data_controller(self.vocab, self.conf)
+        self.data_handler = data.data_controller(self.vocab, self.conf)
         self.create_voc_menu()
         self.construction_config()
 
@@ -99,7 +88,7 @@ class lct_controller():
         self.main_win.vocmenu.add_command(label="Import XLS/CSV", command=self.trigger_xls_import)
         self.main_win.vocmenu.add_separator()
         self.main_win.vocmenu.add_command(label="Populate from Text...", command=self.trigger_populate_from_text)
-        self.main_win.vocmenu.add_command(label="Populate from Web...", command=self.data_handler.get_words_from_web)
+        self.main_win.vocmenu.add_command(label="Populate from Web...", command=self.trigger_populate_from_web)
         self.main_win.vocmenu.add_separator()
         self.main_win.vocmenu.add_command(label="Export XLS/CSV/TXT")
         self.main_win.vocmenu.add_command(label="Pretty Print PDF with LaTeX")
@@ -392,190 +381,24 @@ class lct_controller():
             self.refresh_vocabulary()
         else:
             self.population_window.warning_label.configure(text="Please choose a File!")
-
-
-class data_controller():
-    def __init__(self, vocab, conf):
-        self.vocab = vocab
-        self.conf = conf
-
-    def load_excel(self, excel_file):
-        wb = oxl.load_workbook(excel_file)
-        ws = wb.active
-        import_dict = []
-        headings = []
-        for i, row in enumerate(ws.rows):
-            if i == 0:
-                for heading in row:
-                    if heading.value != None:
-                        headings.append(heading.value)
-            else:
-                temp_word = {}
-                for i, heading in enumerate(headings):
-                    if row[i].value != None:
-                        temp_word[heading] = row[i].value
-                import_dict.append(temp_word)
-                
-        self.vocab.import_words_from_file(import_dict)
-
-
-    def load_csv(self, csv_file):
-        pass
-
-    def pdf_extractor(self, filename, word_count=20, min_size=10, max_size=20 ):
-
-        #open allows you to read the file.
-        pdfFileObj = open(filename,'rb')
-        #The pdfReader variable is a readable object that will be parsed.
-        pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
-        #Discerning the number of pages will allow us to parse through all the pages.
-        num_pages = pdfReader.numPages
-        count = 0
-        text = ""
-        #The while loop will read each page.
-        while count < num_pages:
-            pageObj = pdfReader.getPage(count)
-            count +=1
-            text += pageObj.extractText()
-        #This if statement exists to check if the above library returned words. It's done because PyPDF2 cannot read scanned files.
-        if text != "":
-            text = text
-        #If the above returns as False, we run the OCR library textract to #convert scanned/image based PDF files into text.
-        else:
-            text = textract.process(fileurl, method='tesseract', language='de')
-        #Now we have a text variable that contains all the text derived from our PDF file. Type print(text) to see what it contains. It likely contains a lot of spaces, possibly junk such as '\n,' etc.
-        #Now, we will clean our text variable and return it as a list of keywords.
-
-        #The word_tokenize() function will break our text phrases into individual words.
-        tokens = word_tokenize(text)
-        
-        #We'll create a new list that contains punctuation we wish to clean.
-        punctuations = ['(',')',';',':','[',']',',']
-        #We initialize the stopwords variable, which is a list of words like "The," "I," "and," etc. that don't hold much value as keywords.
-        stop_words = stopwords.words('german') 
-        #We create a list comprehension that only returns a list of words that are NOT IN stop_words and NOT IN punctuations.
-        keywords = [word for word in tokens if not word in stop_words and not word in punctuations]
-
-        parametric_words = [w for w in keywords if len(w) > min_size and len(w) < max_size]
-
-        fdist1 = FreqDist(parametric_words)
-        fdist_counts = fdist1.most_common(word_count)
-
-        final_wordlist = []
-
-        for word in fdist_counts:
-            temp_list = list(word)
-            final_wordlist.append(temp_list[0])
-
-        return(final_wordlist)
-
-
-    def gen_words(self, letter_parts, word_count=30, min_size=2, max_size=6):
-        
-        letters_list = np.random.randint(low = min_size, high = max_size, size = word_count)
-        word = ""
-        gen_words_list = []
-
-        for letter_num in letters_list:
-                prob = random.random()
-                word = [" "] * letter_num
-
-                for i in range(len(word)):
-                    # FIRST CHAR CHOOSER
-                    if i == 0:
-                        if prob <=  0.33:
-                            word[0] = random.choice(letter_parts["consonants"])
-
-                        elif prob > 0.33 and prob < 0.66:
-                            word[0] = random.choice(letter_parts["vowels"])
-
-                        elif prob >= 0.66:
-                            word[0] = random.choice(letter_parts["special_vowels"])
-                    
-                    else:
-                        prob = random.random()  #Generate a new value for probability
-
-                        # Char before WAS A KONS
-                        for char in letter_parts["consonants"]:
-                            if char == word[i-1]:
-
-                                if prob <= 0.03:
-                                    word[i] = random.choice(letter_parts["consonants"])
-
-                                elif prob > 0.03 and prob < 0.95:
-                                    word[i] = random.choice(letter_parts["vowels"])
-
-                                elif prob >= 0.95:
-                                    word[i] = random.choice(letter_parts["special_vowels"])
-
-                            else: 
-                                pass
-
-                        # Char before WAS A SPECIAL VOWEL
-                        for char in letter_parts["special_vowels"]:
-                            if char == word[i-1]:
-
-                                if prob <= 0.01:
-                                    word[i] = random.choice(letter_parts["vowels"])
-
-                                elif prob > 0.01 and prob < 0.975:
-                                    word[i] = random.choice(letter_parts["consonants"])
-
-                                elif prob >= 0.975:
-                                    word[i] = random.choice(letter_parts["special_vowels"])
-                            else:
-                                pass
-
-                        # Char before  WAS A VOWEL
-                        for char in letter_parts["vowels"]:
-                            if char == word[i-1]:
-
-                                if prob <= 0.05:
-                                    word[i] = random.choice(letter_parts["special_vowels"])
-
-                                elif prob > 0.05 and prob < 0.95:
-                                    word[i] = random.choice(letter_parts["consonants"])
-
-                                elif prob >= 0.95:
-                                    word[i] = random.choice(letter_parts["vowels"])
-                            else:
-                                pass
-
-                word = "".join(word)
-                gen_words_list.append(word)
-                word = []
-
-        gen_words_set = list(set(gen_words_list))
-        return gen_words_set
-
     
-    def get_words_from_web(self):
+
+    def trigger_populate_from_web(self):
+        self.population_window = populate_from_web()
         scraper_websites = self.conf.conf["scraper_websites"]
+        self.population_window.service_chooser.configure(*scraper_websites, command=self.change_webservice)
+        self.population_window.default_service.set(scraper_websites[0])
+        languge_dict = self.data_handler.get_language_from_web()
+        language_list = []
 
-        headers = requests.utils.default_headers()
-        headers.update({ 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
+        for language, link in language_dict:
+            language_list.append[language]
         
-        req = requests.get(scraper_websites[0], headers)
-        soup = BeautifulSoup(req.content, 'html.parser')
-        links = {}
-        output = soup.find_all("a", attrs={"style" : "color: #0000ff;"})
-
-        for link in output:
-            # print(link)
-            name = link.find("a").text
-            links[name] = link.get("href")
-
-        print(links)
-
-        # scrape_url = scraper_websites[0] + "1000-most-common-" + language + "-words/"
-
-    
+        self.population_window.language_chooser.configure(*language_list)
 
 
-
-    
-
-
+    def change_webservice(self):
+        pass
 
 
 
