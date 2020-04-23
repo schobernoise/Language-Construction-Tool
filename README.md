@@ -1,9 +1,6 @@
 # lct
 
 **Recent Plans**
-- Make Optionmenu Class
-
-- Make a populate from web Window
 
 - Make Column Sorting Functions
 
@@ -13,14 +10,8 @@
 
 - Make an "Open Recent Vocabulary" Menu Entry
 
-- Asynchronous Tasks
-
 - Make quit function which will be inherited from all toplevels,
 so it looks nice
-
-- For text and web import:
-make option to import it as transliteration/translation 
--> programm gets usable for learners of languages
 
 
 **Export Function**

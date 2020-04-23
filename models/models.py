@@ -190,7 +190,7 @@ class voc_model():
         self.load_db()
     
     
-    def populate_database(self, population_words):
+    def populate_database_from_text(self, population_words):
         temp_words = []
         for word in population_words:
             temp_words.append(("-","-","-",word,"-","-","-","-"))
@@ -202,9 +202,34 @@ class voc_model():
         try:
             c.executemany(sql_populate_db, temp_words)
             conn.commit()
-            log.debug("MODEL: Successfully populated Database.")
+            log.debug("MODEL: Successfully populated Database from text.")
         except:
-            log.error("MODEL: Failed populating Database.")
+            log.error("MODEL: Failed populating Database from text.")
+        
+        self.load_db()
+    
+
+    def populate_database_from_web(self, words_dict, import_method, import_translation):
+        temp_words = []
+        for word in words_dict:
+            if import_method == "translation":
+                temp_words.append(("-","-","-",word["translation"],"-","-","-","-"))
+            elif import_method == "transliteration" and not import_translation:
+                temp_words.append((word["translation"],"-","-","-","-","-","-","-"))
+            elif import_method == "transliteration" and import_translation:
+                temp_words.append((word["translation"],"-","-",word["english"],"-","-","-","-"))
+
+        
+        sql_populate_db = '''INSERT INTO VOCABULARY ({},{},{},{},{},{},{},{})
+                        VALUES (?,?,?,?,?,?,?,?)'''.format(*self.word_attribute_headings[1:])
+        conn = sqlite3.connect(self.db_file)
+        c = conn.cursor()
+        try:
+            c.executemany(sql_populate_db, temp_words)
+            conn.commit()
+            log.debug("MODEL: Successfully populated Database from Web.")
+        except:
+            log.error("MODEL: Failed populating Database from Web.")
         
         self.load_db()
 

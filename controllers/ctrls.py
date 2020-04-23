@@ -376,7 +376,7 @@ class lct_controller():
                             max_size=int(self.population_window.max_entry.get())
                             )
             
-            self.vocab.populate_database(population_words)
+            self.vocab.populate_database_from_text(population_words)
             self.population_window.file_populate_win.destroy()
             self.refresh_vocabulary()
         else:
@@ -384,21 +384,17 @@ class lct_controller():
     
 
     def trigger_populate_from_web(self):
-        self.population_window = populate_from_web()
         scraper_websites = self.conf.conf["scraper_websites"]
-        self.population_window.service_chooser.configure(*scraper_websites, command=self.change_webservice)
-        self.population_window.default_service.set(scraper_websites[0])
-        languge_dict = self.data_handler.get_language_from_web()
-        language_list = []
-
-        for language, link in language_dict:
-            language_list.append[language]
-        
-        self.population_window.language_chooser.configure(*language_list)
+        self.population_window = populate_from_web(scraper_websites, self.data_handler)
+        self.population_window.import_button.configure(command=self.save_populate_from_web)
 
 
-    def change_webservice(self):
-        pass
-
+    def save_populate_from_web(self):
+        words_list = self.data_handler.get_words_from_web(self.population_window.language_dict[self.population_window.default_language.get()], end_count=self.population_window.wc_entry.get())
+        self.vocab.populate_database_from_web(words_list,
+                                                    self.population_window.default_import.get(), 
+                                                    self.population_window.translation_var.get())
+        self.population_window.populate_web_win.destroy()
+        self.refresh_vocabulary()
 
 

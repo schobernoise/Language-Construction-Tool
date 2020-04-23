@@ -752,7 +752,15 @@ class word_form():
 
 
 class populate_from_web():
-    def __init__(self):
+    def __init__(self, scraper_websites, data_handler):
+        self.scraper_websites = scraper_websites
+        self.data_handler = data_handler
+        self.change_webservice()
+        self.build_widgets()
+        
+
+    def build_widgets(self):
+
         self.populate_web_win = tk.Toplevel()
         self.populate_web_win.title("Populate Vocabulary from Web")
         self.populate_web_win.attributes('-topmost', True)
@@ -760,39 +768,64 @@ class populate_from_web():
         self.chooser_frame = tk.LabelFrame(self.populate_web_win, text="Choose Web Service")
         self.chooser_frame.grid(row=0, column=0, sticky="nsew")
 
+        tk.Label(self.chooser_frame, text="Web Service").grid(row=0, column=0, sticky="nsew")
+
         self.default_service = tk.StringVar(self.populate_web_win)
-        self.service_chooser = tk.OptionMenu(self.chooser_frame, self.default_service)
-        self.service_chooser.grid(row=0, column=0, sticky="nsew")
+        self.default_service.set(self.scraper_websites[0])
+        self.service_chooser = tk.OptionMenu(self.chooser_frame, self.default_service, *self.scraper_websites, command=self.change_webservice)
+        self.service_chooser.grid(row=1, column=0, sticky="nsew")
+
+        tk.Label(self.chooser_frame, text="Language").grid(row=0, column=1, sticky="nsew")
 
         self.default_language = tk.StringVar(self.populate_web_win)
-        self.language_chooser = tk.OptionMenu(self.chooser_frame, self.default_language)
-        self.language_chooser.grid(row=0, column=1, sticky="nsew")
+        self.default_language.set(self.language_list[0])
+        self.language_chooser = tk.OptionMenu(self.chooser_frame, self.default_language, *self.language_list)
+        self.language_chooser.grid(row=1, column=1, sticky="nsew")
+
+        tk.Label(self.chooser_frame, text="Import as").grid(row=0, column=2, sticky="nsew")
 
         self.default_import = tk.StringVar(self.populate_web_win)
         self.default_import.set("translation")
-        self.import_option = tk.OptionMenu(self.chooser_frame, self.default_import, ("transliteration", "translation"))
-        self.import_option.grid(row=0, column=2, sticky="nsew")
+        self.import_option = tk.OptionMenu(self.chooser_frame, self.default_import, *("transliteration", "translation"), command=self.change_import_method)
+        self.import_option.grid(row=1, column=2, sticky="nsew")
 
-        # class MyOptionMenu(OptionMenu):
-        #     def __init__(self, master, status, *options):
-        #         self.var = StringVar(master)
-        #         self.var.set(status)
-        #         OptionMenu.__init__(self, master, self.var, *options)
-        #         self.config(font=('calibri',(10)),bg='white',width=12)
-        #         self['menu'].config(font=('calibri',(10)),bg='white')
+        tk.Label(self.chooser_frame, text="Import translation as well").grid(row=0, column=3, sticky="nsew")
 
-        # root = Tk()
-        # mymenu1 = MyOptionMenu(root, 'Select status', 'a','b','c')
-        # mymenu2 = MyOptionMenu(root, 'Select another status', 'd','e','f')
-        # mymenu1.pack()
-        # mymenu2.pack()
+        self.translation_var = tk.BooleanVar()
+        self.translation_chooser = tk.Checkbutton(self.chooser_frame, variable=self.translation_var, state="disabled")
+        self.translation_chooser.grid(row=1, column=3, sticky="nsew")
 
+        self.config_frame = tk.LabelFrame(self.populate_web_win, text="Configure")
+        self.config_frame.grid(row=1, column=0, sticky="nsew")
 
+        tk.Label(self.config_frame, text="Words to import").grid(row=0, column=0, sticky="nsew")
+        self.wc_entry = tk.Entry(self.config_frame, width=4)
+        self.wc_entry.grid(row=0, column=1, sticky="nsew")
+        self.wc_entry.insert(0, 100)
+        # tk.Label(self.config_frame, text="most used words with min. length").grid(row=0, column=3, sticky="nsew")
+        # self.min_entry = tk.Entry(self.config_frame, width=4)
+        # self.min_entry.grid(row=0, column=4, sticky="nsew")
+        # tk.Label(self.config_frame, text="and max. length").grid(row=0, column=5, sticky="nsew")
+        # self.max_entry = tk.Entry(self.config_frame, width=4)
+        # self.max_entry.grid(row=0, column=6, sticky="nsew")
 
+        self.import_button = tk.Button(self.populate_web_win, text="Import Words!")
+        self.import_button.grid(row=2, column=0, sticky="nsew")
 
-
+    def change_webservice(self):
+        try:
+            self.language_dict = self.data_handler.get_language_from_web(url=self.default_service.get())
+        except:
+            self.language_dict = self.data_handler.get_language_from_web()
         
-
-
-
+        self.language_list = []
         
+        for language, link in self.language_dict.items():
+            self.language_list.append(language)
+
+    
+    def change_import_method(self, value):
+        if value == "transliteration":
+            self.translation_chooser.configure(state="active")
+        else:
+            self.translation_chooser.configure(state="disabled")
