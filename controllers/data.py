@@ -42,9 +42,12 @@ class data_controller():
                         if heading != "related_image":
                             temp_word[heading] = row[j].value
                         else:
-                            image_dir = os.path.dirname(excel_file) + "/related_images/"
-                            image = image_dir + str(i)+".jpg"
-                            temp_word[heading] = utils.convertToBinaryData(image)
+                            try:
+                                image_dir = os.path.dirname(excel_file) + "/related_images/"
+                                image = image_dir + str(i)+".jpg"
+                                temp_word[heading] = utils.convertToBinaryData(image)
+                            except:
+                                pass
                 import_dict.append(temp_word)
                 
         self.vocab.import_words_from_file(import_dict)
