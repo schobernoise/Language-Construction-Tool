@@ -1,7 +1,10 @@
 import numpy as np
 import random
 import io
+import os
 import openpyxl as oxl
+from openpyxl.styles import Font
+import csv
 import PyPDF2 
 import textract
 from nltk.tokenize import word_tokenize
@@ -9,6 +12,9 @@ from nltk.corpus import stopwords
 from nltk import *
 from bs4 import BeautifulSoup
 import requests
+import docx
+import pylatex as pyl
+from pylatex.utils import italic
 
 from controllers import utils, log
 
@@ -17,6 +23,7 @@ class data_controller():
     def __init__(self, vocab, conf):
         self.vocab = vocab
         self.conf = conf
+
 
     def load_excel(self, excel_file):
         wb = oxl.load_workbook(excel_file)
@@ -30,51 +37,84 @@ class data_controller():
                         headings.append(heading.value)
             else:
                 temp_word = {}
-                for i, heading in enumerate(headings):
-                    if row[i].value != None:
-                        temp_word[heading] = row[i].value
+                for j, heading in enumerate(headings):
+                    if row[j].value != None or heading == "related_image":
+                        if heading != "related_image":
+                            temp_word[heading] = row[j].value
+                        else:
+                            image_dir = os.path.dirname(excel_file) + "/related_images/"
+                            image = image_dir + str(i)+".jpg"
+                            temp_word[heading] = utils.convertToBinaryData(image)
                 import_dict.append(temp_word)
                 
         self.vocab.import_words_from_file(import_dict)
 
 
     def load_csv(self, csv_file):
-        pass
+        
+        import_dict = []
+        headings = []
+        with open(csv_file, "r", encoding="utf-8-sig") as csvfile:
+            rows = csv.reader(csvfile, delimiter=';')
+            for i, row in enumerate(rows):
+                if i == 0:
+                    for heading in row:
+                        if heading != "":
+                            headings.append(heading)
+                else:
+                    temp_word = {}
+                    for j, heading in enumerate(headings):
+                        if row[j] != "" or heading == "related_image":
+                            if heading != "related_image":
+                                temp_word[heading] = row[j]
+                            else:
+                                image_dir = os.path.dirname(csv_file) + "/related_images/"
+                                image = image_dir + str(i)+".jpg"
+                                temp_word[heading] = utils.convertToBinaryData(image)
 
-    def pdf_extractor(self, filename, word_count=20, min_size=10, max_size=20 ):
+                    import_dict.append(temp_word)
+                    
+        self.vocab.import_words_from_file(import_dict)
+    
+                   
+    def text_extractor(self, filename, word_count=20, min_size=10, max_size=20 ):
 
-        #open allows you to read the file.
-        pdfFileObj = open(filename,'rb')
-        #The pdfReader variable is a readable object that will be parsed.
-        pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
-        #Discerning the number of pages will allow us to parse through all the pages.
-        num_pages = pdfReader.numPages
-        count = 0
-        text = ""
-        #The while loop will read each page.
-        while count < num_pages:
-            pageObj = pdfReader.getPage(count)
-            count +=1
-            text += pageObj.extractText()
-        #This if statement exists to check if the above library returned words. It's done because PyPDF2 cannot read scanned files.
-        if text != "":
-            text = text
-        #If the above returns as False, we run the OCR library textract to #convert scanned/image based PDF files into text.
-        else:
-            text = textract.process(fileurl, method='tesseract', language='de')
-        #Now we have a text variable that contains all the text derived from our PDF file. Type print(text) to see what it contains. It likely contains a lot of spaces, possibly junk such as '\n,' etc.
-        #Now, we will clean our text variable and return it as a list of keywords.
+        if filename[-3:] == "pdf":
+        
+            pdfFileObj = open(filename,'rb')
+            pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
 
-        #The word_tokenize() function will break our text phrases into individual words.
+            num_pages = pdfReader.numPages
+            count = 0
+            text = ""
+
+            while count < num_pages:
+                pageObj = pdfReader.getPage(count)
+                count +=1
+                text += pageObj.extractText()
+
+            # Check if scanned File
+            if text != "":
+                text = text
+            else:
+                text = textract.process(fileurl, method='tesseract', language='de')
+        
+        elif filename[-3:] == "txt":
+            f = open(filename, "r", encoding="utf-8-sig")
+            text = f.read()
+        
+        elif filename[-4:] == "docx":
+            document = docx.Document(filename)
+            temp_text = []
+            for para in document.paragraphs:
+                temp_text.append(para.text)
+            text = str(temp_text)
+
         tokens = word_tokenize(text)
         
-        #We'll create a new list that contains punctuation we wish to clean.
         punctuations = ['(',')',';',':','[',']',',']
-        #We initialize the stopwords variable, which is a list of words like "The," "I," "and," etc. that don't hold much value as keywords.
         stop_words = stopwords.words('german') 
-        #We create a list comprehension that only returns a list of words that are NOT IN stop_words and NOT IN punctuations.
         keywords = [word for word in tokens if not word in stop_words and not word in punctuations]
-
         parametric_words = [w for w in keywords if len(w) > min_size and len(w) < max_size]
 
         fdist1 = FreqDist(parametric_words)
@@ -289,17 +329,70 @@ class data_controller():
                 words_list.append(words_dict)
             
         return(words_list[int(start_count):int(end_count)])
-
-
-
-
     
 
+    def export_vocabulary_as_file(self, filename, vocabulary, formats, columns):
+        for format_ in formats:
+            if format_ == "CSV":
+                if ".csv" not in filename:
+                    output_name = str(filename) + ".csv"
+                else:
+                    output_name = filename
 
+                with open(output_name, 'w', newline='') as csvfile:
+                    writer = csv.writer(csvfile, delimiter=';')
+                    writer.writerow(columns)
+                    for word_ in vocabulary: 
+                        temp_attr = []
+                        for column in columns:
+                            temp_attr.append(word_.attributes[column])  
+                        writer.writerow(temp_attr)
 
+            elif format_ == "XLSX":
+                if ".xlsx" not in filename:
+                    output_name = str(filename) + ".xlsx"
+                else:
+                    output_name = filename
+
+                wb = oxl.Workbook()
+                ws = wb.active
+                ws.title = "vocabulary"
+                ft = Font(bold=True)
+                
+                ws.append(columns)
+                for word_ in vocabulary: 
+                        temp_attr = []
+                        for i, column in enumerate(columns): 
+                            if column != "related_image":
+                                temp_attr.append(word_.attributes[column])  
+                        ws.append(temp_attr)
+
+                for cell in ws["1"]:
+                    cell.font = ft
+
+                wb.save(filename = output_name)
+
+            elif format_ == "TXT":
+                if ".txt" not in filename:
+                    output_name = str(filename) + ".txt"
+                else:
+                    output_name = filename
     
 
+    def pretty_print_vocabulary(self, vocabulary, filename):
 
+        geometry_options = {"tmargin": "1cm", "lmargin": "10cm"}
+        doc = pyl.Document(geometry_options=geometry_options)
 
+        doc.preamble.append(pyl.Command('title', 'Awesome Title'))
+        doc.preamble.append(pyl.Command('author', 'Anonymous author'))
+        doc.preamble.append(pyl.Command('date', pyl.NoEscape(r'\today')))
+        doc.append(pyl.NoEscape(r'\maketitle'))
 
-
+        for word_ in vocabulary:
+            with doc.create(pyl.Section(word_.attributes["transliteration"])):
+                doc.append(italic(word_.attributes["pos"]))
+                doc.append(word_.attributes["translation"])
+                
+        print(filename)
+        doc.generate_pdf(filepath=str(filename), compiler='pdflatex', clean_tex=True)

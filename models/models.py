@@ -160,10 +160,6 @@ class voc_model():
 
             word_values.append(tuple(temp_list))
 
-        print(word_values)
-
-        # c.executemany(sql_import_word, word_values)
-        # conn.commit()
         try:
             c.executemany(sql_import_word, word_values)
             conn.commit()
@@ -174,14 +170,14 @@ class voc_model():
         self.load_db()
 
     
-    def delete_word(self, word_id):
+    def delete_word(self, word_ids):
         # print(word_id)
         conn = sqlite3.connect(self.db_file)
         c = conn.cursor()
         sql_del_word = '''DELETE FROM VOCABULARY WHERE [word_id] = ?'''
 
         try:
-            c.execute(sql_del_word, (word_id,))
+            c.executemany(sql_del_word, word_ids)
             conn.commit()
             log.debug("MODEL: Deleted Word ID {word_id} from DB.")
         except:

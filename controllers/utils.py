@@ -114,15 +114,18 @@ def open_file_dialog(file_type):
     elif file_type == "database":
         file_types.append(("DB files","*.db"))
     elif file_type == "excel_csv":
-        file_types.append(("Excel files","*.xlsx"))
         file_types.append(("CSV files","*.csv"))
-    elif file_type == "pdf":
+        file_types.append(("Excel 2010 files","*.xlsx"))
+    elif file_type == "text":
         file_types.append(("PDF files","*.pdf"))
+        file_types.append(("TXT files","*.txt"))
+        file_types.append(("Word 2010 files","*.docx"))
     
     file_types.append(("all files","*.*"))
 
     filename = filedialog.askopenfilename(initialdir = "/data",title = "Select file",filetypes = tuple(file_types))
     return filename 
+
 
 
 def random_rgb():
@@ -164,3 +167,5 @@ class Config():
                 log.error("Missing essential entry in config.yaml: {}".format(ke))
                 raise SystemExit(3)
             return value
+    
+

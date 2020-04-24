@@ -2,7 +2,7 @@ log_level: DEBUG
 part_of_speech: [Noun, Verb, Adjective, Adverb, Pronoun, Preposition, Conjunction, Interjection, Article]
 word_attributes: [word_id, transliteration, phonetics, pos, translation, example_sentence, example_translation, description, related_image]
 vocabulary_metadata: [name, author, language, notes]
-start_db: "data/start.db"
+start_db: "data/test_fuenf.db"
 # consonants: [c,z,x,s,sch,ð,d,f,v,w,qu,ch,g,k,b,p,m,n,h,j,rr]
 # special_vowels: [ah,ä,eh,ie,ö,oo,ü]
 # vowels: [a,e,i,o,u]
@@ -14,4 +14,6 @@ construction_config:
               "height" : 30
 scraper_websites:
               - "https://1000mostcommonwords.com/"
+pretty_print_feature: False
+
 

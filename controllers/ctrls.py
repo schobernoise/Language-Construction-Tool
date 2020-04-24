@@ -18,7 +18,7 @@ class lct_controller():
         self.vocabulary_viewer_instances = [self.main_win.fixed_vocab_viewer]
         self.main_win.withdraw() 
         self.data_handler = data.data_controller(self.vocab, self.conf)
-        self.create_voc_menu()
+        self.populate_menu()
         self.construction_config()
 
         self.pos_list = self.conf.conf["part_of_speech"]
@@ -28,6 +28,9 @@ class lct_controller():
         if self.start_up == True:
             self.load_vocabulary()
             self.start_up = False
+    
+    def check_datafolder_integrity(self):
+        pass
         
 
     def load_vocabulary(self, name="", db_file="", metadata=[]):
@@ -71,28 +74,28 @@ class lct_controller():
         self.main_win.generate_button.configure(command=lambda value=0:self.generate_wordlist(0))
     
 
-    def create_voc_menu(self):
+    def populate_menu(self):
 
         # FILEMENU
         self.main_win.menu.add_cascade(label="File", menu=self.main_win.filemenu)
         self.main_win.filemenu.add_command(label="Create new Vocabulary", command=self.trigger_new_vocabulary)
         self.main_win.filemenu.add_command(label="Open Vocabulary...", command=self.trigger_load_vocabulary)
-        self.main_win.filemenu.add_command(label="Open Recent")
+        # self.main_win.filemenu.add_command(label="Open Recent")
         self.main_win.filemenu.add_separator()
         self.main_win.filemenu.add_command(label="Exit")
 
         # VOC MENU
         self.main_win.menu.add_cascade(label="Vocabulary", menu=self.main_win.vocmenu)
         self.main_win.vocmenu.add_command(label="Edit Info", command=self.trigger_update_vocabulary)
-        self.main_win.vocmenu.add_command(label="Import XLS/CSV", command=self.trigger_xls_import)
+        self.main_win.vocmenu.add_command(label="Import CSV/XLS", command=self.trigger_xls_import)
         self.main_win.vocmenu.add_separator()
         self.main_win.vocmenu.add_command(label="Populate from Text...", command=self.trigger_populate_from_text)
         self.main_win.vocmenu.add_command(label="Populate from Web...", command=self.trigger_populate_from_web)
         self.main_win.vocmenu.add_separator()
-        self.main_win.vocmenu.add_command(label="Export XLS/CSV/TXT")
-        self.main_win.vocmenu.add_command(label="Pretty Print PDF with LaTeX")
+        self.main_win.vocmenu.add_command(label="Export Vocabulary...", command=self.trigger_export_vocabulary)
+        if self.conf.conf["pretty_print_feature"] == True:
+            self.main_win.vocmenu.add_command(label="Pretty Print Vocabulary as PDF", command=self.trigger_pretty_print_vocabulary)
         
-
         # CON MENU
         self.main_win.menu.add_cascade(label="Generation", menu=self.main_win.genmenu)
         self.main_win.genmenu.add_command(label="Export Batch...")
@@ -304,7 +307,12 @@ class lct_controller():
 
     def trigger_del_word(self, word_id):
         self.main_win.status.set("Deleting Word...")
-        self.vocab.delete_word(word_id)
+        treeview = self.main_win.fixed_vocab_viewer.word_list
+        selection = treeview.selection()
+        word_ids = []
+        for sel_ in selection:
+            word_ids.append((treeview.item(sel_)['tags'][0],))
+        self.vocab.delete_word(word_ids)
         self.refresh_vocabulary()
     
 
@@ -317,17 +325,14 @@ class lct_controller():
     def trigger_xls_import(self):
         temp_file = utils.open_file_dialog("excel_csv")
 
-        # if file ending contains xlsx take load_excel function
-        self.data_handler.load_excel(temp_file)
+        if temp_file[-4:] == "xlsx":
+            self.data_handler.load_excel(temp_file)
+
+        elif temp_file[-3:] == "csv":
+            self.data_handler.load_csv(temp_file)
+        
         self.refresh_vocabulary()
 
-        # else csv, take csv read function
-
-    
-    def save_populate_xls(self):
-        self.data_handler.load_excel(self.file_imp.file_entry.get())
-        self.file_imp.file_imp_win.destroy()
-    
 
     def generate_wordlist(self, value):
         self.letter_parts = {}
@@ -359,25 +364,25 @@ class lct_controller():
         self.population_window.wc_entry.insert(0, 20)
         self.population_window.min_entry.insert(0, 7)
         self.population_window.max_entry.insert(0, 15)
-        self.population_window.file_chooser.configure(command=self.pdf_loader)
+        self.population_window.file_chooser.configure(command=self.text_loader)
         self.population_window.analyze_button.configure(command=self.save_populate_from_text)
     
 
-    def pdf_loader(self):
-        self.temp_file = utils.open_file_dialog("pdf")
+    def text_loader(self):
+        self.temp_file = utils.open_file_dialog("text")
         if self.temp_file != "":
             self.population_window.file_chooser.configure(text=self.temp_file)
     
 
     def save_populate_from_text(self):
-        if self.temp_file != "":
+        if self.temp_file != "":      
             if self.population_window.config_var.get() == 1:
-                population_words = self.data_handler.pdf_extractor(self.temp_file, 
+                population_words = self.data_handler.text_extractor(self.temp_file, 
                             word_count=int(self.population_window.wc_entry.get()),
                             min_size=int(self.population_window.min_entry.get()),
                             max_size=int(self.population_window.max_entry.get())
                             )
-            
+
             self.vocab.populate_database_from_text(population_words)
             self.population_window.file_populate_win.destroy()
             self.refresh_vocabulary()
@@ -398,5 +403,41 @@ class lct_controller():
                                                     self.population_window.translation_var.get())
         self.population_window.populate_web_win.destroy()
         self.refresh_vocabulary()
+
+
+    def trigger_export_vocabulary(self):
+        format_list=["CSV", "XLSX", "TXT"]
+        self.export_window = export_vocabulary(format_list, self.conf.conf["word_attributes"])
+        self.export_window.export_button.configure(command=self.save_export_vocabulary)
+
+
+    
+    def save_export_vocabulary(self):
+     
+        filename = filedialog.asksaveasfilename(initialdir = "/data",title = "Save as...",filetypes = (("all files","*.*"),))
+
+        column_indexes = self.export_window.column_chooser.curselection()  
+        columns = []        
+        for index in column_indexes:
+            columns.append(self.export_window.column_chooser.get(index))
+
+        format_indexes = self.export_window.format_chooser.curselection()  
+        formats = []        
+        for index in format_indexes:
+            formats.append(self.export_window.format_chooser.get(index))
+
+        self.data_handler.export_vocabulary_as_file(filename, self.vocab.vocabulary, formats, columns)
+
+        self.export_window.export_win.destroy()
+    
+
+    def trigger_pretty_print_vocabulary(self):
+        filename = filedialog.asksaveasfilename(initialdir = "/data",title = "Save as PDF", filetypes = (("PDF files","*.pdf"),))
+        if ".pdf" not in filename:
+                    output_name = str(filename) + ".pdf"
+        else:
+            output_name = filename
+
+        self.data_handler.pretty_print_vocabulary(self.vocab.vocabulary, filename)
 
 

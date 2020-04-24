@@ -57,7 +57,7 @@ class main_frame(common_win, tk.Toplevel):
         self.gen_tab = ttk.Frame(self.tab_control)                     
         self.tab_control.add(self.gen_tab, text='Generation') 
         self.con_tab = ttk.Frame(self.tab_control)                     
-        self.tab_control.add(self.con_tab, text='Construction (Experimental)')        
+        # self.tab_control.add(self.con_tab, text='Construction (Experimental)')        
         self.tab_control.grid(row=0, column=0, rowspan=12, columnspan=12, sticky="nsew")  
 
         
@@ -251,7 +251,7 @@ class main_frame(common_win, tk.Toplevel):
 
 
     ###################################################
-    # CONSTRUCTION TAB
+    # GENERATION TAB
     #####################################################
 
     def build_gen_tab(self):
@@ -263,12 +263,6 @@ class main_frame(common_win, tk.Toplevel):
 
         height = self.construction_config["height"]
         width = self.construction_config["width"]
-
-        # for i in range(height):
-        #     self.table_frame.rowconfigure(i, weight=1)
-
-        # for i in range(width):
-        #     self.table_frame.columnconfigure(i, weight=1)
 
         self.table = []
         k = 0
@@ -341,6 +335,8 @@ class main_frame(common_win, tk.Toplevel):
         self.generate_button.grid(row=10, column=0, columnspan=6, sticky="nsew")
     
 
+    ########## CONSTRUCTION TAB ################
+
     def build_con_tab(self):
         pass
 
@@ -361,15 +357,13 @@ class vocab_viewer(tk.Frame):
         column_width=100
 
         self.word_list = ttk.Treeview(self)
+        self.word_list['show'] = 'headings'
         self.word_list.grid(column=0, row=2,  rowspan=10, columnspan=4, sticky="wnse") 
-        self.word_list["columns"]=("translation")
-        self.word_list.column("translation", width=column_width)
-        self.word_list.column("#0", width=column_width)
-
-        self.word_list.heading("#0",text="Transliteration", command=lambda: \
-                            self.treeview_sort_column(self.word_list, "#0", False))
-        self.word_list.heading("translation",text="Translation", command=lambda: \
-                            self.treeview_sort_column(self.word_list, "translation", False))
+        self.word_list["columns"]=("transliteration","translation")
+        for column in self.word_list["columns"]:
+            self.word_list.column(column, width=column_width)
+            self.word_list.heading(column,text=column, command=lambda: \
+                            self.treeview_sort_column(self.word_list, column, False))
 
         ###### COLOR BUG FIX ###########
         self.style = ttk.Style()
@@ -429,10 +423,10 @@ class vocab_viewer(tk.Frame):
         for word_object in self.vocab.vocabulary:
             if text in word_object.attributes["transliteration"] or text in word_object.attributes["translation"] or text == "":
                 if word_object.attributes["pos"] == self.pos_chooser.get() or self.pos_chooser.get() == "all":
-                    self.word_list.insert("", "end", text=word_object.attributes["transliteration"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
+                    self.word_list.insert("", "end", text="", values=(word_object.attributes["transliteration"],word_object.attributes["translation"]), tags=(word_object.attributes["word_id"],))
                     self.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data_functions[0](event, wo))
-                elif self.pos_chooser == "unassigned" and word_object.attributes["pos"] == "-":
-                    self.word_list.insert("", "end", text=word_object.attributes["transliteration"], values=word_object.attributes["translation"], tags=(word_object.attributes["word_id"],))
+                elif self.pos_chooser.get() == "unassigned" and word_object.attributes["pos"] == "-":
+                    self.word_list.insert("", "end", text="", values=(word_object.attributes["transliteration"],word_object.attributes["translation"]), tags=(word_object.attributes["word_id"],))
                     self.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data_functions[0](event, wo))
         try:
             self.focus_object(self.word_list)
@@ -485,7 +479,7 @@ class populate_from_text():
 
         ########## FILE FRAME #################
 
-        self.file_frame = tk.LabelFrame(self.file_populate_win, text="Choose PDF-File")
+        self.file_frame = tk.LabelFrame(self.file_populate_win, text="Choose PDF/TXT/DOCX-File")
         self.file_frame.grid(row=0, column=0, sticky="nsew")
         self.file_chooser = tk.Button(self.file_frame, text="Choose File...")
         self.file_chooser.grid(row=0, column=0, sticky="nsew")
@@ -569,6 +563,7 @@ class edit_vocabulary_form():
 
 # Thanks to Miguel Martínez for the Search Bar Class
 # http://code.activestate.com/recipes/580773-tkinter-search-box/
+
 
 class Placeholder_State(object):
      __slots__ = 'normal_color', 'normal_font', 'placeholder_text', 'placeholder_color', 'placeholder_font', 'contains_placeholder'
@@ -751,14 +746,14 @@ class populate_from_web():
         self.scraper_websites = scraper_websites
         self.data_handler = data_handler
         self.change_webservice()
+
+        self.populate_web_win = tk.Toplevel()
+        self.populate_web_win.title("Populate Vocabulary from Web")
+        # self.populate_web_win.attributes('-topmost', True)
         self.build_widgets()
         
 
     def build_widgets(self):
-
-        self.populate_web_win = tk.Toplevel()
-        self.populate_web_win.title("Populate Vocabulary from Web")
-        self.populate_web_win.attributes('-topmost', True)
 
         self.chooser_frame = tk.LabelFrame(self.populate_web_win, text="Choose Web Service")
         self.chooser_frame.grid(row=0, column=0, sticky="nsew")
@@ -824,3 +819,34 @@ class populate_from_web():
             self.translation_chooser.configure(state="active")
         else:
             self.translation_chooser.configure(state="disabled")
+
+
+class export_vocabulary():
+    def __init__(self, format_list, export_columns):
+        self.format_list = format_list
+        self.export_columns = export_columns
+        self.export_win = tk.Toplevel()
+        self.export_win.title("Populate Vocabulary from Web")
+        # self.export_win.attributes('-topmost', True)
+        self.build_widgets()
+    
+
+    def build_widgets(self):
+        self.config_frame = tk.Frame(self.export_win)
+        self.config_frame.grid(row=0, column=0, sticky="nsew")
+
+        tk.Label(self.config_frame, text="Export as").grid(row=0, column=0, sticky="nsew")
+        self.format_chooser = tk.Listbox(self.config_frame, selectmode=tk.MULTIPLE, exportselection=0)
+        self.format_chooser.grid(row=1, column=0, sticky="nsew")
+        for format_ in self.format_list:
+            self.format_chooser.insert(tk.END, format_)
+
+        tk.Label(self.config_frame, text="Choose Columns").grid(row=0, column=1, sticky="nsew")
+        self.column_chooser = tk.Listbox(self.config_frame, selectmode=tk.MULTIPLE, exportselection=0)
+        self.column_chooser.grid(row=1, column=1, sticky="nsew")
+        for column in self.export_columns:
+            self.column_chooser.insert(tk.END, column)
+
+        self.export_button = tk.Button(self.export_win, text="Export!")
+        self.export_button.grid(row=1, column=0, sticky="nsew")
+
