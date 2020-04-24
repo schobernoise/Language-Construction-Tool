@@ -300,45 +300,30 @@ class main_frame(common_win, tk.Toplevel):
 
         tk.Label(self.letters_frame, text="Consonants").grid(row=0, column=0, sticky="nsew")
         self.cons_entry = tk.Entry(self.letters_frame)
-        self.cons_entry.grid(row=1, column=0, sticky="nsew")
+        self.cons_entry.grid(row=1, column=0, columnspan=10, sticky="nsew")
 
         tk.Label(self.letters_frame, text="Vowels").grid(row=2, column=0, sticky="nsew")
         self.vow_entry = tk.Entry(self.letters_frame)
-        self.vow_entry.grid(row=3, column=0, sticky="nsew")
+        self.vow_entry.grid(row=3, column=0, columnspan=10, sticky="nsew")
 
         tk.Label(self.letters_frame, text="Special Characters").grid(row=4, column=0, sticky="nsew")
         self.spec_entry = tk.Entry(self.letters_frame)
-        self.spec_entry.grid(row=5, column=0, sticky="nsew")
+        self.spec_entry.grid(row=5, column=0, columnspan=10, sticky="nsew")
 
 
         ################### SCALES #######################################
-        tk.Label(self.combination_frame, text="Probability Distribution, based on Last Char").grid(row=0, column=0, sticky="w")
-        self.prob_frame = tk.Frame(self.combination_frame)
-        self.prob_frame.grid(row=1, column=0, sticky="nsew")
+        tk.Label(self.combination_frame, text="Hardness").grid(row=0, column=0, sticky="w")
 
-        prob_entries = {}
-        prob_entries["cons"] = []
-        prob_entries["vow"] = []
-        prob_entries["spec"] = []
-        
-        tk.Label(self.prob_frame, text="Consonants", width=10, padx=5).grid(row=0, column=1, sticky="nsew")
-        tk.Label(self.prob_frame, text="CONS", font=("Calibri 10")).grid(row=1, column=0, sticky="nsew")
-        for i in range(3):
-            prob_entries["cons"].append(tk.Entry(self.prob_frame, width=5))
-            prob_entries["cons"][i].grid(row=i+1, column=1, sticky="nsew")
+        self.hardness_scale = tk.Scale(self.combination_frame, from_=1, to=10, orient=tk.HORIZONTAL)
+        self.hardness_scale.grid(row=1, column=0, columnspan=10, sticky="nsew")
+        self.hardness_scale.set(4)
 
-        tk.Label(self.prob_frame, text="Vowels", width=10, padx=5).grid(row=0, column=2, sticky="nsew")
-        tk.Label(self.prob_frame, text="VOW", font=("Calibri 10")).grid(row=2, column=0, sticky="nsew")
-        for i in range(3):
-            prob_entries["vow"].append(tk.Entry(self.prob_frame, width=5))
-            prob_entries["vow"][i].grid(row=i+1, column=2, sticky="nsew")
+        tk.Label(self.combination_frame, text="Foreigness").grid(row=2, column=0, sticky="w")
+
+        self.foreign_scale = tk.Scale(self.combination_frame, from_=1, to=10, orient=tk.HORIZONTAL)
+        self.foreign_scale.grid(row=3, column=0, columnspan=10, sticky="nsew")
+        self.foreign_scale.set(3)
         
-        
-        tk.Label(self.prob_frame, text="Spec. Characters", width=10, padx=5).grid(row=0, column=3, sticky="nsew")
-        tk.Label(self.prob_frame, text="SPEC", font=("Calibri 10")).grid(row=3, column=0, sticky="nsew")
-        for i in range(3):
-            prob_entries["spec"].append(tk.Entry(self.prob_frame, width=5))
-            prob_entries["spec"][i].grid(row=i+1, column=3, sticky="nsew")
 
         ###################### CONFIGURATION ###############################
 

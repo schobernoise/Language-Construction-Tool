@@ -89,76 +89,144 @@ class data_controller():
         return(final_wordlist)
 
 
-    def gen_words(self, letter_parts, word_count=30, min_size=2, max_size=6):
+    def gen_words(self, letter_parts, word_count=30, min_size=2, max_size=6, hardness=4, foreigness=3):
         
         letters_list = np.random.randint(low = min_size, high = max_size, size = word_count)
         word = ""
         gen_words_list = []
 
         for letter_num in letters_list:
-                prob = random.random()
+                prob = random.random()*100
                 word = [" "] * letter_num
 
                 for i in range(len(word)):
                     # FIRST CHAR CHOOSER
                     if i == 0:
-                        if prob <=  0.33:
+                        cons_prob = self.translate(hardness, 1, 10, 1, 80)
+                        vowels_prob = 100-cons_prob
+                        spec_prob = (vowels_prob/100)*self.translate(foreigness, 1, 10, 1, 100)
+                        vowel_prob = vowels_prob-spec_prob
+
+                        if prob <=  cons_prob:
                             word[0] = random.choice(letter_parts["consonants"])
 
-                        elif prob > 0.33 and prob < 0.66:
+                        elif prob > cons_prob and prob < (cons_prob+vowel_prob):
                             word[0] = random.choice(letter_parts["vowels"])
 
-                        elif prob >= 0.66:
+                        elif prob >= (cons_prob+vowel_prob):
                             word[0] = random.choice(letter_parts["special_vowels"])
                     
                     else:
-                        prob = random.random()  #Generate a new value for probability
+                        prob = random.random()*100  #Generate a new value for probability
 
                         # Char before WAS A KONS
                         for char in letter_parts["consonants"]:
                             if char == word[i-1]:
 
-                                if prob <= 0.03:
+                                cons_prob = self.translate(hardness, 1, 10, 1, 60)
+                                vowels_prob = 100-cons_prob
+                                spec_prob = (vowels_prob/100)*self.translate(foreigness, 1, 10, 1, 100)
+                                vowel_prob = vowels_prob-spec_prob
+
+                                if prob <= cons_prob:
                                     word[i] = random.choice(letter_parts["consonants"])
+                                    try:
+                                        while word[i] == word[i-1] and word[i] == word[i-2]:
+                                            word[i] = random.choice(letter_parts["consonants"])
+                                    except:
+                                        word[i] = random.choice(letter_parts["consonants"])
 
-                                elif prob > 0.03 and prob < 0.95:
+                                elif prob > cons_prob and prob < (cons_prob+vowel_prob):
                                     word[i] = random.choice(letter_parts["vowels"])
+                                    try:
+                                        while word[i] == word[i-1] and word[i] == word[i-2]:
+                                            word[i] = random.choice(letter_parts["vowels"])
+                                    except:
+                                        word[i] = random.choice(letter_parts["vowels"])
 
-                                elif prob >= 0.95:
+                                elif prob >= (cons_prob+vowel_prob):
                                     word[i] = random.choice(letter_parts["special_vowels"])
+                                    try:
+                                        while word[i] == word[i-1] and word[i] == word[i-2]:
+                                            word[i] = random.choice(letter_parts["special_vowels"])
+                                    except:
+                                        word[i] = random.choice(letter_parts["special_vowels"])
 
                             else: 
                                 pass
+                        
+                        # Char before  WAS A VOWEL
+                        for char in letter_parts["vowels"]:
+                            if char == word[i-1]:
+
+                                cons_prob = self.translate(hardness, 1, 10, 1, 85)
+                                vowels_prob = 100-cons_prob
+                                spec_prob = (vowels_prob/100)*self.translate(foreigness, 1, 10, 1, 100)
+                                vowel_prob = vowels_prob-spec_prob
+
+                                if prob <= cons_prob:
+                                    word[i] = random.choice(letter_parts["consonants"])
+                                    try:
+                                        while word[i] == word[i-1] and word[i] == word[i-2]:
+                                            word[i] = random.choice(letter_parts["consonants"])
+                                    except:
+                                        word[i] = random.choice(letter_parts["consonants"])
+
+                                elif prob > cons_prob and prob < (cons_prob+vowel_prob):
+                                    word[i] = random.choice(letter_parts["vowels"])
+                                    try:
+                                        while word[i] == word[i-1] and word[i] == word[i-2]:
+                                            word[i] = random.choice(letter_parts["vowels"])
+                                    except:
+                                        word[i] = random.choice(letter_parts["vowels"])
+
+                                elif prob >= (cons_prob+vowel_prob):
+                                    word[i] = random.choice(letter_parts["special_vowels"])
+                                    try:
+                                        while word[i] == word[i-1] and word[i] == word[i-2]:
+                                            word[i] = random.choice(letter_parts["special_vowels"])
+                                    except:
+                                        word[i] = random.choice(letter_parts["special_vowels"])
+                            else:
+                                pass
+
 
                         # Char before WAS A SPECIAL VOWEL
                         for char in letter_parts["special_vowels"]:
                             if char == word[i-1]:
 
-                                if prob <= 0.01:
-                                    word[i] = random.choice(letter_parts["vowels"])
+                                cons_prob = self.translate(hardness, 1, 10, 1, 85)
+                                vowels_prob = 100-cons_prob
+                                spec_prob = (vowels_prob/100)*self.translate(foreigness, 1, 10, 1, 100)
+                                vowel_prob = vowels_prob-spec_prob
 
-                                elif prob > 0.01 and prob < 0.975:
+                                if prob <= cons_prob:
                                     word[i] = random.choice(letter_parts["consonants"])
+                                    try:
+                                        while word[i] == word[i-1] and word[i] == word[i-2]:
+                                            word[i] = random.choice(letter_parts["consonants"])
+                                    except:
+                                        word[i] = random.choice(letter_parts["consonants"])
 
-                                elif prob >= 0.975:
+                                elif prob > cons_prob and prob < (cons_prob+vowel_prob):
+                                    word[i] = random.choice(letter_parts["vowels"])
+                                    try:
+                                        while word[i] == word[i-1] and word[i] == word[i-2]:
+                                            word[i] = random.choice(letter_parts["vowels"])
+                                    except:
+                                        word[i] = random.choice(letter_parts["vowels"])
+
+                                elif prob >= (cons_prob+vowel_prob):
                                     word[i] = random.choice(letter_parts["special_vowels"])
+                                    try:
+                                        while word[i] == word[i-1] and word[i] == word[i-2]:
+                                            word[i] = random.choice(letter_parts["special_vowels"])
+                                    except:
+                                        word[i] = random.choice(letter_parts["special_vowels"])
                             else:
                                 pass
 
-                        # Char before  WAS A VOWEL
-                        for char in letter_parts["vowels"]:
-                            if char == word[i-1]:
-
-                                if prob <= 0.05:
-                                    word[i] = random.choice(letter_parts["special_vowels"])
-
-                                elif prob > 0.05 and prob < 0.95:
-                                    word[i] = random.choice(letter_parts["consonants"])
-
-                                elif prob >= 0.95:
-                                    word[i] = random.choice(letter_parts["vowels"])
-                            else:
-                                pass
+                        
 
                 word = "".join(word)
                 gen_words_list.append(word)
@@ -166,6 +234,18 @@ class data_controller():
 
         gen_words_set = list(set(gen_words_list))
         return gen_words_set
+    
+
+    def translate(self, value, leftMin, leftMax, rightMin, rightMax):
+        # Figure out how 'wide' each range is
+        leftSpan = leftMax - leftMin
+        rightSpan = rightMax - rightMin
+
+        # Convert the left range into a 0-1 range (float)
+        valueScaled = float(value - leftMin) / float(leftSpan)
+
+        # Convert the 0-1 range into a value in the right range.
+        return rightMin + (valueScaled * rightSpan)
 
     
     def get_language_from_web(self, url="https://www.1000mostcommonwords.com/"):

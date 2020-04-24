@@ -55,21 +55,20 @@ class lct_controller():
     
     def construction_config(self):
         
-        for letter in self.conf.conf["consonants"]:
-            self.main_win.cons_entry.insert(0, letter)
-        for letter in self.conf.conf["vowels"]:
-            self.main_win.vow_entry.insert(0, letter)
-        for letter in self.conf.conf["special_vowels"]:
-            self.main_win.spec_entry.insert(0, letter)
+        insert_cons = str(self.conf.conf["consonants"]).replace("'","").replace("[", "").replace("]", "").replace(" ", "")
+        insert_vow = str(self.conf.conf["vowels"]).replace("'","").replace("[", "").replace("]", "").replace(" ", "")
+        insert_spec = str(self.conf.conf["special_vowels"]).replace("'","").replace("[", "").replace("]", "").replace(" ", "")
+        self.main_win.cons_entry.insert(0, insert_cons)
+        self.main_win.vow_entry.insert(0, insert_vow)
+        self.main_win.spec_entry.insert(0, insert_spec)
 
         self.main_win.minsize_entry.insert(0,str(2))
         self.main_win.maxsize_entry.insert(0,str(6))
 
-        # self.main_win.cons_scale.configure(command=self.generate_wordlist)
-        # self.main_win.vow_scale.configure(command=self.generate_wordlist)
-        # self.main_win.spec_scale.configure(command=self.generate_wordlist)
+        self.main_win.hardness_scale.configure(command=self.generate_wordlist)
+        self.main_win.foreign_scale.configure(command=self.generate_wordlist)
 
-        self.main_win.generate_button.configure(command=self.generate_wordlist)
+        self.main_win.generate_button.configure(command=lambda value=0:self.generate_wordlist(0))
     
 
     def create_voc_menu(self):
@@ -330,16 +329,18 @@ class lct_controller():
         self.file_imp.file_imp_win.destroy()
     
 
-    def generate_wordlist(self):
+    def generate_wordlist(self, value):
         self.letter_parts = {}
-        self.letter_parts["consonants"] = self.main_win.cons_entry.get()
-        self.letter_parts["special_vowels"] = self.main_win.spec_entry.get()
-        self.letter_parts["vowels"] = self.main_win.vow_entry.get()
+        self.letter_parts["consonants"] = self.main_win.cons_entry.get().split(",")
+        self.letter_parts["special_vowels"] = self.main_win.spec_entry.get().split(",")
+        self.letter_parts["vowels"] = self.main_win.vow_entry.get().split(",")
 
         self.generated_word_list = self.data_handler.gen_words(self.letter_parts, 
                                             min_size=self.main_win.minsize_entry.get(), 
                                             max_size=self.main_win.maxsize_entry.get(),
-                                            word_count=(self.conf.conf["construction_config"]["height"]*self.conf.conf["construction_config"]["width"])-1)
+                                            word_count=(self.conf.conf["construction_config"]["height"]*self.conf.conf["construction_config"]["width"])-1,
+                                            foreigness=self.main_win.foreign_scale.get(),
+                                            hardness=self.main_win.hardness_scale.get())
 
         k = 0
         for j in range(self.conf.conf["construction_config"]["width"]): #Rows
@@ -350,6 +351,7 @@ class lct_controller():
                 except:
                     pass
                 k += 1
+
 
     def trigger_populate_from_text(self):
         self.temp_file = ""
