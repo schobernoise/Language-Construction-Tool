@@ -27,5 +27,17 @@ Now you should be good to go! With your venv enabled, run
 `python app.py`
 
 
+**Usability**
+Strg-N: Neues Wort
+Strg+V: Neues Vokabular
+Strg+I: Import XLS/CSV
+Strg+E: Export XLS/CSV
+F5: Refresh Vocabulary
+Entf: Delete selected words
+
+# Not implemented yet
+
+Strg+A: Select all words
+
 
 

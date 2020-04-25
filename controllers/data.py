@@ -13,17 +13,13 @@ from nltk import *
 from bs4 import BeautifulSoup
 import requests
 import docx
-import pylatex as pyl
-from pylatex.utils import italic
 
 from controllers import utils, log
 
 
 class data_controller():
-    def __init__(self, vocab, conf):
+    def __init__(self, vocab):
         self.vocab = vocab
-        self.conf = conf
-
 
     def load_excel(self, excel_file):
         wb = oxl.load_workbook(excel_file)
@@ -348,7 +344,7 @@ class data_controller():
                     for word_ in vocabulary: 
                         temp_attr = []
                         for column in columns:
-                            temp_attr.append(word_.attributes[column])  
+                            temp_attr.append(word_[column])  
                         writer.writerow(temp_attr)
 
             elif format_ == "XLSX":
@@ -367,7 +363,7 @@ class data_controller():
                         temp_attr = []
                         for i, column in enumerate(columns): 
                             if column != "related_image":
-                                temp_attr.append(word_.attributes[column])  
+                                temp_attr.append(word_[column])  
                         ws.append(temp_attr)
 
                 for cell in ws["1"]:
@@ -380,22 +376,3 @@ class data_controller():
                     output_name = str(filename) + ".txt"
                 else:
                     output_name = filename
-    
-
-    def pretty_print_vocabulary(self, vocabulary, filename):
-
-        geometry_options = {"tmargin": "1cm", "lmargin": "10cm"}
-        doc = pyl.Document(geometry_options=geometry_options)
-
-        doc.preamble.append(pyl.Command('title', 'Awesome Title'))
-        doc.preamble.append(pyl.Command('author', 'Anonymous author'))
-        doc.preamble.append(pyl.Command('date', pyl.NoEscape(r'\today')))
-        doc.append(pyl.NoEscape(r'\maketitle'))
-
-        for word_ in vocabulary:
-            with doc.create(pyl.Section(word_.attributes["transliteration"])):
-                doc.append(italic(word_.attributes["pos"]))
-                doc.append(word_.attributes["translation"])
-                
-        print(filename)
-        doc.generate_pdf(filepath=str(filename), compiler='pdflatex', clean_tex=True)

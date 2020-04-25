@@ -2,26 +2,46 @@ import tkinter as tk
 from tkinter import ttk
 from tk_html_widgets import HTMLLabel
 from controllers import utils
+import re
 
-from functools import partial
 
 class common_win:
-    def __init__(self):
-        pass
-
+    
+    def __init__(self, main_win=False):
+        if main_win == False:
+            self.toplevel_win = tk.Toplevel()
+            self.toplevel_win.resizable(0,0)
+            self.toplevel_win.attributes('-topmost', True)
+        else:
+            self.status = tk.StringVar()  
+        
     def _quit(self):
-        pass
+        self.toplevel_win.destroy()
+    
+    def validate_input(self, entry_checkers, entry_text, length_):
+        regex = re.compile(r"(['\"()[\]])")
+
+        for check_var in entry_checkers:
+            if str(check_var) == str(entry_text):
+                for char in check_var.get():
+                    if regex.match(char):
+                        check_var.set(check_var.get()[:len(check_var.get())-1])
+                    else:
+                        pass    
+
+                if len(check_var.get()) > 0:
+                    check_var.set(check_var.get()[:length_])
 
 
 class main_frame(common_win, tk.Toplevel):
     def __init__(self, master, display_data_functions, vocab, conf):
+        super().__init__(main_win=True)
         tk.Toplevel.__init__(self, master)
-        super().__init__()
-        self.construction_config = conf.conf["construction_config"]
+        self.construction_config = conf["construction_config"]
         self.display_data_functions = display_data_functions
         self.vocab = vocab
         self.main_win = master 
-        self.protocol('WM_DELETE_WINDOW', self.main_win.destroy)
+        self.protocol('WM_DELETE_WINDOW', self._quit)
 
         ######### GUI INFO SETUP ##################
 
@@ -244,7 +264,6 @@ class main_frame(common_win, tk.Toplevel):
 
         ######### STATUS BAR #######################
 
-        self.status=tk.StringVar()  
         self.status_bar = tk.Label(self.main_win, textvariable=self.status, anchor=tk.W, bd=1, relief=tk.SUNKEN)
         self.status_bar.grid(row=12, column=0, columnspan=12, rowspan=1, sticky="nwes")
         self.status.set("Ready...")
@@ -340,9 +359,8 @@ class main_frame(common_win, tk.Toplevel):
     def build_con_tab(self):
         pass
 
-    
 
-class vocab_viewer(tk.Frame):
+class vocab_viewer(tk.Frame, common_win):
     def __init__(self, master, display_data_functions, vocab):
         tk.Frame.__init__(self, master)
         self.vocab = vocab
@@ -420,14 +438,14 @@ class vocab_viewer(tk.Frame):
     def display_vocabulary(self, text=""):
         self.word_list.delete(*self.word_list.get_children())
         
-        for word_object in self.vocab.vocabulary:
-            if text in word_object.attributes["transliteration"] or text in word_object.attributes["translation"] or text == "":
-                if word_object.attributes["pos"] == self.pos_chooser.get() or self.pos_chooser.get() == "all":
-                    self.word_list.insert("", "end", text="", values=(word_object.attributes["transliteration"],word_object.attributes["translation"]), tags=(word_object.attributes["word_id"],))
-                    self.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data_functions[0](event, wo))
-                elif self.pos_chooser.get() == "unassigned" and word_object.attributes["pos"] == "-":
-                    self.word_list.insert("", "end", text="", values=(word_object.attributes["transliteration"],word_object.attributes["translation"]), tags=(word_object.attributes["word_id"],))
-                    self.word_list.tag_bind(word_object.attributes["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_object: self.display_data_functions[0](event, wo))
+        for word_ in self.vocab.vocabulary:
+            if text in word_["transliteration"] or text in word_["translation"] or text == "":
+                if word_["pos"] == self.pos_chooser.get() or self.pos_chooser.get() == "all":
+                    self.word_list.insert("", "end", text="", values=(word_["transliteration"],word_["translation"]), tags=(word_["word_id"],))
+                    self.word_list.tag_bind(word_["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_: self.display_data_functions[0](event, wo))
+                elif self.pos_chooser.get() == "unassigned" and word_["pos"] == "-":
+                    self.word_list.insert("", "end", text="", values=(word_["transliteration"],word_["translation"]), tags=(word_["word_id"],))
+                    self.word_list.tag_bind(word_["word_id"],'<<TreeviewSelect>>', lambda event, wo=word_: self.display_data_functions[0](event, wo))
         try:
             self.focus_object(self.word_list)
         except IndexError:
@@ -464,77 +482,67 @@ class vocab_viewer(tk.Frame):
         # reverse sort next time
         tv.heading(col, command=lambda: \
                 self.treeview_sort_column(tv, col, not reverse))
-
-
-class populate_from_text():
-    def __init__(self):
-        self.file_populate_win = tk.Toplevel()
-        self.file_populate_win.title("Populate Vocabulary from File")
-        self.file_populate_win.resizable(0,0)
-        self.file_populate_win.attributes('-topmost', True)
-        self.create_widgets()
     
 
+    def select_all(self):
+        pass
+        
+
+class word_form(common_win):
+    def __init__(self, pos_list):
+        super().__init__()
+        self.pos_list = pos_list
+        self.toplevel_win.title("Word Editor")
+        
+        self.create_widgets()
+
     def create_widgets(self):
+        self.entries = {
+            "transliteration" : ["Word Literal"],
+            "phonetics" : ["Phonetics"],
+            "pos" : ["Part of Speech"],
+            "translation" : ["Translation"],
+            "example_sentence": ["Example Sentence"],
+            "example_translation" : ["Example Translation"],
+            "description" : ["Description"],
+            "related_image" : ["Related Image"]
+                        }
 
-        ########## FILE FRAME #################
+        self.entry_checkers = []
+        for name, entry in self.entries.items():
+            entry.append(tk.Label(self.toplevel_win,  text=entry[0], padx=10, pady=10))
+            if name == "description":
+                entry.append(tk.Text(self.toplevel_win, height=10))
+            elif name == "pos":
+                self.default_pos = tk.StringVar(self.toplevel_win)
+                self.default_pos.set(self.pos_list[0]) # default value
+                entry.append(tk.OptionMenu(self.toplevel_win, self.default_pos, *self.pos_list))
+            elif name == "related_image":
+                entry.append(tk.Button(self.toplevel_win, text="Choose File..."))
+            else:
+                check_var = tk.StringVar(self.toplevel_win)
+                check_var.trace("w", lambda x, y, z=check_var: self.validate_input(self.entry_checkers, x, 255))
+                self.entry_checkers.append(check_var)
+                entry.append(ttk.Entry(self.toplevel_win, textvariable = check_var, justify='center', font=("Calibri 14")))
+            
+        row = 0
+        for name, entry in self.entries.items(): 
+            for i, entropy in enumerate(entry):
+                if i != 0:
+                    entropy.grid(row=row, column=i-1, sticky="nsew")
+            row += 1
+        
+        ############### SUBMIT BUTTON #####################
 
-        self.file_frame = tk.LabelFrame(self.file_populate_win, text="Choose PDF/TXT/DOCX-File")
-        self.file_frame.grid(row=0, column=0, sticky="nsew")
-        self.file_chooser = tk.Button(self.file_frame, text="Choose File...")
-        self.file_chooser.grid(row=0, column=0, sticky="nsew")
-        self.warning_label = tk.Label(self.file_frame, text="", foreground="red")
-        self.warning_label.grid(row=1, column=0, sticky="nsew")
-
-
-        ############## CONFIGURATOR ##################
-
-        self.config_frame = tk.LabelFrame(self.file_populate_win, text="Configure")
-        self.config_frame.grid(row=2, column=0, sticky="nsew")
-
-        self.config_var = tk.IntVar(self.file_populate_win)
-        self.config_var.set(1)
-
-        # OPTION 1
-
-        self.radio_one = tk.Radiobutton(self.config_frame, variable=self.config_var, value=1)
-        self.radio_one.grid(row=0, column=0, sticky="nsew")
-
-        tk.Label(self.config_frame, text="Pick the").grid(row=0, column=1, sticky="nsew")
-        self.wc_entry = tk.Entry(self.config_frame, width=4)
-        self.wc_entry.grid(row=0, column=2, sticky="nsew")
-        tk.Label(self.config_frame, text="most used words with min. length").grid(row=0, column=3, sticky="nsew")
-        self.min_entry = tk.Entry(self.config_frame, width=4)
-        self.min_entry.grid(row=0, column=4, sticky="nsew")
-        tk.Label(self.config_frame, text="and max. length").grid(row=0, column=5, sticky="nsew")
-        self.max_entry = tk.Entry(self.config_frame, width=4)
-        self.max_entry.grid(row=0, column=6, sticky="nsew")
-
-        # OPTION 2
-
-        # self.radio_two = tk.Radiobutton(self.config_frame, variable=self.config_var, value=2)
-        # self.radio_two.grid(row=1, column=0, sticky="nsew")
-
-        # tk.Label(self.config_frame, text="Pick the").grid(row=1, column=1, sticky="nsew")
-        # self.wc_entry = tk.Entry(self.config_frame, width=4)
-        # self.wc_entry.grid(row=1, column=2, sticky="nsew")
-        # tk.Label(self.config_frame, text="most used words with min. length").grid(row=1, column=3, sticky="nsew")
-        # self.min_entry = tk.Entry(self.config_frame, width=4)
-        # self.min_entry.grid(row=1, column=4, sticky="nsew")
-        # tk.Label(self.config_frame, text="and max. length").grid(row=1, column=5, sticky="nsew")
-        # self.max_entry = tk.Entry(self.config_frame, width=4)
-        # self.max_entry.grid(row=1, column=6, sticky="nsew")
-
-        self.analyze_button = tk.Button(self.file_populate_win, text="Analyze Text!")
-        self.analyze_button.grid(row=3, column=0, sticky="nsew")
+        self.submit_button = tk.Button(self.toplevel_win, text="Submit Word")
+        self.submit_button.grid(row=len(self.entries)+3, padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
 
 
-class edit_vocabulary_form():
+class edit_vocabulary_form(common_win):
     def __init__(self):
-        self.edit_vocab_win = tk.Toplevel()
-        self.edit_vocab_win.title("New Vocabulary")
-        self.edit_vocab_win.resizable(0,0)
-        self.edit_vocab_win.attributes('-topmost', True)
+        super().__init__()
+        self.toplevel_win.title("New Vocabulary")
+
         self.create_widgets()
     
 
@@ -546,27 +554,29 @@ class edit_vocabulary_form():
             "notes": ["Vocabulary Notes"]
                         }
         row = 0
+        self.entry_checkers = []
         for name, entry in self.entries.items():
-            entry.append(tk.Label(self.edit_vocab_win, text=entry[0], padx=10, pady=10))
-            entry.append(ttk.Entry(self.edit_vocab_win, font=("Calibri 14"), justify='center'))
+            check_var = tk.StringVar(self.toplevel_win)
+            check_var.trace("w", lambda x, y, z=check_var: self.validate_input(self.entry_checkers, x, 255))
+            self.entry_checkers.append(check_var)
+            entry.append(tk.Label(self.toplevel_win, text=entry[0], padx=10, pady=10))
+            entry.append(ttk.Entry(self.toplevel_win, textvariable = check_var, font=("Calibri 14"), justify='center'))
+            
             for i, entropy in enumerate(entry):
                 if i != 0:
                     entropy.grid(row=row, column=i-1, sticky="nsew")
             row += 1
-        
+
         for i in range(4):
-            self.edit_vocab_win.columnconfigure(i, weight=1)
+            self.toplevel_win.columnconfigure(i, weight=1)
         
-        self.submit_button = tk.Button(self.edit_vocab_win, text="Submit Vocabulary")
+        self.submit_button = tk.Button(self.toplevel_win, text="Submit Vocabulary")
         self.submit_button.grid(row=len(self.entries), padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
-
-
-# Thanks to Miguel Martínez for the Search Bar Class
-# http://code.activestate.com/recipes/580773-tkinter-search-box/
 
 
 class Placeholder_State(object):
      __slots__ = 'normal_color', 'normal_font', 'placeholder_text', 'placeholder_color', 'placeholder_font', 'contains_placeholder'
+
 
 def add_placeholder_to(entry, placeholder, color="grey", font=None):
     normal_color = entry.cget("fg")
@@ -609,6 +619,9 @@ def add_placeholder_to(entry, placeholder, color="grey", font=None):
 
 
 class SearchBox(tk.Frame):
+    # Thanks to Miguel Martínez for the Search Bar Class
+    # http://code.activestate.com/recipes/580773-tkinter-search-box/
+
     def __init__(self, master, entry_width=30, entry_font=None, entry_background="white", entry_highlightthickness=1, button_text="Search", button_ipadx=10, button_background="#009688", button_foreground="white", button_font=None, opacity=0.8, placeholder=None, placeholder_font=None, placeholder_color="grey", spacing=3, command=None):
         tk.Frame.__init__(self, master)
         
@@ -691,90 +704,41 @@ class SearchBox(tk.Frame):
         self.button_label.configure(background=self._button_activebackground)
 
 
-class word_form():
-    def __init__(self, pos_list):
-        self.pos_list = pos_list
-        self.word_win = tk.Toplevel()
-        
-        self.word_win.title("Word Editor")
-        self.word_win.resizable(0,0)
-        self.word_win.attributes('-topmost', True)
-
-        self.create_widgets()
-
-
-    def create_widgets(self):
-        self.entries = {
-            "transliteration" : ["Word Literal"],
-            "phonetics" : ["Phonetics"],
-            "pos" : ["Part of Speech"],
-            "translation" : ["Translation"],
-            "example_sentence": ["Example Sentence"],
-            "example_translation" : ["Example Translation"],
-            "description" : ["Description"],
-            "related_image" : ["Related Image"]
-                        }
-        
-        for name, entry in self.entries.items():
-            entry.append(tk.Label(self.word_win, text=entry[0], padx=10, pady=10))
-            if name == "description":
-                entry.append(tk.Text(self.word_win, height=10))
-            elif name == "pos":
-                self.default_pos = tk.StringVar(self.word_win)
-                self.default_pos.set(self.pos_list[0]) # default value
-                entry.append(tk.OptionMenu(self.word_win, self.default_pos, *self.pos_list))
-            elif name == "related_image":
-                entry.append(tk.Button(self.word_win, text="Choose File..."))
-            else:
-                entry.append(ttk.Entry(self.word_win, justify='center', font=("Calibri 14")))
-            
-        row = 0
-        for name, entry in self.entries.items(): 
-            for i, entropy in enumerate(entry):
-                if i != 0:
-                    entropy.grid(row=row, column=i-1, sticky="nsew")
-            row += 1
-        
-        ############### SUBMIT BUTTON #####################
-
-        self.submit_button = tk.Button(self.word_win, text="Submit Word")
-        self.submit_button.grid(row=len(self.entries)+3, padx=10, pady=10, column=0, columnspan=2, sticky="nsew")
-
-
-class populate_from_web():
+class populate_from_web(common_win):
     def __init__(self, scraper_websites, data_handler):
+        super().__init__()
+        self.toplevel_win.title("Populate Vocabulary from Web")
         self.scraper_websites = scraper_websites
         self.data_handler = data_handler
         self.change_webservice()
 
-        self.populate_web_win = tk.Toplevel()
-        self.populate_web_win.title("Populate Vocabulary from Web")
-        # self.populate_web_win.attributes('-topmost', True)
+        
+        # self.toplevel_win.attributes('-topmost', True)
         self.build_widgets()
         
 
     def build_widgets(self):
 
-        self.chooser_frame = tk.LabelFrame(self.populate_web_win, text="Choose Web Service")
+        self.chooser_frame = tk.LabelFrame(self.toplevel_win, text="Choose Web Service")
         self.chooser_frame.grid(row=0, column=0, sticky="nsew")
 
         tk.Label(self.chooser_frame, text="Web Service").grid(row=0, column=0, sticky="nsew")
 
-        self.default_service = tk.StringVar(self.populate_web_win)
+        self.default_service = tk.StringVar(self.toplevel_win)
         self.default_service.set(self.scraper_websites[0])
         self.service_chooser = tk.OptionMenu(self.chooser_frame, self.default_service, *self.scraper_websites, command=self.change_webservice)
         self.service_chooser.grid(row=1, column=0, sticky="nsew")
 
         tk.Label(self.chooser_frame, text="Language").grid(row=0, column=1, sticky="nsew")
 
-        self.default_language = tk.StringVar(self.populate_web_win)
+        self.default_language = tk.StringVar(self.toplevel_win)
         self.default_language.set(self.language_list[0])
         self.language_chooser = tk.OptionMenu(self.chooser_frame, self.default_language, *self.language_list)
         self.language_chooser.grid(row=1, column=1, sticky="nsew")
 
         tk.Label(self.chooser_frame, text="Import as").grid(row=0, column=2, sticky="nsew")
 
-        self.default_import = tk.StringVar(self.populate_web_win)
+        self.default_import = tk.StringVar(self.toplevel_win)
         self.default_import.set("translation")
         self.import_option = tk.OptionMenu(self.chooser_frame, self.default_import, *("transliteration", "translation"), command=self.change_import_method)
         self.import_option.grid(row=1, column=2, sticky="nsew")
@@ -785,21 +749,20 @@ class populate_from_web():
         self.translation_chooser = tk.Checkbutton(self.chooser_frame, variable=self.translation_var, state="disabled")
         self.translation_chooser.grid(row=1, column=3, sticky="nsew")
 
-        self.config_frame = tk.LabelFrame(self.populate_web_win, text="Configure")
+        self.config_frame = tk.LabelFrame(self.toplevel_win, text="Configure")
         self.config_frame.grid(row=1, column=0, sticky="nsew")
 
-        tk.Label(self.config_frame, text="Words to import").grid(row=0, column=0, sticky="nsew")
-        self.wc_entry = tk.Entry(self.config_frame, width=4)
-        self.wc_entry.grid(row=0, column=1, sticky="nsew")
-        self.wc_entry.insert(0, 100)
-        # tk.Label(self.config_frame, text="most used words with min. length").grid(row=0, column=3, sticky="nsew")
-        # self.min_entry = tk.Entry(self.config_frame, width=4)
-        # self.min_entry.grid(row=0, column=4, sticky="nsew")
-        # tk.Label(self.config_frame, text="and max. length").grid(row=0, column=5, sticky="nsew")
-        # self.max_entry = tk.Entry(self.config_frame, width=4)
-        # self.max_entry.grid(row=0, column=6, sticky="nsew")
+        tk.Label(self.config_frame, text="Start Index").grid(row=0, column=0, sticky="nsew")
+        self.start_count = tk.Entry(self.config_frame, width=4)
+        self.start_count.grid(row=1, column=0, sticky="nsew")
+        self.start_count.insert(0, 100)
+        
+        tk.Label(self.config_frame, text="Start Index").grid(row=0, column=1, sticky="nsew")
+        self.end_count = tk.Entry(self.config_frame, width=4)
+        self.end_count.grid(row=1, column=1, sticky="nsew")
+        self.end_count.insert(0, 100)
 
-        self.import_button = tk.Button(self.populate_web_win, text="Import Words!")
+        self.import_button = tk.Button(self.toplevel_win, text="Import Words!")
         self.import_button.grid(row=2, column=0, sticky="nsew")
 
     def change_webservice(self):
@@ -821,18 +784,18 @@ class populate_from_web():
             self.translation_chooser.configure(state="disabled")
 
 
-class export_vocabulary():
+class export_vocabulary(common_win):
     def __init__(self, format_list, export_columns):
         self.format_list = format_list
         self.export_columns = export_columns
-        self.export_win = tk.Toplevel()
-        self.export_win.title("Populate Vocabulary from Web")
-        # self.export_win.attributes('-topmost', True)
+        super().__init__()
+        self.toplevel_win.title("Populate Vocabulary from Web")
+        # self.toplevel_win.attributes('-topmost', True)
         self.build_widgets()
     
 
     def build_widgets(self):
-        self.config_frame = tk.Frame(self.export_win)
+        self.config_frame = tk.Frame(self.toplevel_win)
         self.config_frame.grid(row=0, column=0, sticky="nsew")
 
         tk.Label(self.config_frame, text="Export as").grid(row=0, column=0, sticky="nsew")
@@ -847,6 +810,66 @@ class export_vocabulary():
         for column in self.export_columns:
             self.column_chooser.insert(tk.END, column)
 
-        self.export_button = tk.Button(self.export_win, text="Export!")
+        self.export_button = tk.Button(self.toplevel_win, text="Export!")
         self.export_button.grid(row=1, column=0, sticky="nsew")
 
+
+class populate_from_text(common_win):
+    def __init__(self):
+        super().__init__()
+        self.toplevel_win.title("Populate Vocabulary from File")
+
+        self.create_widgets()
+
+    def create_widgets(self):
+
+        ########## FILE FRAME #################
+
+        self.file_frame = tk.LabelFrame(self.toplevel_win, text="Choose PDF/TXT/DOCX-File")
+        self.file_frame.grid(row=0, column=0, sticky="nsew")
+        self.file_chooser = tk.Button(self.file_frame, text="Choose File...")
+        self.file_chooser.grid(row=0, column=0, sticky="nsew")
+        self.warning_label = tk.Label(self.file_frame, text="", foreground="red")
+        self.warning_label.grid(row=1, column=0, sticky="nsew")
+
+
+        ############## CONFIGURATOR ##################
+
+        self.config_frame = tk.LabelFrame(self.toplevel_win, text="Configure")
+        self.config_frame.grid(row=2, column=0, sticky="nsew")
+
+        self.config_var = tk.IntVar(self.toplevel_win)
+        self.config_var.set(1)
+
+        # OPTION 1
+
+        self.radio_one = tk.Radiobutton(self.config_frame, variable=self.config_var, value=1)
+        self.radio_one.grid(row=0, column=0, sticky="nsew")
+
+        tk.Label(self.config_frame, text="Pick the").grid(row=0, column=1, sticky="nsew")
+        self.wc_entry = tk.Entry(self.config_frame, width=4)
+        self.wc_entry.grid(row=0, column=2, sticky="nsew")
+        tk.Label(self.config_frame, text="most used words with min. length").grid(row=0, column=3, sticky="nsew")
+        self.min_entry = tk.Entry(self.config_frame, width=4)
+        self.min_entry.grid(row=0, column=4, sticky="nsew")
+        tk.Label(self.config_frame, text="and max. length").grid(row=0, column=5, sticky="nsew")
+        self.max_entry = tk.Entry(self.config_frame, width=4)
+        self.max_entry.grid(row=0, column=6, sticky="nsew")
+
+        # OPTION 2
+
+        # self.radio_two = tk.Radiobutton(self.config_frame, variable=self.config_var, value=2)
+        # self.radio_two.grid(row=1, column=0, sticky="nsew")
+
+        # tk.Label(self.config_frame, text="Pick the").grid(row=1, column=1, sticky="nsew")
+        # self.wc_entry = tk.Entry(self.config_frame, width=4)
+        # self.wc_entry.grid(row=1, column=2, sticky="nsew")
+        # tk.Label(self.config_frame, text="most used words with min. length").grid(row=1, column=3, sticky="nsew")
+        # self.min_entry = tk.Entry(self.config_frame, width=4)
+        # self.min_entry.grid(row=1, column=4, sticky="nsew")
+        # tk.Label(self.config_frame, text="and max. length").grid(row=1, column=5, sticky="nsew")
+        # self.max_entry = tk.Entry(self.config_frame, width=4)
+        # self.max_entry.grid(row=1, column=6, sticky="nsew")
+
+        self.analyze_button = tk.Button(self.toplevel_win, text="Analyze Text!")
+        self.analyze_button.grid(row=3, column=0, sticky="nsew")

@@ -6,9 +6,9 @@ import io
 
 class voc_model():
     def __init__(self, conf):
-        self.word_attribute_headings = conf.conf["word_attributes"]
-        self.metadata_headings = conf.conf["vocabulary_metadata"]
-        self.pos_list = conf.conf["part_of_speech"]
+        self.word_attribute_headings = conf["word_attributes"]
+        self.metadata_headings = conf["vocabulary_metadata"]
+        self.pos_list = conf["part_of_speech"]
 
 
     def load_db(self, db_file="", metadata=[], mode="load"):
@@ -72,7 +72,7 @@ class voc_model():
                         word_args[self.word_attribute_headings[i]] = value
 
                 # print(word_args)
-                self.vocabulary.append(word(**word_args))
+                self.vocabulary.append(word_args)
 
             sql_load_meta = "SELECT * FROM METADATA"
             
@@ -228,15 +228,3 @@ class voc_model():
             log.error("MODEL: Failed populating Database from Web.")
         
         self.load_db()
-
-
-
-class word():
-    def __init__(self, **kwargs):
-        self.attributes = {}
-        for key, value in kwargs.items():
-            self.attributes[key] = value
-    
-
-
-

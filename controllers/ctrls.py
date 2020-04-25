@@ -11,25 +11,22 @@ from views.main_views import *
 
 
 class lct_controller():
-    def __init__(self, root, conf, start_up):
-        self.conf = conf
+    def __init__(self, root, conf):
+        self.conf = conf.conf
         self.vocab = voc_model(self.conf)
         self.display_data_functions = [self.display_data, self.display_empty_data]
         self.main_win = main_frame(root, self.display_data_functions, self.vocab, self.conf)
         self.vocabulary_viewer_instances = [self.main_win.fixed_vocab_viewer]
         self.main_win.withdraw() 
-        self.data_handler = data.data_controller(self.vocab, self.conf)
+        self.data_handler = data.data_controller(self.vocab)
         self.populate_menu()
         self.construction_config()
 
-        self.pos_list = self.conf.conf["part_of_speech"]
-
-        self.start_up = start_up
-        
-        if self.start_up == True:
-            self.load_vocabulary()
-            self.start_up = False
+        self.pos_list = self.conf["part_of_speech"]
+        self.bind_keys(root)
+        self.load_vocabulary()
     
+
     def check_datafolder_integrity(self):
         pass
         
@@ -47,7 +44,7 @@ class lct_controller():
             self.show_tooltips = False
         else:
             self.main_win.status.set("Loading Start Vocabulary")
-            db_file=self.conf.conf["start_db"]
+            db_file=self.conf["start_db"]
             self.vocab.load_db(db_file, mode="load")
             self.show_tooltips = True
         
@@ -55,15 +52,15 @@ class lct_controller():
 
         self.refresh_vocabulary()
         end = timer()
-        print(end - start)
+        # print(end - start)
         self.main_win.title("Language Construction Tool " + self.vocab.metadata["name"])
         
     
     def construction_config(self):
         
-        insert_cons = str(self.conf.conf["consonants"]).replace("'","").replace("[", "").replace("]", "").replace(" ", "")
-        insert_vow = str(self.conf.conf["vowels"]).replace("'","").replace("[", "").replace("]", "").replace(" ", "")
-        insert_spec = str(self.conf.conf["special_vowels"]).replace("'","").replace("[", "").replace("]", "").replace(" ", "")
+        insert_cons = str(self.conf["consonants"]).replace("'","").replace("[", "").replace("]", "").replace(" ", "")
+        insert_vow = str(self.conf["vowels"]).replace("'","").replace("[", "").replace("]", "").replace(" ", "")
+        insert_spec = str(self.conf["special_vowels"]).replace("'","").replace("[", "").replace("]", "").replace(" ", "")
         self.main_win.cons_entry.insert(0, insert_cons)
         self.main_win.vow_entry.insert(0, insert_vow)
         self.main_win.spec_entry.insert(0, insert_spec)
@@ -96,13 +93,13 @@ class lct_controller():
         self.main_win.vocmenu.add_command(label="Populate from Web...", command=self.trigger_populate_from_web)
         self.main_win.vocmenu.add_separator()
         self.main_win.vocmenu.add_command(label="Export Vocabulary...", command=self.trigger_export_vocabulary)
-        if self.conf.conf["pretty_print_feature"] == True:
+        if self.conf["pretty_print_feature"] == True:
             self.main_win.vocmenu.add_command(label="Pretty Print Vocabulary as PDF", command=self.trigger_pretty_print_vocabulary)
         
         # CON MENU
         self.main_win.menu.add_cascade(label="Generation", menu=self.main_win.genmenu)
         self.main_win.genmenu.add_command(label="Export Batch...")
-        self.main_win.genmenu.add_command(label="Feed File")
+        # self.main_win.genmenu.add_command(label="Feed File")
 
         # HELP MENU
         self.main_win.menu.add_cascade(label="Help", menu=self.main_win.helpmenu)
@@ -115,23 +112,32 @@ class lct_controller():
         self.main_win.clone_button.configure(command=self.trigger_vocabulary_instance)
         
 
-    def display_data(self, event, word_object):
+    def bind_keys(self, root):
+        root.bind("<Control-n>", lambda event: self.trigger_new_word())
+        root.bind("<Control-v>", lambda event: self.trigger_new_vocabulary())
+        root.bind("<Delete>", lambda event: self.trigger_del_word())
+        root.bind("<Control-i>", lambda event: self.trigger_xls_import())
+        root.bind("<Control-e>", lambda event: self.trigger_export_vocabulary())
+        root.bind("<F5>", lambda event: self.refresh_vocabulary())
 
-        self.main_win.word_header.configure(text=word_object.attributes["transliteration"])
-        self.main_win.phonetics_label.configure(text=word_object.attributes["phonetics"])
-        self.main_win.pos_label.configure(text=word_object.attributes["pos"])
-        self.main_win.translation_label.configure(text=word_object.attributes["translation"])
-        self.main_win.example_label.configure(text=word_object.attributes["example_sentence"])
-        self.main_win.example_translation_label.configure(text=word_object.attributes["example_translation"])
-        self.main_win.description.set_html(html=word_object.attributes["description"])
-        img = word_object.attributes["related_image"]
+
+    def display_data(self, event, word_):
+
+        self.main_win.word_header.configure(text=word_["transliteration"])
+        self.main_win.phonetics_label.configure(text=word_["phonetics"])
+        self.main_win.pos_label.configure(text=word_["pos"])
+        self.main_win.translation_label.configure(text=word_["translation"])
+        self.main_win.example_label.configure(text=word_["example_sentence"])
+        self.main_win.example_translation_label.configure(text=word_["example_translation"])
+        self.main_win.description.set_html(html=word_["description"])
+        img = word_["related_image"]
         self.main_win.related_image.image = ImageTk.PhotoImage(img.resize((200, 200), Image.ANTIALIAS))
         self.main_win.related_image.create_image(0, 0, image=self.main_win.related_image.image, anchor='nw')
-        self.main_win.related_image.bind('<Double-Button-1>', lambda event, wo=word_object: self.update_related_image(event, wo))
+        self.main_win.related_image.bind('<Double-Button-1>', lambda event, wo=word_: self.update_related_image(event, wo))
         # DELETE BUTTON
-        self.main_win.voc_buttons[1].configure(command=lambda word_id=word_object.attributes["word_id"]:self.trigger_del_word(word_id))
+        self.main_win.voc_buttons[1].configure(command=self.trigger_del_word)
         # EDIT BUTTON
-        self.main_win.voc_buttons[2].configure(command=lambda wo=word_object:self.trigger_edit_word(wo))
+        self.main_win.voc_buttons[2].configure(command=lambda wo=word_:self.trigger_edit_word(wo))
         self.display_voc_info()
         # self.main_win.status.set("Ready...")
             
@@ -160,7 +166,7 @@ class lct_controller():
         self.main_win.voc_description.configure(text=self.vocab.metadata["notes"])
 
 
-    def refresh_vocabulary(self):
+    def refresh_vocabulary(self, event=None):
         # create an array for all instances of the vocabulary viewer
         # refresh all of them every time this function gets called
         
@@ -176,7 +182,7 @@ class lct_controller():
         vocab_win.minsize(300, 600)
         vocab_win.maxsize(400, 1024)
         vocab_win.title("LCT Vocab Viewer")
-        vocab_win.attributes('-topmost', True)
+        vocab_win('-topmost', True)
         vocab_instance = vocab_viewer(vocab_win, self.display_data_functions, self.vocab)
         self.vocabulary_viewer_instances.append(vocab_instance)
         vocab_instance.grid(row=0, column=0, columnspan=4, rowspan=12, sticky="nsew")
@@ -190,16 +196,16 @@ class lct_controller():
         vocab_instance.display_vocabulary()
 
     
-    def update_related_image(self, event, word_object):
+    def update_related_image(self, event, word_):
         image_filename = utils.open_file_dialog("image")
         if image_filename != "":
-            self.vocab.update_word(word_object.attributes["word_id"], "related_image", utils.convertToBinaryData(image_filename))  
+            self.vocab.update_word(word_["word_id"], "related_image", utils.convertToBinaryData(image_filename))  
             self.refresh_vocabulary()
         else:
             pass
 
     
-    def trigger_new_vocabulary(self):
+    def trigger_new_vocabulary(self, event=None):
         self.new_vocab = edit_vocabulary_form()
         self.new_vocab.submit_button.configure(command=self.save_new_vocabulary)
     
@@ -240,7 +246,7 @@ class lct_controller():
         self.display_empty_data()
 
 
-    def trigger_new_word(self):
+    def trigger_new_word(self, event=None):
         self.main_win.status.set("Opening Word Editor")
         self.temp_rel_image = ""
         self.new_word = word_form(self.pos_list)
@@ -266,25 +272,25 @@ class lct_controller():
                 form_contents[name] = entry[2].get()
         
         self.vocab.save_word(form_contents)
-        self.new_word.word_win.destroy()
+        self.new_word._quit()
         self.refresh_vocabulary()
     
 
-    def trigger_edit_word(self, word_object):
+    def trigger_edit_word(self, word_):
         
         self.main_win.status.set("Opening Word Editor")
         self.temp_rel_image = ""
         self.edit_word = word_form(self.pos_list)
-        self.edit_word.default_pos.set(word_object.attributes["pos"])
+        self.edit_word.default_pos.set(word_["pos"])
         self.edit_word.entries["related_image"][2].configure(command=self.add_related_image)
-        self.edit_word.submit_button.configure(command=lambda w_id=word_object.attributes["word_id"]:self.update_edit_word(w_id))
+        self.edit_word.submit_button.configure(command=lambda w_id=word_["word_id"]:self.update_edit_word(w_id))
 
         for name, entry in self.edit_word.entries.items(): 
             try:
                 if name != "description":
-                    entry[2].insert(0, word_object.attributes[name])
+                    entry[2].insert(0, word_[name])
                 else:
-                    entry[2].insert(tk.END, word_object.attributes[name])
+                    entry[2].insert(tk.END, word_[name])
             except:
                 pass
 
@@ -304,11 +310,11 @@ class lct_controller():
                 form_contents[name] = entry[2].get()
         
         self.vocab.update_word(form_contents, word_id)
-        self.edit_word.word_win.destroy()
+        self.edit_word._quit()
         self.refresh_vocabulary()
             
 
-    def trigger_del_word(self, word_id):
+    def trigger_del_word(self, event=None):
         self.main_win.status.set("Deleting Word...")
         treeview = self.main_win.fixed_vocab_viewer.word_list
         selection = treeview.selection()
@@ -320,12 +326,12 @@ class lct_controller():
     
 
     def id_attributes(self, word_id):
-        for word_object in self.vocab.vocabulary:
-            if word_object.attributes["word_id"] == word_id:
-                return word_object.attributes
+        for word_ in self.vocab.vocabulary:
+            if word_["word_id"] == word_id:
+                return word_
     
     
-    def trigger_xls_import(self):
+    def trigger_xls_import(self, event=None):
         temp_file = utils.open_file_dialog("excel_csv")
 
         if temp_file[-4:] == "xlsx":
@@ -346,13 +352,13 @@ class lct_controller():
         self.generated_word_list = self.data_handler.gen_words(self.letter_parts, 
                                             min_size=self.main_win.minsize_entry.get(), 
                                             max_size=self.main_win.maxsize_entry.get(),
-                                            word_count=(self.conf.conf["construction_config"]["height"]*self.conf.conf["construction_config"]["width"])-1,
+                                            word_count=(self.conf["construction_config"]["height"]*self.conf["construction_config"]["width"])-1,
                                             foreigness=self.main_win.foreign_scale.get(),
                                             hardness=self.main_win.hardness_scale.get())
 
         k = 0
-        for j in range(self.conf.conf["construction_config"]["width"]): #Rows
-            for i in range(self.conf.conf["construction_config"]["height"]): #Columns
+        for j in range(self.conf["construction_config"]["width"]): #Rows
+            for i in range(self.conf["construction_config"]["height"]): #Columns
                 self.main_win.table[k].delete(0, 'end')
                 try:
                     self.main_win.table[k].insert(0, self.generated_word_list[k])
@@ -387,32 +393,33 @@ class lct_controller():
                             )
 
             self.vocab.populate_database_from_text(population_words)
-            self.population_window.file_populate_win.destroy()
+            self.population_window._quit()
             self.refresh_vocabulary()
         else:
             self.population_window.warning_label.configure(text="Please choose a File!")
     
 
     def trigger_populate_from_web(self):
-        scraper_websites = self.conf.conf["scraper_websites"]
+        scraper_websites = self.conf["scraper_websites"]
         self.population_window = populate_from_web(scraper_websites, self.data_handler)
         self.population_window.import_button.configure(command=self.save_populate_from_web)
 
 
     def save_populate_from_web(self):
-        words_list = self.data_handler.get_words_from_web(self.population_window.language_dict[self.population_window.default_language.get()], end_count=self.population_window.wc_entry.get())
+        words_list = self.data_handler.get_words_from_web(self.population_window.language_dict[self.population_window.default_language.get()], 
+                                                        start_count=self.population_window.start_count.get(), 
+                                                        end_count=self.population_window.end_count.get())
         self.vocab.populate_database_from_web(words_list,
                                                     self.population_window.default_import.get(), 
                                                     self.population_window.translation_var.get())
-        self.population_window.populate_web_win.destroy()
+        self.population_window._quit()
         self.refresh_vocabulary()
 
 
-    def trigger_export_vocabulary(self):
+    def trigger_export_vocabulary(self, event=None):
         format_list=["CSV", "XLSX", "TXT"]
-        self.export_window = export_vocabulary(format_list, self.conf.conf["word_attributes"])
+        self.export_window = export_vocabulary(format_list, self.conf["word_attributes"])
         self.export_window.export_button.configure(command=self.save_export_vocabulary)
-
 
     
     def save_export_vocabulary(self):
@@ -431,16 +438,5 @@ class lct_controller():
 
         self.data_handler.export_vocabulary_as_file(filename, self.vocab.vocabulary, formats, columns)
 
-        self.export_window.export_win.destroy()
+        self.export_window._quit()
     
-
-    def trigger_pretty_print_vocabulary(self):
-        filename = filedialog.asksaveasfilename(initialdir = "/data",title = "Save as PDF", filetypes = (("PDF files","*.pdf"),))
-        if ".pdf" not in filename:
-                    output_name = str(filename) + ".pdf"
-        else:
-            output_name = filename
-
-        self.data_handler.pretty_print_vocabulary(self.vocab.vocabulary, filename)
-
-
