@@ -114,14 +114,16 @@ class voc_model():
             log.error("MODEL: Updating Vocabulary Metadata failed")
          
         self.load_db()
-    
         
     
     def save_word(self, form_contents):
         sql_insert_word_values = []
 
-        for key, value in form_contents.items():
-            sql_insert_word_values.append(value)
+        for heading in self.word_attribute_headings[1:]:
+            try:
+                sql_insert_word_values.append(form_contents[heading])
+            except:
+                sql_insert_word_values.append("-")
 
 
         sql_insert_new_word = '''INSERT INTO VOCABULARY ({},{},{},{},{},{},{},{})

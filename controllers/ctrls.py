@@ -227,6 +227,7 @@ class lct_controller():
         self.update_vocab.edit_vocab_win.destroy()
         self.refresh_vocabulary()
 
+
     def save_new_vocabulary(self):
         self.main_win.status.set("Saving new Vocabulary")
         form_contents = []
@@ -270,11 +271,41 @@ class lct_controller():
                 form_contents[name] = self.new_word.default_pos.get()
             else:
                 form_contents[name] = entry[2].get()
+                duplicate_check = self.check_for_duplicates(["transliteration", "translation"], entry[2].get())
+                if duplicate_check != True:
+                    MsgBox = tk.messagebox.askquestion ('Found Duplicate','Word already exists: {}. Do wish to continue?'.format(duplicate_check),icon = 'warning')
+                    if MsgBox == True:
+                        self.vocab.save_word(form_contents)
+                        self.new_word._quit()
+                        self.refresh_vocabulary()
+                        return
+                    else:
+                        self.new_word._quit()
+                        return
+                else:
+                    pass
         
         self.vocab.save_word(form_contents)
         self.new_word._quit()
         self.refresh_vocabulary()
-    
+
+
+    def check_for_duplicates(self, term, heading_list=[]):
+        checker = "x"
+        # print(term, heading_list)
+        if self.vocab.vocabulary != []:
+            for heading in heading_list:
+                for word in self.vocab.vocabulary:   
+                    # print(word[heading], term)
+                    if word[heading] == term: 
+                        checker = term
+                    else:
+                        checker = True
+            return checker               
+        
+        else:
+            return True
+
 
     def trigger_edit_word(self, word_):
         
@@ -391,10 +422,47 @@ class lct_controller():
                             min_size=int(self.population_window.min_entry.get()),
                             max_size=int(self.population_window.max_entry.get())
                             )
+                match_count = []
+                for population_word in population_words:
+                    duplicate_check = self.check_for_duplicates(population_word, heading_list=["translation"])
+                    if duplicate_check != True:
+                        match_count.append(population_word)
+                    else:
+                        pass
+                print(match_count)
+                if match_count != []:
+                    message_ = '''Found {} words, which are already in vocabulary. Import anyway?
+                                    Press YES to import all. 
+                                    Press NO to import all but duplicates.
+                                    Press CANCEL to abort.
+                                    '''.format(str(len(match_count)))
+                    MsgBox = tk.messagebox.askyesnocancel("Found Duplicates", message_)
+                    print(MsgBox)
+                    if MsgBox == True:
+                        self.vocab.populate_database_from_text(population_words)
+                        self.population_window._quit()
+                        self.refresh_vocabulary()
+                        return
 
-            self.vocab.populate_database_from_text(population_words)
-            self.population_window._quit()
-            self.refresh_vocabulary()
+                    elif MsgBox == False:
+                        for match in match_count:
+                            population_words.remove(match)
+                        self.vocab.populate_database_from_text(population_words)
+                        self.population_window._quit()
+                        self.refresh_vocabulary()
+                        return
+
+                    else:
+                        self.population_window._quit
+                        return
+                
+                else:
+                    self.vocab.populate_database_from_text(population_words)
+                    self.population_window._quit()
+                    self.refresh_vocabulary()
+                    return
+
+
         else:
             self.population_window.warning_label.configure(text="Please choose a File!")
     
@@ -409,11 +477,49 @@ class lct_controller():
         words_list = self.data_handler.get_words_from_web(self.population_window.language_dict[self.population_window.default_language.get()], 
                                                         start_count=self.population_window.start_count.get(), 
                                                         end_count=self.population_window.end_count.get())
-        self.vocab.populate_database_from_web(words_list,
-                                                    self.population_window.default_import.get(), 
-                                                    self.population_window.translation_var.get())
-        self.population_window._quit()
-        self.refresh_vocabulary()
+        match_count = []
+        for import_word in words_list:
+            duplicate_check = self.check_for_duplicates(import_word["translation"], heading_list=["transliteration","translation"])
+            if duplicate_check != True:
+                match_count.append(import_word)
+            else:
+                pass
+        if match_count != []:
+            message_ = '''Found {} words, which are already in vocabulary. Import anyway?
+                            Press YES to import all. 
+                            Press NO to import all but duplicates.
+                            Press CANCEL to abort.
+                            '''.format(str(len(match_count)))
+            MsgBox = tk.messagebox.askyesnocancel("Found Duplicates", message_)
+
+            if MsgBox == True:
+                self.vocab.populate_database_from_web(words_list,
+                                                            self.population_window.default_import.get(), 
+                                                            self.population_window.translation_var.get())
+                self.population_window._quit()
+                self.refresh_vocabulary()
+                return
+            
+            elif MsgBox == False:
+                for match in match_count:
+                    words_list.remove(match)
+                self.vocab.populate_database_from_web(words_list,
+                                                            self.population_window.default_import.get(), 
+                                                            self.population_window.translation_var.get())
+                self.population_window._quit()
+                self.refresh_vocabulary()
+                return
+
+            else:
+                self.population_window._quit()
+                return
+        else:
+            self.vocab.populate_database_from_web(words_list,
+                                                        self.population_window.default_import.get(), 
+                                                        self.population_window.translation_var.get())
+            self.population_window._quit()
+            self.refresh_vocabulary()
+            return 
 
 
     def trigger_export_vocabulary(self, event=None):

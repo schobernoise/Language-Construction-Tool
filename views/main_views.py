@@ -11,15 +11,19 @@ class common_win:
         if main_win == False:
             self.toplevel_win = tk.Toplevel()
             self.toplevel_win.resizable(0,0)
-            self.toplevel_win.attributes('-topmost', True)
+            # self.toplevel_win.attributes('-topmost', True)
         else:
             self.status = tk.StringVar()  
         
     def _quit(self):
         self.toplevel_win.destroy()
     
-    def validate_input(self, entry_checkers, entry_text, length_):
-        regex = re.compile(r"(['\"()[\]])")
+    
+    def validate_input(self, entry_checkers, entry_text, length_, input_type="var_char"):
+        if input_type == "var_char":
+            regex = re.compile(r"(['\"()[\]])")
+        elif input_type == "int_":
+            regex = re.compile(r"([^1-90])")
 
         for check_var in entry_checkers:
             if str(check_var) == str(entry_text):
@@ -751,16 +755,24 @@ class populate_from_web(common_win):
 
         self.config_frame = tk.LabelFrame(self.toplevel_win, text="Configure")
         self.config_frame.grid(row=1, column=0, sticky="nsew")
+        
+        self.entry_checkers = []
 
         tk.Label(self.config_frame, text="Start Index").grid(row=0, column=0, sticky="nsew")
-        self.start_count = tk.Entry(self.config_frame, width=4)
+        check_var_one = tk.StringVar(self.toplevel_win)
+        check_var_one.trace("w", lambda x, y, z=check_var_one: self.validate_input(self.entry_checkers, x, 3, input_type="int_"))
+        self.entry_checkers.append(check_var_one)
+        self.start_count = ttk.Entry(self.config_frame, textvariable = check_var_one, width=4)
         self.start_count.grid(row=1, column=0, sticky="nsew")
-        self.start_count.insert(0, 100)
+        check_var_one.set(0)
         
-        tk.Label(self.config_frame, text="Start Index").grid(row=0, column=1, sticky="nsew")
-        self.end_count = tk.Entry(self.config_frame, width=4)
+        tk.Label(self.config_frame, text="End Index").grid(row=0, column=1, sticky="nsew")
+        check_var_two = tk.StringVar(self.toplevel_win)
+        check_var_two.trace("w", lambda x, y, z=check_var_two: self.validate_input(self.entry_checkers, x, 3, input_type="int_"))
+        self.entry_checkers.append(check_var_two)
+        self.end_count = ttk.Entry(self.config_frame, textvariable = check_var_two, width=4)
         self.end_count.grid(row=1, column=1, sticky="nsew")
-        self.end_count.insert(0, 100)
+        check_var_two.set(100)
 
         self.import_button = tk.Button(self.toplevel_win, text="Import Words!")
         self.import_button.grid(row=2, column=0, sticky="nsew")
