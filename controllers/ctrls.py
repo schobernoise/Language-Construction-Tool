@@ -3,6 +3,7 @@ from tkinter import filedialog
 from tkinter import ttk
 from functools import partial
 from PIL import ImageTk, Image
+from timeit import default_timer as timer
 
 from controllers import utils, log, data
 from models.models import voc_model
@@ -34,7 +35,7 @@ class lct_controller():
         
 
     def load_vocabulary(self, name="", db_file="", metadata=[]):
-
+        start = timer()
         if name != "" and metadata != [] and db_file == "":
             self.main_win.status.set("Creating new Vocabulary...")
             db_file = "data/" + utils.string_unify(name) + ".db"
@@ -53,6 +54,8 @@ class lct_controller():
         self.main_win.status.set("Ready...")
 
         self.refresh_vocabulary()
+        end = timer()
+        print(end - start)
         self.main_win.title("Language Construction Tool " + self.vocab.metadata["name"])
         
     
