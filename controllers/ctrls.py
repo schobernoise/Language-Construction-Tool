@@ -292,19 +292,19 @@ class lct_controller():
 
     def check_for_duplicates(self, term, heading_list=[]):
         checker = "x"
-        # print(term, heading_list)
         if self.vocab.vocabulary != []:
             for heading in heading_list:
                 for word in self.vocab.vocabulary:   
-                    # print(word[heading], term)
                     if word[heading] == term: 
-                        checker = term
+                        checker = term 
+                        return checker   
                     else:
                         checker = True
-            return checker               
-        
+                
         else:
-            return True
+            checker = True
+        
+        return checker    
 
 
     def trigger_edit_word(self, word_):
@@ -433,7 +433,7 @@ class lct_controller():
                 if match_count != []:
                     message_ = '''Found {} words, which are already in vocabulary. Import anyway?
                                     Press YES to import all. 
-                                    Press NO to import all but duplicates.
+                                    Press NO to import all without duplicates.
                                     Press CANCEL to abort.
                                     '''.format(str(len(match_count)))
                     MsgBox = tk.messagebox.askyesnocancel("Found Duplicates", message_)
@@ -487,7 +487,7 @@ class lct_controller():
         if match_count != []:
             message_ = '''Found {} words, which are already in vocabulary. Import anyway?
                             Press YES to import all. 
-                            Press NO to import all but duplicates.
+                            Press NO to import all without duplicates.
                             Press CANCEL to abort.
                             '''.format(str(len(match_count)))
             MsgBox = tk.messagebox.askyesnocancel("Found Duplicates", message_)
