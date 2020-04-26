@@ -9,7 +9,6 @@ from controllers import utils, log, data
 from models.models import voc_model
 from views.main_views import *
 
-
 class lct_controller():
     def __init__(self, root, conf):
         self.conf = conf.conf
@@ -27,23 +26,22 @@ class lct_controller():
         self.load_vocabulary()
     
 
-    def check_datafolder_integrity(self):
-        pass
-
-
     def load_vocabulary(self, name="", db_file="", metadata=[]):
         start = timer()
         if name != "" and metadata != [] and db_file == "":
             self.main_win.status.set("Creating new Vocabulary...")
+            log.debug("CTRL: Creating new Vocabulary.")
             db_file = "data/" + utils.string_unify(name) + ".db"
             self.vocab.load_db(db_file=db_file, metadata=metadata, mode="create")
             self.show_tooltips = False
         elif name == "" and metadata == [] and db_file != "":
             self.main_win.status.set("Loading Vocabulary {}".format(db_file))
+            log.debug("Loading Vocabulary {}".format(db_file))
             self.vocab.load_db(db_file, mode="load")
             self.show_tooltips = False
         else:
             self.main_win.status.set("Loading Start Vocabulary")
+            log.debug("CTRL: Loading Start Vocabulary")
             db_file=self.conf["start_db"]
             self.vocab.load_db(db_file, mode="load")
             self.show_tooltips = True
@@ -93,12 +91,10 @@ class lct_controller():
         self.main_win.vocmenu.add_command(label="Populate from Web...", command=self.trigger_populate_from_web)
         self.main_win.vocmenu.add_separator()
         self.main_win.vocmenu.add_command(label="Export Vocabulary...", command=self.trigger_export_vocabulary)
-        if self.conf["pretty_print_feature"] == True:
-            self.main_win.vocmenu.add_command(label="Pretty Print Vocabulary as PDF", command=self.trigger_pretty_print_vocabulary)
-        
+
         # CON MENU
         self.main_win.menu.add_cascade(label="Generation", menu=self.main_win.genmenu)
-        self.main_win.genmenu.add_command(label="Export Batch...")
+        self.main_win.genmenu.add_command(label="Export Batch...", command=self.trigger_export_batch)
         # self.main_win.genmenu.add_command(label="Feed File")
 
         # HELP MENU
@@ -169,7 +165,7 @@ class lct_controller():
     def refresh_vocabulary(self, event=None):
         # create an array for all instances of the vocabulary viewer
         # refresh all of them every time this function gets called
-        
+        self.main_win.status.set("Ready...")
         for voc_viewer in self.vocabulary_viewer_instances:
             voc_viewer.display_vocabulary()
 
@@ -197,20 +193,28 @@ class lct_controller():
 
     
     def update_related_image(self, event, word_):
+        self.main_win.status.set("Updating Related Image...")
         image_filename = utils.open_file_dialog("image")
+        log.debug("CTRL: Updating Related Image with {}".format(image_filename))
         if image_filename != "":
             self.vocab.update_word(word_["word_id"], "related_image", utils.convertToBinaryData(image_filename))  
             self.refresh_vocabulary()
+            self.main_win.status.set("Ready...")
         else:
             pass
 
     
     def trigger_new_vocabulary(self, event=None):
+        log.debug("CTRL: Creating new vocabulary.")
+        self.main_win.status.set("Creating new Vocabulary...")
         self.new_vocab = edit_vocabulary_form()
         self.new_vocab.submit_button.configure(command=self.save_new_vocabulary)
     
 
     def trigger_update_vocabulary(self):
+        log.debug("CTRL: Updating Vocabulary.")
+        self.main_win.status.set("Updating Vocabulary...")
+
         self.update_vocab = edit_vocabulary_form()
         self.update_vocab.submit_button.configure(command=self.save_update_vocabulary)
 
@@ -219,7 +223,6 @@ class lct_controller():
     
 
     def save_update_vocabulary(self):
-        self.main_win.status.set("Updating Vocabulary Metadata")
         form_contents = {}
         for name, entry in self.update_vocab.entries.items():
             form_contents[name] = entry[2].get()
@@ -248,7 +251,8 @@ class lct_controller():
 
 
     def trigger_new_word(self, event=None):
-        self.main_win.status.set("Opening Word Editor")
+        log.debug("CTRL: Creating new word...")
+        self.main_win.status.set("Creating new word...")
         self.temp_rel_image = ""
         self.new_word = word_form(self.pos_list)
         self.new_word.entries["related_image"][2].configure(command=self.add_related_image)
@@ -311,8 +315,8 @@ class lct_controller():
 
 
     def trigger_edit_word(self, word_):
-        
-        self.main_win.status.set("Opening Word Editor")
+        log.debug("CTRL: Updating {}".format(word_))
+        self.main_win.status.set("Updating Word...")
         self.temp_rel_image = ""
         self.edit_word = word_form(self.pos_list)
         self.edit_word.default_pos.set(word_["pos"])
@@ -330,7 +334,6 @@ class lct_controller():
 
 
     def update_edit_word(self, word_id):
-        self.main_win.status.set("Updating Word...")
         form_contents = {}
         for name, entry in self.edit_word.entries.items():
             if name == "related_image":
@@ -379,6 +382,7 @@ class lct_controller():
     
     
     def trigger_xls_import(self, event=None):
+        self.main_win.status.set("Importing Excel File...")
         temp_file = utils.open_file_dialog("excel_csv")
 
         if temp_file[-4:] == "xlsx":
@@ -396,7 +400,7 @@ class lct_controller():
         self.letter_parts["special_vowels"] = self.main_win.spec_entry.get().split(",")
         self.letter_parts["vowels"] = self.main_win.vow_entry.get().split(",")
 
-        self.generated_word_list = self.data_handler.gen_words(self.letter_parts, 
+        generated_word_list = self.data_handler.gen_words(self.letter_parts, 
                                             min_size=self.main_win.minsize_entry.get(), 
                                             max_size=self.main_win.maxsize_entry.get(),
                                             word_count=(self.conf["construction_config"]["height"]*self.conf["construction_config"]["width"])-1,
@@ -408,13 +412,14 @@ class lct_controller():
             for i in range(self.conf["construction_config"]["height"]): #Columns
                 self.main_win.table[k].delete(0, 'end')
                 try:
-                    self.main_win.table[k].insert(0, self.generated_word_list[k])
+                    self.main_win.table[k].insert(0, generated_word_list[k])
                 except:
                     pass
                 k += 1
 
 
     def trigger_populate_from_text(self):
+        self.main_win.status.set("Populating Vocabulary from Text...")
         self.temp_file = ""
         self.population_window = populate_from_text()
         self.population_window.wc_entry.insert(0, 20)
@@ -445,7 +450,6 @@ class lct_controller():
                         match_count.append(population_word)
                     else:
                         pass
-                print(match_count)
                 if match_count != []:
                     message_ = '''Found {} words, which are already in vocabulary. Import anyway?
                                     Press YES to import all. 
@@ -481,6 +485,7 @@ class lct_controller():
     
 
     def trigger_populate_from_web(self):
+        self.main_win.status.set("Populating Vocabulary from Web...")
         scraper_websites = self.conf["scraper_websites"]
         self.population_window = populate_from_web(scraper_websites, self.data_handler)
         self.population_window.import_button.configure(command=self.save_populate_from_web)
@@ -534,13 +539,13 @@ class lct_controller():
 
 
     def trigger_export_vocabulary(self, event=None):
+        self.main_win.status.set("Exporting Vocabulary...")
         format_list=["CSV", "XLSX", "TXT"]
         self.export_window = export_vocabulary(format_list, self.conf["word_attributes"])
         self.export_window.export_button.configure(command=self.save_export_vocabulary)
 
     
-    def save_export_vocabulary(self):
-     
+    def save_export_vocabulary(self):    
         filename = filedialog.asksaveasfilename(initialdir = "/data",title = "Save as...",filetypes = (("all files","*.*"),))
 
         column_indexes = self.export_window.column_chooser.curselection()  
@@ -554,6 +559,32 @@ class lct_controller():
             formats.append(self.export_window.format_chooser.get(index))
 
         self.data_handler.export_vocabulary_as_file(filename, self.vocab.vocabulary, formats, columns)
-
+        self.main_win.status.set("Ready...")
         self.export_window._quit()
     
+
+    def trigger_export_batch(self):
+        self.main_win.status.set("Export Batch...")
+        self.export_batch_win = export_batch()
+        self.export_batch_win.submit_button.configure(command=self.save_export_batch)
+    
+
+    def save_export_batch(self):
+        filetypes= (("xlsx files","*.xlsx"), ("csv files","*.csv"), ("docx files","*.docx"), ("txt files","*.txt"))
+        filename = filedialog.asksaveasfilename(initialdir = "/data",title = "Export as...", filetypes = filetypes, defaultextension="*.txt")
+
+        self.letter_parts = {}
+        self.letter_parts["consonants"] = self.main_win.cons_entry.get().split(",")
+        self.letter_parts["special_vowels"] = self.main_win.spec_entry.get().split(",")
+        self.letter_parts["vowels"] = self.main_win.vow_entry.get().split(",")
+
+        generated_word_list = self.data_handler.gen_words(self.letter_parts, 
+                                            min_size=self.main_win.minsize_entry.get(), 
+                                            max_size=self.main_win.maxsize_entry.get(),
+                                            word_count=int(self.export_batch_win.wc_entry.get()),
+                                            foreigness=self.main_win.foreign_scale.get(),
+                                            hardness=self.main_win.hardness_scale.get())
+                                
+        self.data_handler.export_batch(generated_word_list, filename)
+        self.export_batch_win._quit()
+        self.main_win.status.set("Ready...")

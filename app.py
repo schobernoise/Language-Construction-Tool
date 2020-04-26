@@ -9,12 +9,12 @@ from controllers.ctrls import lct_controller
 
 
 if __name__ == '__main__':
-    log.info("#########################################")
-    log.info("WELCOME TO THE LANGUAGE CONSTRUCTION TOOL")
+    
     root = tk.Tk()  # TKINTER OBJECT
     conf = utils.Config()
+    log.info("#########################################")
+    log.info("WELCOME TO THE LANGUAGE CONSTRUCTION TOOL")
     app = lct_controller(root, conf) # GUI CONTROLLER
-
     root.lift()
     root.attributes('-topmost', True)
     root.attributes('-topmost', False)

@@ -14,6 +14,7 @@ import os
 from controllers import log
 
 
+
 # read yaml
 def read_yaml(yamlfile):
     """expects path/file"""
@@ -36,6 +37,7 @@ def read_yaml(yamlfile):
         log.error(" trying to load %s.", yamlfile)
         raise err
         raise SystemExit(3)
+
 
 def string_to_list(string_list):
     
@@ -68,13 +70,6 @@ def convertToBinaryData(image_name):
             except:
                 log.error("UTILS: Reading Image failed")    
                 return ""
-
-
-def check_user_input(input):
-    pass
-
-def check_image_input(image_input):
-    pass
 
 
 def binary_to_image(blobData):
@@ -127,7 +122,6 @@ def open_file_dialog(file_type):
     return filename 
 
 
-
 def random_rgb():
     return (random.randint(0,170), random.randint(0,170), random.randint(0,170))
 
@@ -137,15 +131,15 @@ class Config():
         lct_lib = Path(os.path.dirname(os.path.abspath(__file__)))
         self.lct_root = lct_lib.parents[0]
         log.info("Config.lct_root: {}".format(self.lct_root))
+        self.check_integrity()
         self.conf = read_yaml( self.lct_root / "config.yaml")
-        try: 
+        try:
             self.log_level = self.conf["log_level"]
             log.info("config.yaml entry log_level is {}.".format(self.log_level))
         except:
             self.log_level = "WARNING"
             log.warn("config.yaml entry log_level not set, set Default Level.")
-
-
+        log.handlers[0].setLevel(self.log_level)
 
     def _get_config_entry(self, yaml_key, optional = True):
         if optional:
@@ -167,5 +161,32 @@ class Config():
                 log.error("Missing essential entry in config.yaml: {}".format(ke))
                 raise SystemExit(3)
             return value
+    
+
+    def check_integrity(self):
+        if not os.path.isfile("config.yaml"): 
+            log.info("Creating config.yaml")
+            config_str = '''log_level: WARNING
+part_of_speech: [Noun, Verb, Adjective, Adverb, Pronoun, Preposition, Conjunction, Interjection, Article]
+word_attributes: [word_id, transliteration, phonetics, pos, translation, example_sentence, example_translation, description, related_image]
+vocabulary_metadata: [name, author, language, notes]
+start_db: "data/start.db"
+consonants: [c,z,x,s,d,f,v,w,g,k,b,p,m,n,h,j]
+special_vowels: [ä,ö,ü,è]
+vowels: [a,e,i,o,u]
+construction_config: 
+              "width" : 4 
+              "height" : 30
+scraper_websites:
+              - "https://1000mostcommonwords.com/"'''
+
+            with open("config.yaml", 'w') as config_file:
+                config_file.write(config_str)
+        else:
+            pass
+    
+
+
+
     
 

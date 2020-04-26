@@ -885,3 +885,29 @@ class populate_from_text(common_win):
 
         self.analyze_button = tk.Button(self.toplevel_win, text="Analyze Text!")
         self.analyze_button.grid(row=3, column=0, sticky="nsew")
+
+
+class export_batch(common_win):
+        def __init__(self):
+            super().__init__()
+            self.toplevel_win.title("Export generated Batch")
+
+            self.create_widgets()
+
+        def create_widgets(self):
+
+            ############## CONFIGURATOR ##################
+
+            self.config_frame = tk.LabelFrame(self.toplevel_win, text="Configure")
+            self.config_frame.grid(row=0, column=0, sticky="nsew")
+
+            self.entry_checkers = []
+            tk.Label(self.config_frame, text="Word Count").grid(row=0, column=0, sticky="nsew")
+            check_var = tk.StringVar(self.toplevel_win)
+            check_var.trace("w", lambda x, y, z=check_var: self.validate_input(self.entry_checkers, x, 5, input_type="int_"))
+            self.entry_checkers.append(check_var)
+            self.wc_entry = tk.Entry(self.config_frame, width=4, textvariable=check_var)
+            self.wc_entry.grid(row=1, column=0, sticky="nsew")
+
+            self.submit_button = tk.Button(self.toplevel_win, text="Export Batch!")
+            self.submit_button.grid(row=1, column=0, sticky="nsew")

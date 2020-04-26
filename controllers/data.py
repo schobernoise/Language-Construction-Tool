@@ -113,11 +113,11 @@ class data_controller():
                 return
 
             else:
-                log.debug("Aborted Importing".)
+                log.debug("Aborted Importing")
                 return
 
         else:
-            log.debug("No Duplicates Found".)
+            log.debug("No Duplicates Found")
             self.vocab.import_words_from_file(import_dict)
 
                    
@@ -182,6 +182,8 @@ class data_controller():
         letters_list = np.random.randint(low = min_size, high = max_size, size = word_count)
         word = ""
         gen_words_list = []
+
+        log.debug("DATA: Generating Word Batch. Word Count: {}, min_size: {}, max_size: {}, hardness: {}, foreigness: {}.".format(word_count, min_size, max_size, hardness, foreigness))
 
         for letter_num in letters_list:
                 prob = random.random()*100
@@ -438,6 +440,44 @@ class data_controller():
             
             log.debug("DATA: Exporting {}.".format(output_name))
     
+    def export_batch(self, generated_word_list, filename):
+        log.debug("DATA: Exporting {}".format(filename))
+        if filename[-3:] == "csv":
+            try:
+                with open(filename, mode='w', newline='') as csv_file:
+                    csv_writer = csv.writer(csv_file, delimiter=";")
+                    for word_ in generated_word_list:
+                        csv_writer.writerow([word_])
+            except:
+                log.error("DATA: Exporting {} failed.".format(filename))
+        
+        elif filename[-4:] == "xlsx":
+            wb = oxl.Workbook() 
+            sheet = wb.active 
 
-    def export_batch(self):
-        pass
+            for word_ in generated_word_list:
+                sheet.append([word_])
+            try:
+                wb.save(filename) 
+            except:
+                log.error("DATA: Exporting {} failed.".format(filename))
+
+        elif filename[-4:] == "docx":
+            document = docx.Document()
+
+            document.add_heading('Vocabulary', 0)
+            for word_ in generated_word_list:
+                document.add_paragraph(word_)
+            try:
+                document.save(filename)
+            except:
+                log.error("DATA: Exporting {} failed.".format(filename))
+
+        elif filename[-3:] == "txt":
+            try:
+                txt_file = open(filename, "w")
+                for word_ in generated_word_list:
+                    txt_file.write(word_ + "\n") 
+                txt_file.close() 
+            except:
+                log.error("DATA: Exporting {} failed.".format(filename))
