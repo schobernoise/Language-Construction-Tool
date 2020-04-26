@@ -18,7 +18,7 @@ class lct_controller():
         self.main_win = main_frame(root, self.display_data_functions, self.vocab, self.conf)
         self.vocabulary_viewer_instances = [self.main_win.fixed_vocab_viewer]
         self.main_win.withdraw() 
-        self.data_handler = data.data_controller(self.vocab)
+        self.data_handler = data.data_controller(self.vocab, self.check_for_duplicates)
         self.populate_menu()
         self.construction_config()
 
@@ -29,7 +29,7 @@ class lct_controller():
 
     def check_datafolder_integrity(self):
         pass
-        
+
 
     def load_vocabulary(self, name="", db_file="", metadata=[]):
         start = timer()
@@ -271,7 +271,7 @@ class lct_controller():
                 form_contents[name] = self.new_word.default_pos.get()
             else:
                 form_contents[name] = entry[2].get()
-                duplicate_check = self.check_for_duplicates(["transliteration", "translation"], entry[2].get())
+                duplicate_check = self.check_for_duplicates(entry[2].get(), heading_list=["transliteration", "translation"])
                 if duplicate_check != True:
                     MsgBox = tk.messagebox.askquestion ('Found Duplicate','Word already exists: {}. Do wish to continue?'.format(duplicate_check),icon = 'warning')
                     if MsgBox == True:
@@ -291,17 +291,20 @@ class lct_controller():
 
 
     def check_for_duplicates(self, term, heading_list=[]):
-        checker = "x"
-        if self.vocab.vocabulary != []:
-            for heading in heading_list:
-                for word in self.vocab.vocabulary:   
-                    if word[heading] == term: 
-                        checker = term 
-                        return checker   
-                    else:
-                        checker = True
-                
-        else:
+        if term != "-" and term != " ":
+            checker = ""
+            if self.vocab.vocabulary != []:
+                for heading in heading_list:
+                    for word in self.vocab.vocabulary:   
+                        if word[heading] == term: 
+                            checker = term 
+                            return checker   
+                        else:
+                            checker = True
+                    
+            else:
+                checker = True
+        else: 
             checker = True
         
         return checker    
@@ -339,6 +342,19 @@ class lct_controller():
                 form_contents[name] = self.edit_word.default_pos.get()
             else:
                 form_contents[name] = entry[2].get()
+                duplicate_check = self.check_for_duplicates(entry[2].get(), heading_list=["transliteration", "translation"])
+                if duplicate_check != True:
+                    MsgBox = tk.messagebox.askquestion ('Found Duplicate','Word already exists: {}. Do wish to continue?'.format(duplicate_check),icon = 'warning')
+                    if MsgBox == True:
+                        self.vocab.update_word(form_contents, word_id)
+                        self.edit_word._quit()
+                        self.refresh_vocabulary()
+                        return
+                    else:
+                        self.edit_word._quit()
+                        return
+                else:
+                    pass
         
         self.vocab.update_word(form_contents, word_id)
         self.edit_word._quit()
@@ -366,10 +382,10 @@ class lct_controller():
         temp_file = utils.open_file_dialog("excel_csv")
 
         if temp_file[-4:] == "xlsx":
-            self.data_handler.load_excel(temp_file)
+            self.data_handler.load_excel(excel_file=temp_file)
 
         elif temp_file[-3:] == "csv":
-            self.data_handler.load_csv(temp_file)
+            self.data_handler.load_excel(csv_file=temp_file)
         
         self.refresh_vocabulary()
 
@@ -436,24 +452,21 @@ class lct_controller():
                                     Press NO to import all without duplicates.
                                     Press CANCEL to abort.
                                     '''.format(str(len(match_count)))
+                    self.population_window._quit()
                     MsgBox = tk.messagebox.askyesnocancel("Found Duplicates", message_)
                     print(MsgBox)
                     if MsgBox == True:
-                        self.vocab.populate_database_from_text(population_words)
-                        self.population_window._quit()
+                        self.vocab.populate_database_from_text(population_words) 
                         self.refresh_vocabulary()
                         return
-
                     elif MsgBox == False:
                         for match in match_count:
                             population_words.remove(match)
                         self.vocab.populate_database_from_text(population_words)
-                        self.population_window._quit()
                         self.refresh_vocabulary()
                         return
 
                     else:
-                        self.population_window._quit
                         return
                 
                 else:
@@ -490,13 +503,13 @@ class lct_controller():
                             Press NO to import all without duplicates.
                             Press CANCEL to abort.
                             '''.format(str(len(match_count)))
+            self.population_window._quit()
             MsgBox = tk.messagebox.askyesnocancel("Found Duplicates", message_)
 
             if MsgBox == True:
                 self.vocab.populate_database_from_web(words_list,
                                                             self.population_window.default_import.get(), 
                                                             self.population_window.translation_var.get())
-                self.population_window._quit()
                 self.refresh_vocabulary()
                 return
             
@@ -506,12 +519,10 @@ class lct_controller():
                 self.vocab.populate_database_from_web(words_list,
                                                             self.population_window.default_import.get(), 
                                                             self.population_window.translation_var.get())
-                self.population_window._quit()
                 self.refresh_vocabulary()
                 return
 
             else:
-                self.population_window._quit()
                 return
         else:
             self.vocab.populate_database_from_web(words_list,

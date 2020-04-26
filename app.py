@@ -20,4 +20,3 @@ if __name__ == '__main__':
     root.attributes('-topmost', False)
 
     root.mainloop() # START WINDOW
-

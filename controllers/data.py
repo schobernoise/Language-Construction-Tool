@@ -1,3 +1,7 @@
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import ttk
+
 import numpy as np
 import random
 import io
@@ -18,66 +22,109 @@ from controllers import utils, log
 
 
 class data_controller():
-    def __init__(self, vocab):
+    def __init__(self, vocab, check_for_duplicates):
         self.vocab = vocab
+        self.check_for_duplicates = check_for_duplicates
 
-    def load_excel(self, excel_file):
-        wb = oxl.load_workbook(excel_file)
-        ws = wb.active
+    def load_excel(self, excel_file="", csv_file=""):
         import_dict = []
         headings = []
-        for i, row in enumerate(ws.rows):
-            if i == 0:
-                for heading in row:
-                    if heading.value != None:
-                        headings.append(heading.value)
-            else:
-                temp_word = {}
-                for j, heading in enumerate(headings):
-                    if row[j].value != None or heading == "related_image":
-                        if heading != "related_image":
-                            temp_word[heading] = row[j].value
-                        else:
-                            try:
-                                image_dir = os.path.dirname(excel_file) + "/related_images/"
-                                image = image_dir + str(i)+".jpg"
-                                temp_word[heading] = utils.convertToBinaryData(image)
-                            except:
-                                pass
-                import_dict.append(temp_word)
-                
-        self.vocab.import_words_from_file(import_dict)
-
-
-    def load_csv(self, csv_file):
-        
-        import_dict = []
-        headings = []
-        with open(csv_file, "r", encoding="utf-8-sig") as csvfile:
-            rows = csv.reader(csvfile, delimiter=';')
-            for i, row in enumerate(rows):
+        if excel_file != "":
+            _file = excel_file
+            wb = oxl.load_workbook(_file)
+            ws = wb.active
+            
+            log.debug("Importing {}".format(_file))
+            for i, row in enumerate(ws.rows):
                 if i == 0:
                     for heading in row:
-                        if heading != "":
-                            headings.append(heading)
+                        if heading.value != None:
+                            headings.append(heading.value)
                 else:
                     temp_word = {}
                     for j, heading in enumerate(headings):
-                        if row[j] != "" or heading == "related_image":
+                        if row[j].value != None or heading == "related_image":
                             if heading != "related_image":
-                                temp_word[heading] = row[j]
+                                temp_word[heading] = row[j].value
                             else:
-                                image_dir = os.path.dirname(csv_file) + "/related_images/"
-                                image = image_dir + str(i)+".jpg"
-                                temp_word[heading] = utils.convertToBinaryData(image)
-
+                                image_dir = os.path.dirname(_file) + "/related_images/"
+                                image_path = image_dir + str(i)+".jpg"
+                                if os.path.isfile(image_path):
+                                    temp_word[heading] = utils.convertToBinaryData(image_path)
+                                else:
+                                    temp_word[heading] = "-"
+                    log.debug("Importing headings: {}".format(headings))
                     import_dict.append(temp_word)
-                    
-        self.vocab.import_words_from_file(import_dict)
-    
+
+        elif csv_file != "":
+            _file = csv_file
+            log.debug("Importing {}".format(_file))
+            with open(csv_file, "r", encoding="utf-8-sig") as csvfile:
+                rows = csv.reader(csvfile, delimiter=';')
+                for i, row in enumerate(rows):
+                    if i == 0:
+                        for heading in row:
+                            if heading != "":
+                                headings.append(heading)
+                    else:
+                        temp_word = {}
+                        for j, heading in enumerate(headings):
+                            if row[j] != "" or heading == "related_image":
+                                if heading != "related_image":
+                                    temp_word[heading] = row[j]
+                                else:
+                                    image_dir = os.path.dirname(csv_file) + "/related_images/"
+                                    image_path = image_dir + str(i)+".jpg"
+                                    if os.path.isfile(image_path):
+                                        temp_word[heading] = utils.convertToBinaryData(image_path)
+                                    else:
+                                        temp_word[heading] = "-"
+
+                        import_dict.append(temp_word)
+
+        match_count = []
+        for word in import_dict:
+            for heading, value in word.items():
+                if heading == "transliteration" or heading == "translation":
+                    duplicate_check = self.check_for_duplicates(value, heading_list=["transliteration","translation"])
+            if duplicate_check != True:
+                match_count.append(word)     
+            else:
+                pass
+
+        if match_count != []:
+            log.error("XLS/CSV Import: Found {} duplicates.".format(len(match_count)))
+            message_ = '''Found {} words, which are already in vocabulary. Import anyway?
+                            Press YES to import all. 
+                            Press NO to import all without duplicates.
+                            Press CANCEL to abort.
+                            '''.format(str(len(match_count)))
+            MsgBox = tk.messagebox.askyesnocancel("Found Duplicates", message_)
+            if MsgBox == True:
+                log.debug("Importing {} Words.".format(str(len(import_dict))))
+                self.vocab.import_words_from_file(import_dict)
+                return
+            
+            elif MsgBox == False:
+                for match in match_count:
+                    import_dict.remove(match)
+                log.debug("Importing {} Words.".format(str(len(import_dict))))
+                self.vocab.import_words_from_file(import_dict)
+                return
+
+            else:
+                log.debug("Aborted Importing".)
+                return
+
+        else:
+            log.debug("No Duplicates Found".)
+            self.vocab.import_words_from_file(import_dict)
+
                    
     def text_extractor(self, filename, word_count=20, min_size=10, max_size=20 ):
-
+        
+        log.debug("DATA: Extracting text from {}".format(filename))
+        
         if filename[-3:] == "pdf":
         
             pdfFileObj = open(filename,'rb')
@@ -96,7 +143,8 @@ class data_controller():
             if text != "":
                 text = text
             else:
-                text = textract.process(fileurl, method='tesseract', language='de')
+                log.debug("DATA: Couldn't fetch Text, starting Textract.")
+                text = textract.process(filename, method='tesseract', language='de')
         
         elif filename[-3:] == "txt":
             f = open(filename, "r", encoding="utf-8-sig")
@@ -125,6 +173,7 @@ class data_controller():
             temp_list = list(word)
             final_wordlist.append(temp_list[0])
 
+        log.debug("DATA: Fetched {} words.".format(len(final_wordlist)))
         return(final_wordlist)
 
 
@@ -292,9 +341,14 @@ class data_controller():
         headers = requests.utils.default_headers()
         headers.update({ 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
         
-        req = requests.get(url, headers)
+        try:
+            req = requests.get(url, headers)
+        except:
+            log.error("DATA: Requesting {} failed.".format(url))
+
         soup = BeautifulSoup(req.content, 'html.parser')
         links = {}
+        log.debug("DATA: Scraping data from {}".format(url))
 
         if url == "https://www.1000mostcommonwords.com/":
 
@@ -306,11 +360,15 @@ class data_controller():
             return(links)
     
 
-    def get_words_from_web(self, url, start_count=0, end_count=1000):
+    def get_words_from_web(self, url, start_count=0, end_count=999):
         headers = requests.utils.default_headers()
         headers.update({ 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
 
-        req = requests.get(url, headers)
+        try:
+            req = requests.get(url, headers)
+        except:
+            log.error("DATA: Requesting {} failed.".format(url))
+
         soup = BeautifulSoup(req.content, 'html.parser')
 
         output = soup.find_all("tr")
@@ -326,13 +384,14 @@ class data_controller():
                 words_dict["english"]=cell[2].text
 
                 words_list.append(words_dict)
-            
+        log.debug("DATA: Importing {} words.".format(len(words_list[int(start_count):int(end_count)])))
         return(words_list[int(start_count):int(end_count)])
     
 
     def export_vocabulary_as_file(self, filename, vocabulary, formats, columns):
         for format_ in formats:
             if format_ == "CSV":
+                
                 if ".csv" not in filename:
                     output_name = str(filename) + ".csv"
                 else:
@@ -376,3 +435,9 @@ class data_controller():
                     output_name = str(filename) + ".txt"
                 else:
                     output_name = filename
+            
+            log.debug("DATA: Exporting {}.".format(output_name))
+    
+
+    def export_batch(self):
+        pass

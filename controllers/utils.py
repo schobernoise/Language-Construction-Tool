@@ -53,7 +53,7 @@ def string_to_list(string_list):
     
 def convertToBinaryData(image_name):
         #Convert digital data to binary format
-        if image_name == "":
+        if image_name == "" or image_name == "-":
             img = Image.new('RGB', (200, 200), random_rgb())
             with io.BytesIO() as output:
                 img.save(output, format="JPEG")
