@@ -392,8 +392,7 @@ class data_controller():
 
     def export_vocabulary_as_file(self, filename, vocabulary, formats, columns):
         for format_ in formats:
-            if format_ == "CSV":
-                
+            if format_ == "CSV":       
                 if ".csv" not in filename:
                     output_name = str(filename) + ".csv"
                 else:
@@ -431,12 +430,6 @@ class data_controller():
                     cell.font = ft
 
                 wb.save(filename = output_name)
-
-            elif format_ == "TXT":
-                if ".txt" not in filename:
-                    output_name = str(filename) + ".txt"
-                else:
-                    output_name = filename
             
             log.debug("DATA: Exporting {}.".format(output_name))
     

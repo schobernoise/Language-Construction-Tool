@@ -223,7 +223,8 @@ scraper_websites:
                         "You are very welcome here.", 
                         "Du bist hier sehr willkommen.",
                         '''<p><b>This tool is designed to help you construct languages.</b> </p>
-Up to date its main function is to manage vocabulary, and secondly to form words. It should not be confused with a language generator.''', 
+Up to date its main function is to manage vocabulary, and secondly to form words. It should not be confused with a language generator.
+Best practices and usage examples can be found in the <a href="https://github.com/schobernoise/Language-Construction-Tool">documentation</a>.''', 
                         binary_image)
             
             sql_meta_query = '''INSERT INTO METADATA VALUES(?,?,?,?)'''

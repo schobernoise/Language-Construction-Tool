@@ -70,7 +70,8 @@ class lct_controller():
         self.main_win.foreign_scale.configure(command=self.generate_wordlist)
 
         self.main_win.generate_button.configure(command=lambda value=0:self.generate_wordlist(0))
-    
+        self.main_win.export_button.configure(command=self.save_export_batch)
+
 
     def populate_menu(self):
 
@@ -92,15 +93,15 @@ class lct_controller():
         self.main_win.vocmenu.add_separator()
         self.main_win.vocmenu.add_command(label="Export Vocabulary...", command=self.trigger_export_vocabulary)
 
-        # CON MENU
-        self.main_win.menu.add_cascade(label="Generation", menu=self.main_win.genmenu)
-        self.main_win.genmenu.add_command(label="Export Batch...", command=self.trigger_export_batch)
+        # GEN MENU
+        # self.main_win.menu.add_cascade(label="Generation", menu=self.main_win.genmenu)
+        # self.main_win.genmenu.add_command(label="Export Batch...", command=self.trigger_export_batch)
         # self.main_win.genmenu.add_command(label="Feed File")
 
         # HELP MENU
         self.main_win.menu.add_cascade(label="Help", menu=self.main_win.helpmenu)
-        self.main_win.helpmenu.add_command(label="Open Documentation")
-        self.main_win.helpmenu.add_command(label="Info")
+        # self.main_win.helpmenu.add_command(label="Open Documentation")
+        self.main_win.helpmenu.add_command(label="Info", command=self.trigger_info_window)
 
         # VOC BUTTONS
         
@@ -173,21 +174,19 @@ class lct_controller():
     def trigger_vocabulary_instance(self):
         log.debug("Creating new Instance of Vocabulary Viewer.")
         self.main_win.status.set("Creating new Instance of Vocabulary Viewer.")
-
-        vocab_win = tk.Toplevel()
-        vocab_win.minsize(300, 600)
-        vocab_win.maxsize(400, 1024)
-        vocab_win.title("LCT Vocab Viewer")
-        vocab_win('-topmost', True)
-        vocab_instance = vocab_viewer(vocab_win, self.display_data_functions, self.vocab)
+        vocab_win = common_win(main_win=False)
+        vocab_win.toplevel_win.minsize(300, 600)
+        vocab_win.toplevel_win.maxsize(400, 1024)
+        vocab_win.toplevel_win.title("LCT Vocab Viewer")
+        vocab_instance = vocab_viewer(vocab_win.toplevel_win, self.display_data_functions, self.vocab)
         self.vocabulary_viewer_instances.append(vocab_instance)
         vocab_instance.grid(row=0, column=0, columnspan=4, rowspan=12, sticky="nsew")
         
         for i in range(12):
-            vocab_win.rowconfigure(i, weight=1)
+            vocab_win.toplevel_win.rowconfigure(i, weight=1)
             vocab_instance.rowconfigure(i, weight=1)
             if i < 4:
-                vocab_win.columnconfigure(i, weight=1)
+                vocab_win.toplevel_win.columnconfigure(i, weight=1)
                 vocab_instance.columnconfigure(i, weight=1)
         vocab_instance.display_vocabulary()
 
@@ -227,7 +226,7 @@ class lct_controller():
         for name, entry in self.update_vocab.entries.items():
             form_contents[name] = entry[2].get()
         self.vocab.update_vocabulary_metadata(form_contents)
-        self.update_vocab.edit_vocab_win.destroy()
+        self.update_vocab._quit()
         self.refresh_vocabulary()
 
 
@@ -237,7 +236,7 @@ class lct_controller():
         for name, entry in self.new_vocab.entries.items():
             form_contents.append(entry[2].get())
         self.load_vocabulary(name=form_contents[0], metadata=form_contents)
-        self.new_vocab.edit_vocab_win.destroy()
+        self.new_vocab._quit()
         self.refresh_vocabulary()
         self.display_empty_data()
     
@@ -315,7 +314,7 @@ class lct_controller():
 
 
     def trigger_edit_word(self, word_):
-        log.debug("CTRL: Updating {}".format(word_))
+        log.debug("CTRL: Updating {}".format(word_["transliteration"]))
         self.main_win.status.set("Updating Word...")
         self.temp_rel_image = ""
         self.edit_word = word_form(self.pos_list)
@@ -323,6 +322,8 @@ class lct_controller():
         self.edit_word.entries["related_image"][2].configure(command=self.add_related_image)
         self.edit_word.submit_button.configure(command=lambda w_id=word_["word_id"]:self.update_edit_word(w_id))
 
+        self.temp_word = word_
+        
         for name, entry in self.edit_word.entries.items(): 
             try:
                 if name != "description":
@@ -345,19 +346,20 @@ class lct_controller():
                 form_contents[name] = self.edit_word.default_pos.get()
             else:
                 form_contents[name] = entry[2].get()
-                duplicate_check = self.check_for_duplicates(entry[2].get(), heading_list=["transliteration", "translation"])
-                if duplicate_check != True:
-                    MsgBox = tk.messagebox.askquestion ('Found Duplicate','Word already exists: {}. Do wish to continue?'.format(duplicate_check),icon = 'warning')
-                    if MsgBox == True:
-                        self.vocab.update_word(form_contents, word_id)
-                        self.edit_word._quit()
-                        self.refresh_vocabulary()
-                        return
+                if entry[2].get() != self.temp_word["transliteration"] and entry[2].get() != self.temp_word["translation"]:
+                    duplicate_check = self.check_for_duplicates(entry[2].get(), heading_list=["transliteration", "translation"])
+                    if duplicate_check != True:
+                        MsgBox = tk.messagebox.askquestion ('Found Duplicate','Word already exists: {}. Do wish to continue?'.format(duplicate_check),icon = 'warning')
+                        if MsgBox == True:
+                            self.vocab.update_word(form_contents, word_id)
+                            self.edit_word._quit()
+                            self.refresh_vocabulary()
+                            return
+                        else:
+                            self.edit_word._quit()
+                            return
                     else:
-                        self.edit_word._quit()
-                        return
-                else:
-                    pass
+                        pass
         
         self.vocab.update_word(form_contents, word_id)
         self.edit_word._quit()
@@ -365,7 +367,7 @@ class lct_controller():
             
 
     def trigger_del_word(self, event=None):
-        self.main_win.status.set("Deleting Word...")
+        # self.main_win.status.set("Deleting Word...")
         treeview = self.main_win.fixed_vocab_viewer.word_list
         selection = treeview.selection()
         word_ids = []
@@ -540,7 +542,7 @@ class lct_controller():
 
     def trigger_export_vocabulary(self, event=None):
         self.main_win.status.set("Exporting Vocabulary...")
-        format_list=["CSV", "XLSX", "TXT"]
+        format_list=["CSV", "XLSX"]
         self.export_window = export_vocabulary(format_list, self.conf["word_attributes"])
         self.export_window.export_button.configure(command=self.save_export_vocabulary)
 
@@ -563,12 +565,6 @@ class lct_controller():
         self.export_window._quit()
     
 
-    def trigger_export_batch(self):
-        self.main_win.status.set("Export Batch...")
-        self.export_batch_win = export_batch()
-        self.export_batch_win.submit_button.configure(command=self.save_export_batch)
-    
-
     def save_export_batch(self):
         filetypes= (("xlsx files","*.xlsx"), ("csv files","*.csv"), ("docx files","*.docx"), ("txt files","*.txt"))
         filename = filedialog.asksaveasfilename(initialdir = "/data",title = "Export as...", filetypes = filetypes, defaultextension="*.txt")
@@ -581,10 +577,14 @@ class lct_controller():
         generated_word_list = self.data_handler.gen_words(self.letter_parts, 
                                             min_size=self.main_win.minsize_entry.get(), 
                                             max_size=self.main_win.maxsize_entry.get(),
-                                            word_count=int(self.export_batch_win.wc_entry.get()),
+                                            word_count=int(self.main_win.wc_entry.get()),
                                             foreigness=self.main_win.foreign_scale.get(),
                                             hardness=self.main_win.hardness_scale.get())
                                 
         self.data_handler.export_batch(generated_word_list, filename)
-        self.export_batch_win._quit()
         self.main_win.status.set("Ready...")
+
+    
+    def trigger_info_window(self):
+        info_win = info_window()
+

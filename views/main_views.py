@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tk_html_widgets import HTMLLabel
-from controllers import utils
+from controllers import utils, __version__
 import re
 
 
@@ -68,7 +68,7 @@ class main_frame(common_win, tk.Toplevel):
         self.main_win.configure(menu=self.menu)
         self.filemenu = tk.Menu(self.menu, tearoff=0)
         self.vocmenu = tk.Menu(self.menu, tearoff=0)
-        self.genmenu = tk.Menu(self.menu, tearoff=0)
+        # self.genmenu = tk.Menu(self.menu, tearoff=0)
         self.helpmenu = tk.Menu(self.menu, tearoff=0)
         
         # #########################################
@@ -168,7 +168,7 @@ class main_frame(common_win, tk.Toplevel):
         ########### TRANSLATION ###################
 
         tk.Label(self.word_info_frame, text="Translation", font=("Consolas", 10,"bold")).grid(column=0, row=2, sticky="nw", padx=5, pady=5)
-        self.translation_label = tk.Label(self.word_info_frame, text="placeholder")
+        self.translation_label = tk.Label(self.word_info_frame, text="placeholder", font=("Calibri", 14, "bold"))
         self.translation_label.grid(column=1, row=2, sticky="nw")
 
 
@@ -272,7 +272,6 @@ class main_frame(common_win, tk.Toplevel):
         self.status_bar.grid(row=12, column=0, columnspan=12, rowspan=1, sticky="nwes")
         self.status.set("Ready...")
 
-
     ###################################################
     # GENERATION TAB
     #####################################################
@@ -301,11 +300,14 @@ class main_frame(common_win, tk.Toplevel):
         self.letters_frame = tk.LabelFrame(self.parameters_frame, text="Word components")
         self.combination_frame = tk.LabelFrame(self.parameters_frame, text="Combination")
         self.config_frame = tk.LabelFrame(self.parameters_frame, text="Configuration")
-
+        self.export_frame = tk.LabelFrame(self.parameters_frame, text="Export")
+        
         self.parameters_frame.grid(row=2, column=5, columnspan=6, sticky="nsew")
         self.letters_frame.grid(row=0, column=0, columnspan=6, sticky="nsew")
         self.combination_frame.grid(row=3, column=0, columnspan=6, sticky="nsew")
         self.config_frame.grid(row=7, column=0, columnspan=6, sticky="nsew")
+        self.export_frame.grid(row=9, column=0, columnspan=6, sticky="nsew")
+
 
         for i in range(10):
             self.parameters_frame.columnconfigure(i, weight=1)
@@ -355,16 +357,28 @@ class main_frame(common_win, tk.Toplevel):
         #################### GENERATE ##########################
 
         self.generate_button = tk.Button(self.parameters_frame, text="Generate Batch!")
-        self.generate_button.grid(row=10, column=0, columnspan=6, sticky="nsew")
+        self.generate_button.grid(row=8, column=0, columnspan=6, sticky="nsew")
     
 
+        self.entry_checkers = []
+        tk.Label(self.export_frame, text="Word Count").grid(row=0, column=0, sticky="nsew")
+        check_var = tk.StringVar(self.main_win)
+        check_var.trace("w", lambda x, y, z=check_var: self.validate_input(self.entry_checkers, x, 5, input_type="int_"))
+        self.entry_checkers.append(check_var)
+        self.wc_entry = tk.Entry(self.export_frame, width=4, textvariable=check_var)
+        self.wc_entry.grid(row=1, column=0, sticky="nsew")
+
+        self.export_button = tk.Button(self.export_frame, text="Export Batch!")
+        self.export_button.grid(row=2, column=0, sticky="nsew")
+   
+   
     ########## CONSTRUCTION TAB ################
 
     def build_con_tab(self):
         pass
 
 
-class vocab_viewer(tk.Frame, common_win):
+class vocab_viewer(tk.Frame):
     def __init__(self, master, display_data_functions, vocab):
         tk.Frame.__init__(self, master)
         self.vocab = vocab
@@ -380,7 +394,7 @@ class vocab_viewer(tk.Frame, common_win):
 
         self.word_list = ttk.Treeview(self)
         self.word_list['show'] = 'headings'
-        self.word_list.grid(column=0, row=2,  rowspan=10, columnspan=4, sticky="wnse") 
+        self.word_list.grid(column=0, row=1,  rowspan=11, columnspan=4, sticky="wnse") 
         self.word_list["columns"]=("transliteration","translation")
         for column in self.word_list["columns"]:
             self.word_list.column(column, width=column_width)
@@ -392,7 +406,7 @@ class vocab_viewer(tk.Frame, common_win):
         self.style.map('Treeview', foreground=self.fixed_map('foreground'),
         background=self.fixed_map('background'))
 
-        for i in range(12):
+        for i in range(10):
             self.word_list.rowconfigure(i, weight=1)
             if i < 4:
                 self.word_list.columnconfigure(i, weight=1)
@@ -406,10 +420,12 @@ class vocab_viewer(tk.Frame, common_win):
         ################ UPPER FRAME #####################
 
         self.upper_frame = tk.Frame(self)
-        self.upper_frame.grid(row=0, column=0, rowspan=2, columnspan=4, sticky="nsew")
+        self.upper_frame.grid(row=0, column=0, rowspan=1, columnspan=4, sticky="nsew")
 
-        for i in range(4):
-            self.upper_frame.columnconfigure(i, weight=1)
+        for i in range(10):
+            self.upper_frame.rowconfigure(i, weight=1)
+            if i < 4:
+                self.upper_frame.columnconfigure(i, weight=1)
 
 
         ################## SEARCH BAR #############################
@@ -545,7 +561,7 @@ class word_form(common_win):
 class edit_vocabulary_form(common_win):
     def __init__(self):
         super().__init__()
-        self.toplevel_win.title("New Vocabulary")
+        self.toplevel_win.title("Vocabulary Editor")
 
         self.create_widgets()
     
@@ -801,7 +817,7 @@ class export_vocabulary(common_win):
         self.format_list = format_list
         self.export_columns = export_columns
         super().__init__()
-        self.toplevel_win.title("Populate Vocabulary from Web")
+        self.toplevel_win.title("Export Vocabulary")
         # self.toplevel_win.attributes('-topmost', True)
         self.build_widgets()
     
@@ -829,7 +845,7 @@ class export_vocabulary(common_win):
 class populate_from_text(common_win):
     def __init__(self):
         super().__init__()
-        self.toplevel_win.title("Populate Vocabulary from File")
+        self.toplevel_win.title("Populate Vocabulary from Text")
 
         self.create_widgets()
 
@@ -887,27 +903,19 @@ class populate_from_text(common_win):
         self.analyze_button.grid(row=3, column=0, sticky="nsew")
 
 
-class export_batch(common_win):
-        def __init__(self):
-            super().__init__()
-            self.toplevel_win.title("Export generated Batch")
+class info_window(common_win):
+    def __init__(self):
+        super().__init__()
+        self.toplevel_win.title("LCT Info")
+        self.toplevel_win.attributes('-topmost', True)
 
-            self.create_widgets()
+        self.create_widgets()
 
-        def create_widgets(self):
+    def create_widgets(self):
+        for i in range(3):
+            self.toplevel_win.columnconfigure(i, weight=1)
 
-            ############## CONFIGURATOR ##################
-
-            self.config_frame = tk.LabelFrame(self.toplevel_win, text="Configure")
-            self.config_frame.grid(row=0, column=0, sticky="nsew")
-
-            self.entry_checkers = []
-            tk.Label(self.config_frame, text="Word Count").grid(row=0, column=0, sticky="nsew")
-            check_var = tk.StringVar(self.toplevel_win)
-            check_var.trace("w", lambda x, y, z=check_var: self.validate_input(self.entry_checkers, x, 5, input_type="int_"))
-            self.entry_checkers.append(check_var)
-            self.wc_entry = tk.Entry(self.config_frame, width=4, textvariable=check_var)
-            self.wc_entry.grid(row=1, column=0, sticky="nsew")
-
-            self.submit_button = tk.Button(self.toplevel_win, text="Export Batch!")
-            self.submit_button.grid(row=1, column=0, sticky="nsew")
+        tk.Label(self.toplevel_win, text="Language Construction Tool", font=("Calibri", 14, "bold"), padx=14).grid(row=0, column=2, sticky="nsew")
+        tk.Label(self.toplevel_win, text="Version " + str(__version__)).grid(row=1, column=2, sticky="nsew")
+        tk.Label(self.toplevel_win, text="Developed by Fabian Schober").grid(row=2, column=2, sticky="nsew")
+        tk.Label(self.toplevel_win, text="reach@fabianschober.com").grid(row=3, column=2, sticky="nsew", pady=(0, 12))
