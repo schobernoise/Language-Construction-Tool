@@ -87,12 +87,12 @@ If you would like to take a list of generated words with you, you can just expor
 
 **Keybindings**
 
-Strg-N: Neues Wort
-Strg+V: Neues Vokabular
-Strg+I: Import XLS/CSV
-Strg+E: Export Vocabulary as XLS/CSV
-F5: Refresh Vocabulary
-Entf: Delete selected words
+- Ctrl+N: New Word
+- Ctrl+V: New Vocabulary
+- Ctrl+I: Import XLSX/CSV
+- Ctrl+E: Export Vocabulary as XLSX/CSV
+- F5: Refresh Vocabulary
+- Del: Delete selected words
 
 
 ## Known Bugs
