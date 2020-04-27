@@ -1,6 +1,8 @@
-## Language Construction Tool
+# Language Construction Tool
 
-# Release Notes
+![The Language Construction Tool](http://www.fabianschober.com/assets/lct/lct.jpg)
+
+## Release Notes
 
 Welcome to the Language Construction Tool (LCT)! As you will probably have guessed, this tool is designed to help you keep track of your work with languages. This could mean several things like:
 
@@ -10,7 +12,7 @@ Welcome to the Language Construction Tool (LCT)! As you will probably have guess
 
 Of course you can configure this tool to fit your needs however you like. For example, with some small adjustments you could use it as database-manager for recipes and so on.
 
-# Prerequisites and Quickstart
+## Prerequisites and Quickstart
 
 This tools entire GUI is based on tkinter.
 Everything is tested and developed on Python 3.8.
@@ -28,7 +30,7 @@ Now you should be good to go! With your venv enabled, run
 
 With first starting this program, it will build the "config.yaml" and "start.db".
 
-# Config
+## Config
 
 *log_level:* WARNING, DEBUG; INFO or ERROR (Which will be displayed in the CL)
 *part_of_speech, word_attributes and vocabulary_metadata:*
@@ -40,7 +42,7 @@ But some parts are still hardcoded, so I would leave that for now as is.
 *scraper_websites:* Websites which can be used as Word sources. I have implemented one so far,
 but feel free to share your input!
 
-# Usage and Best Practices
+## Usage and Best Practices
 
 First, unzip the "ressources.zip" and have a look inside.
 The Language Construction Tool comes with a sample Vocabulary to import, to demonstrate some of its key functionality.
@@ -63,7 +65,7 @@ Now to some of the advanced methods!
 
 Click on "Clone Vocabulary Viewer" and obtain another instance of the viewer. You can have as many instances as you like. When you now click on the little up arrow a few times right over the treeview of one vocabulary viewer you will see that it only shows the selected part of speech words. You can now seperately do this for all of the viewers and compare lists, also with the search bar.
 
-**Image**
+![Different Vocabulary Viewers](http://www.fabianschober.com/assets/lct/vocab_viewers.jpg)
 
 Now click on Vocabulary - "Populate from Text". This function comes in handy when you want to build your language areound a specific topic, e.g. a language for a people who are great sailors. You can pick some texts about the nautical trade and say that you like to pick the 100 most used words with a min_length of 10. Now you have a lot of nautical terms to work with!
 In our case I picked something from archive.org, the International Journal of Computer Science and Information Security (IJCSIS) Vol. 15, No. 12, December 2017. Go ahead and try it out!
@@ -85,19 +87,19 @@ If you would like to take a list of generated words with you, you can just expor
 
 **Keybindings**
 
-Strg-N: Neues Wort
-Strg+V: Neues Vokabular
-Strg+I: Import XLS/CSV
-Strg+E: Export Vocabulary as XLS/CSV
-F5: Refresh Vocabulary
-Entf: Delete selected words
+- Ctrl+N: New Word
+- Ctrl+V: New Vocabulary
+- Ctrl+I: Import XLSX/CSV
+- Ctrl+E: Export Vocabulary as XLSX/CSV
+- F5: Refresh Vocabulary
+- Del: Delete selected words
 
 
-# Known Bugs
+## Known Bugs
 - Word generator generates not exactly the word_count entered, due to its removal of duplicates (creates set of generated words).
 
 
-## Plans for the Future
+# Plans for the Future
 
 **Minor Features/Fixes**
 - Make Recent Vocabulary Menu Entry
