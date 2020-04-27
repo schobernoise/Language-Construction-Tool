@@ -1,0 +1,13 @@
+log_level: WARNING
+part_of_speech: [Noun, Verb, Adjective, Adverb, Pronoun, Preposition, Conjunction, Interjection, Article]
+word_attributes: [word_id, transliteration, phonetics, pos, translation, example_sentence, example_translation, description, related_image]
+vocabulary_metadata: [name, author, language, notes]
+start_db: "data/start.db"
+consonants: [c,z,x,s,d,f,v,w,g,k,b,p,m,n,h,j]
+special_vowels: [ä,ö,ü,è]
+vowels: [a,e,i,o,u]
+construction_config: 
+              "width" : 4 
+              "height" : 30
+scraper_websites:
+              - "https://1000mostcommonwords.com/"

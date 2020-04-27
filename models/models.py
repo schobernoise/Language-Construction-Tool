@@ -1,41 +1,232 @@
-from PyQt5.QtCore import QObject, pyqtSignal
-from controllers.utils import utils
+from controllers import utils
+from controllers import log
+import sqlite3
+from PIL import Image
+import io
 
-class lct_voc(QObject):
-    amount_changed = pyqtSignal(int)
-    even_odd_changed = pyqtSignal(str)
-    enable_reset_changed = pyqtSignal(bool)
+class voc_model():
+    def __init__(self, conf):
+        self.word_attribute_headings = conf["word_attributes"]
+        self.metadata_headings = conf["vocabulary_metadata"]
+        self.pos_list = conf["part_of_speech"]
 
-    @property
-    def amount(self):
-        return self._amount
 
-    @amount.setter
-    def amount(self, value):
-        self._amount = value
-        self.amount_changed.emit(value)
+    def load_db(self, db_file="", metadata=[], mode="load"):
+        if db_file=="":
+            db_file = self.db_file
+        else:
+            self.db_file = db_file
 
-    @property
-    def even_odd(self):
-        return self._even_odd
+        conn = sqlite3.connect(db_file)
+        self.vocabulary = []
 
-    @even_odd.setter
-    def even_odd(self, value):
-        self._even_odd = value
-        self.even_odd_changed.emit(value)
+        if mode == "create":
+            sql_create_voc = '''CREATE TABLE VOCABULARY
+                                ({} INTEGER PRIMARY KEY,
+                                {} varchar(255) NOT NULL,
+                                {} varchar(255) NOT NULL,
+                                {} TEXT NOT NULL,
+                                {} varchar(255) NOT NULL,
+                                {} TEXT NOT NULL,
+                                {} TEXT NOT NULL,
+                                {} TEXT NOT NULL,
+                                {} BLOB NOT NULL)'''.format(*self.word_attribute_headings)
+            
 
-    @property
-    def enable_reset(self):
-        return self._enable_reset
+            sql_create_meta = ''' CREATE TABLE METADATA
+                                ({} varchar(255),
+                                {} varchar(255),
+                                {} varchar(255),
+                                {} TEXT)'''.format(*self.metadata_headings)
 
-    @enable_reset.setter
-    def enable_reset(self, value):
-        self._enable_reset = value
-        self.enable_reset_changed.emit(value)
+            
+            sql_insert_meta = '''INSERT INTO METADATA VALUES(?,?,?,?)'''
+            
 
-    def __init__(self):
-        super().__init__()
+            c = conn.cursor()
+            c.execute(sql_create_voc)
+            c.execute(sql_create_meta)
+            c.execute(sql_insert_meta, tuple(metadata))
+            conn.commit()
 
-        self._amount = 0
-        self._even_odd = ''
-        self._enable_reset = False
+            # METADATA ASSIGNMENT
+
+            self.metadata = {}
+
+            for i, heading in enumerate(self.metadata_headings):
+                self.metadata[heading] = metadata[i]
+            
+        elif mode =="load":
+            sql_load_voc = "SELECT * FROM VOCABULARY"
+            c = conn.cursor()
+            c.execute(sql_load_voc)
+
+            rows = c.fetchall()
+            conn.commit()
+            for row in rows:
+                word_args = {}
+                for i, value in enumerate(row):
+                    if self.word_attribute_headings[i] == "related_image":
+                        word_args[self.word_attribute_headings[i]] = utils.binary_to_image(value)
+                    else:
+                        word_args[self.word_attribute_headings[i]] = value
+
+                # print(word_args)
+                self.vocabulary.append(word_args)
+
+            sql_load_meta = "SELECT * FROM METADATA"
+            
+            c = conn.cursor()
+            c.execute(sql_load_meta)
+            rows = c.fetchall()
+            conn.commit()
+
+            self.metadata = {}
+            for i, heading in enumerate(self.metadata_headings):
+                self.metadata[heading] = rows[0][i]
+
+
+    def update_word(self, form_contents, word_id):
+        conn = sqlite3.connect(self.db_file)
+        try:
+            log.debug("MODEL: Updated Word ID {}".format(word_id))
+            for key, value in form_contents.items():
+                sql_update_word = '''UPDATE VOCABULARY SET {} = ? WHERE word_id == ?'''.format(key)
+                c = conn.cursor()
+                c.execute(sql_update_word, (value, word_id))
+                conn.commit()
+        except:
+            log.error("MODEL: Updating Word ID {} failed".format(word_id))
+         
+        self.load_db()
+
+    
+    def update_vocabulary_metadata(self, form_contents):
+        conn = sqlite3.connect(self.db_file)
+        try:
+            log.debug("MODEL: Updated Vocabulary Metadata.")
+            for key, value in form_contents.items():
+                sql_update_word = '''UPDATE METADATA SET {} = ?'''.format(key)
+                c = conn.cursor()
+                c.execute(sql_update_word, (value,))
+                conn.commit()
+        except:
+            log.error("MODEL: Updating Vocabulary Metadata failed")
+         
+        self.load_db()
+        
+    
+    def save_word(self, form_contents):
+        sql_insert_word_values = []
+
+        for heading in self.word_attribute_headings[1:]:
+            try:
+                sql_insert_word_values.append(form_contents[heading])
+            except:
+                sql_insert_word_values.append("-")
+
+
+        sql_insert_new_word = '''INSERT INTO VOCABULARY ({},{},{},{},{},{},{},{})
+                                VALUES (?,?,?,?,?,?,?,?)'''.format(*self.word_attribute_headings[1:])
+    
+        conn = sqlite3.connect(self.db_file)
+        c = conn.cursor()
+
+        try:
+            c.execute(sql_insert_new_word, tuple(sql_insert_word_values))
+            conn.commit()
+            log.debug("MODEL: Inserted New Word in DB.")
+        except:
+            log.error("MODEL: Inserting Word failed")
+
+        self.load_db()
+    
+
+    def import_words_from_file(self, import_dict):
+        
+        sql_import_word = '''INSERT INTO VOCABULARY ({},{},{},{},{},{},{},{})
+                        VALUES (?,?,?,?,?,?,?,?)'''.format(*self.word_attribute_headings[1:])
+        conn = sqlite3.connect(self.db_file)
+        c = conn.cursor()
+
+        word_values = []
+
+        for imp_word in import_dict:
+            temp_list = []
+            for heading in self.word_attribute_headings:
+                if heading != "word_id":
+                    try:
+                        temp_list.append(imp_word[heading])
+                    except:
+                        temp_list.append("-")
+
+            word_values.append(tuple(temp_list))
+
+        try:
+            c.executemany(sql_import_word, word_values)
+            conn.commit()
+            log.debug("MODEL: Imported Word from File")
+        except:
+            log.error("MODEL: Importing Word from File failed")
+         
+        self.load_db()
+
+    
+    def delete_word(self, word_ids):
+        # print(word_id)
+        conn = sqlite3.connect(self.db_file)
+        c = conn.cursor()
+        sql_del_word = '''DELETE FROM VOCABULARY WHERE [word_id] = ?'''
+
+        try:
+            c.executemany(sql_del_word, word_ids)
+            conn.commit()
+            log.debug("MODEL: Deleted Word ID {word_id} from DB.")
+        except:
+            log.error("MODEL: Deleting Word ID {word_id} failed")
+         
+        self.load_db()
+    
+    
+    def populate_database_from_text(self, population_words):
+        temp_words = []
+        for word in population_words:
+            temp_words.append(("-","-","-",word,"-","-","-","-"))
+
+        sql_populate_db = '''INSERT INTO VOCABULARY ({},{},{},{},{},{},{},{})
+                        VALUES (?,?,?,?,?,?,?,?)'''.format(*self.word_attribute_headings[1:])
+        conn = sqlite3.connect(self.db_file)
+        c = conn.cursor()
+        try:
+            c.executemany(sql_populate_db, temp_words)
+            conn.commit()
+            log.debug("MODEL: Successfully populated Database from text.")
+        except:
+            log.error("MODEL: Failed populating Database from text.")
+        
+        self.load_db()
+    
+
+    def populate_database_from_web(self, words_dict, import_method, import_translation):
+        temp_words = []
+        for word in words_dict:
+            if import_method == "translation":
+                temp_words.append(("-","-","-",word["translation"],"-","-","-","-"))
+            elif import_method == "transliteration" and not import_translation:
+                temp_words.append((word["translation"],"-","-","-","-","-","-","-"))
+            elif import_method == "transliteration" and import_translation:
+                temp_words.append((word["translation"],"-","-",word["english"],"-","-","-","-"))
+
+        
+        sql_populate_db = '''INSERT INTO VOCABULARY ({},{},{},{},{},{},{},{})
+                        VALUES (?,?,?,?,?,?,?,?)'''.format(*self.word_attribute_headings[1:])
+        conn = sqlite3.connect(self.db_file)
+        c = conn.cursor()
+        try:
+            c.executemany(sql_populate_db, temp_words)
+            conn.commit()
+            log.debug("MODEL: Successfully populated Database from Web.")
+        except:
+            log.error("MODEL: Failed populating Database from Web.")
+        
+        self.load_db()
