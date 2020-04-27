@@ -1,11 +1,10 @@
-# -*- coding: iso-8859-1 -*-
-
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
 from PIL import Image
 import io
 import random
+import sqlite3
 
 import time
 import yaml
@@ -131,8 +130,9 @@ class Config():
         lct_lib = Path(os.path.dirname(os.path.abspath(__file__)))
         self.lct_root = lct_lib.parents[0]
         log.info("Config.lct_root: {}".format(self.lct_root))
-        self.check_integrity()
+        self.check_config_integrity()
         self.conf = read_yaml( self.lct_root / "config.yaml")
+        self.check_db_integrity(self.conf["word_attributes"], self.conf["vocabulary_metadata"])
         try:
             self.log_level = self.conf["log_level"]
             log.info("config.yaml entry log_level is {}.".format(self.log_level))
@@ -163,7 +163,7 @@ class Config():
             return value
     
 
-    def check_integrity(self):
+    def check_config_integrity(self):
         if not os.path.isfile("config.yaml"): 
             log.info("Creating config.yaml")
             config_str = '''log_level: WARNING
@@ -180,10 +180,61 @@ construction_config:
 scraper_websites:
               - "https://1000mostcommonwords.com/"'''
 
-            with open("config.yaml", 'w') as config_file:
+            with open("config.yaml", 'w', encoding="utf-8") as config_file:
                 config_file.write(config_str)
         else:
             pass
+    
+
+    def check_db_integrity(self, headings, metaheadings):
+
+        if not os.path.isfile("data/start.db"):
+            binary_image = convertToBinaryData("ressources/word_image.jpg")
+
+            sql_create_db = '''CREATE TABLE VOCABULARY
+                                        ({} INTEGER PRIMARY KEY,
+                                            {} varchar(255) NOT NULL,
+                                            {} varchar(255) NOT NULL,
+                                            {} TEXT NOT NULL,
+                                            {} varchar(255) NOT NULL,
+                                            {} TEXT NOT NULL,
+                                            {} TEXT NOT NULL,
+                                            {} TEXT NOT NULL,
+                                            {} BLOB NOT NULL)'''.format(*headings)
+
+            sql_create_meta = ''' CREATE TABLE METADATA
+                                ({} varchar(255),
+                                {} varchar(255),
+                                {} varchar(255),
+                                {} TEXT)'''.format(*headings)
+            
+            conn = sqlite3.connect('data/start.db')
+            c = conn.cursor()
+            c.execute(sql_create_db)
+            c.execute(sql_create_meta)
+
+            sql_insertion_query = '''INSERT INTO VOCABULARY ({},{},{},{},{},{},{},{})
+                                            VALUES (?,?,?,?,?,?,?,?)'''.format(*headings[1:])
+
+            sql_vocab_data = ('Welcome',
+                        '/ˈwelkəm/',
+                        'Adjective',
+                        "willkommen",
+                        "You are very welcome here.", 
+                        "Du bist hier sehr willkommen.",
+                        '''<p><b>This tool is designed to help you construct languages.</b> </p>
+Up to date its main function is to manage vocabulary, and secondly to form words. It should not be confused with a language generator.''', 
+                        binary_image)
+            
+            sql_meta_query = '''INSERT INTO METADATA VALUES(?,?,?,?)'''
+            sql_meta_content=("Start DB", "Fabian Schober", "German", "This is the tutorial Database.")
+
+            c.execute(sql_insertion_query, sql_vocab_data)
+            c.execute(sql_meta_query, sql_meta_content)
+            conn.commit()
+            conn.close()
+
+    
     
 
 

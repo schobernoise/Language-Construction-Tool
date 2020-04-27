@@ -440,6 +440,7 @@ class data_controller():
             
             log.debug("DATA: Exporting {}.".format(output_name))
     
+    
     def export_batch(self, generated_word_list, filename):
         log.debug("DATA: Exporting {}".format(filename))
         if filename[-3:] == "csv":
