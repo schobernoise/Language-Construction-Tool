@@ -32,14 +32,14 @@ With first starting this program, it will build the "config.yaml" and "start.db"
 
 ## Config
 
-*log_level:* WARNING, DEBUG; INFO or ERROR (Which will be displayed in the CL)
-*part_of_speech, word_attributes and vocabulary_metadata:*
+- *log_level:* WARNING, DEBUG; INFO or ERROR (Which will be displayed in the CL)
+- *part_of_speech, word_attributes and vocabulary_metadata:*
 This program is built around the config.yaml for more flexibility. The idea was, that if you change one word_attribute, everything would change and you could remodel the whole program to somethign completely different with a few clicks.
 But some parts are still hardcoded, so I would leave that for now as is. 
-*start_db:* Which Database will be loaded on startup.
-*consonants, vowels and special_vowels:* Letters which will be loaded in the generator on startup.
-*construction_config:* The dimensions of the generated word table.
-*scraper_websites:* Websites which can be used as Word sources. I have implemented one so far,
+- *start_db:* Which Database will be loaded on startup.
+- *consonants, vowels and special_vowels:* Letters which will be loaded in the generator on startup.
+- *construction_config:* The dimensions of the generated word table.
+- *scraper_websites:* Websites which can be used as Word sources. I have implemented one so far,
 but feel free to share your input!
 
 ## Usage and Best Practices
