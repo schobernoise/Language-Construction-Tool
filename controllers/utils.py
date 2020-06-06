@@ -164,6 +164,9 @@ class Config():
     
 
     def check_config_integrity(self):
+        if not os.path.exists('data'):
+            os.makedirs('data')
+
         if not os.path.isfile("config.yaml"): 
             log.info("Creating config.yaml")
             config_str = '''log_level: WARNING
@@ -189,7 +192,7 @@ scraper_websites:
     def check_db_integrity(self, headings, metaheadings):
 
         if not os.path.isfile("data/start.db"):
-            binary_image = convertToBinaryData("ressources/word_image.jpg")
+            binary_image = convertToBinaryData("ressources/related_images/1.jpg")
 
             sql_create_db = '''CREATE TABLE VOCABULARY
                                         ({} INTEGER PRIMARY KEY,
