@@ -1,6 +1,6 @@
 # Language Construction Tool
 
-![The Language Construction Tool](http://www.fabianschober.com/assets/lct/lct.jpg)
+![The Language Construction Tool](http://www.fabianschober.com/lct/lct_1.jpg)
 
 ## Release Notes
 
@@ -65,7 +65,7 @@ Now to some of the advanced methods!
 
 Click on "Clone Vocabulary Viewer" and obtain another instance of the viewer. You can have as many instances as you like. When you now click on the little up arrow a few times right over the treeview of one vocabulary viewer you will see that it only shows the selected part of speech words. You can now seperately do this for all of the viewers and compare lists, also with the search bar.
 
-![Different Vocabulary Viewers](http://www.fabianschober.com/assets/lct/vocab_viewers.jpg)
+![Different Vocabulary Viewers](http://www.fabianschober.com/lct/lct_2.jpg)
 
 Now click on Vocabulary - "Populate from Text". This function comes in handy when you want to build your language areound a specific topic, e.g. a language for a people who are great sailors. You can pick some texts about the nautical trade and say that you like to pick the 100 most used words with a min_length of 10. Now you have a lot of nautical terms to work with!
 In our case I picked something from archive.org, the International Journal of Computer Science and Information Security (IJCSIS) Vol. 15, No. 12, December 2017. Go ahead and try it out!
