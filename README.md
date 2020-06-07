@@ -12,6 +12,16 @@ Welcome to the Language Construction Tool (LCT)! As you will probably have guess
 
 Of course you can configure this tool to fit your needs however you like. For example, with some small adjustments you could use it as database-manager for recipes and so on.
 
+## Functionalities
+
+- Adding, Editing and deleting Words from and to a database
+- Batch importing and exporting from and to csv/xls/txt
+- Adding Images to all words
+- Generating Words and exporting them
+- Compare words with multiple undockable treeviews
+- Analyse texts and import their essential vocabulary
+- Import essential words from the web
+
 ## Prerequisites and Quickstart
 
 This tools entire GUI is based on tkinter.
